@@ -1,0 +1,42 @@
+package se.anyro.tgbotapi.types.reply_markup;
+
+
+/**
+ * Note! You must use exactly one of the optional fields.
+ * 
+ * @see <a href="https://core.telegram.org/bots/api#inlinekeyboardbutton">Official documentation of
+ *      InlineKeyboardButton</a>
+ */
+public class InlineKeyboardButton {
+
+    public String text;
+    public String url;
+    public String callback_data;
+    public String switch_inline_query;
+
+    public InlineKeyboardButton(String text) {
+        this.text = text;
+    }
+
+    /*
+     * Helper methods for creating specific button types
+     */
+
+    public static InlineKeyboardButton url(String text, String url) {
+        InlineKeyboardButton button = new InlineKeyboardButton(text);
+        button.url = url;
+        return button;
+    }
+
+    public static InlineKeyboardButton callbackData(String text, String data) {
+        InlineKeyboardButton button = new InlineKeyboardButton(text);
+        button.callback_data = data;
+        return button;
+    }
+
+    public static InlineKeyboardButton switchInlineQuery(String text, String query) {
+        InlineKeyboardButton button = new InlineKeyboardButton(text);
+        button.switch_inline_query = query;
+        return button;
+    }
+}
