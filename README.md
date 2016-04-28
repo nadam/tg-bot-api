@@ -70,7 +70,9 @@ public class ExampleServlet extends HttpServlet implements ErrorListener {
         try {
             Update update = api.parseFromWebhook(req.getReader());            
             
-            // Do something interesting and extract the 
+            // Do something interesting,
+            // extract the chatId from the update object and
+            // decide an appropriate messageText to send as reply.
             
         } catch (Exception e) {
             api.debug(e);
