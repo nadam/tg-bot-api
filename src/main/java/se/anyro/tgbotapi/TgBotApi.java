@@ -1063,7 +1063,7 @@ public class TgBotApi {
      *      answerInlineQuery</a>
      */
     public int answerInlineQuery(String inlineQueryId, InlineQueryResult[] results, int cacheTime, boolean isPersonal,
-            String nextOffset) throws IOException {
+            String nextOffset, String switchPmText, String switchPmParameter) throws IOException {
         StringBuilder command = new StringBuilder(ANSWER_INLINE_QUERY);
         command.append("inline_query_id=").append(inlineQueryId);
         command.append("&results=").append(urlEncode(GSON.toJson(results)));
@@ -1075,6 +1075,12 @@ public class TgBotApi {
         }
         if (nextOffset != null) {
             command.append("&next_offset=").append(nextOffset);
+        }
+        if (switchPmText != null) {
+            command.append("&switch_pm_text=").append(switchPmText);
+            if (switchPmParameter != null) {
+                command.append("&switch_pm_parameter=").append(switchPmParameter);
+            }
         }
         return callMethod(command.toString());
     }
