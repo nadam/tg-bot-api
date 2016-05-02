@@ -815,7 +815,7 @@ public class TgBotApi {
         String url = GET_FILE_URL + file.file_path;
         HttpURLConnection con = createConnection(url);
         if (con.getResponseCode() != 200) {
-            System.err.println("Response " + con.getResponseCode() + " " + con.getResponseMessage() + " for " + url);
+            handleErrorResponse(con.getResponseCode(), con.getResponseMessage());
             closeInputStream(con);
             return null;
         }
@@ -840,7 +840,7 @@ public class TgBotApi {
     public byte[] downloadFromUrl(String url) throws IOException {
         HttpURLConnection con = createConnection(url);
         if (con.getResponseCode() != 200) {
-            System.err.println("Response " + con.getResponseCode() + " " + con.getResponseMessage() + " for " + url);
+            handleErrorResponse(con.getResponseCode(), con.getResponseMessage());
             closeInputStream(con);
             return null;
         }
@@ -1092,12 +1092,18 @@ public class TgBotApi {
         HttpURLConnection con = createConnection(url);
         int responseCode = con.getResponseCode();
         if (responseCode != 200) {
-            InputStream stream = con.getInputStream();
-            try (Reader reader = new InputStreamReader(stream)) {
-                JsonObject response = (JsonObject) PARSER.parse(reader);
-                if (!response.getAsJsonPrimitive("ok").getAsBoolean()) {
-                    handleErrorResponse(response);
+            try {
+                InputStream stream = con.getInputStream();
+                try (Reader reader = new InputStreamReader(stream)) {
+                    JsonObject response = (JsonObject) PARSER.parse(reader);
+                    if (!response.getAsJsonPrimitive("ok").getAsBoolean()) {
+                        handleErrorResponse(response);
+                    } else {
+                        handleErrorResponse(responseCode, con.getResponseMessage());
+                    }
                 }
+            } catch (Exception e) {
+                handleErrorResponse(responseCode, con.getResponseMessage());
             }
         }
         closeInputStream(con);
@@ -1116,11 +1122,6 @@ public class TgBotApi {
      */
     public <T> T callMethod(String url, Class<T> responseClass) throws IOException {
         HttpURLConnection con = createConnection(url);
-        // if (con.getResponseCode() != 200) {
-        // System.err.println("Response " + con.getResponseCode() + " " + con.getResponseMessage() + " for " + url);
-        // closeInputStream(con);
-        // return null;
-        // }
         InputStream stream = con.getInputStream();
 
         // From the documentation: "The response contains a JSON object, which always has a Boolean field ‘ok’ and may
@@ -1143,6 +1144,10 @@ public class TgBotApi {
     private void handleErrorResponse(JsonObject response) {
         int errorCode = response.getAsJsonPrimitive("error_code").getAsInt();
         String description = response.getAsJsonPrimitive("description").getAsString();
+        handleErrorResponse(errorCode, description);
+    }
+
+    private void handleErrorResponse(int errorCode, String description) {
         if (errorListener != null) {
             errorListener.onError(errorCode, description);
         } else {
