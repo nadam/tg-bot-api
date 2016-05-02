@@ -14,9 +14,11 @@ Technical scope and limitations
 Features
 --------
 - Full implementation of the API and hopefully quickly updated when new features are released
+- Javadoc links to corresponding official documentation
 - All types implemented as simple POJO classes with constructors and helper methods where necessary
 - All methods implemented as Java methods with various parameter options
-- Helper methods to make life easier, for instance `TgBotApi.sendReply()` and `TgBotApi.debug()`
+- A setSilent() method for bots who want to use disable_notification instead of having to set it each time you send a message
+- Helper methods to make life easier, for instance `TgBotApi.sendReply()`, `TgBotApi.downloadFile()` and `TgBotApi.debug()`
 - Enums and constants for common values
 
 Including in your project
