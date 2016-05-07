@@ -150,6 +150,10 @@ public class TgBotApi {
         return botUser.id;
     }
 
+    public boolean isOwner(User user) {
+        return user.id == OWNER;
+    }
+
     /**
      * Parse the input in the webhook into a pojo of the json data received.
      */
