@@ -11,9 +11,13 @@ import java.util.List;
 public class ReplyKeyboardMarkup extends ReplyMarkup {
 
     public KeyboardButton[][] keyboard;
-    public boolean resize_keyboard;
-    public boolean one_time_keyboard;
-    public boolean selective;
+    public boolean resize_keyboard = true;
+    public Boolean one_time_keyboard;
+    /**
+     * Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply (has
+     * reply_to_message_id), sender of the original message.
+     */
+    public Boolean selective;
 
     public ReplyKeyboardMarkup(KeyboardButton[]... buttonRows) {
         keyboard = buttonRows;
