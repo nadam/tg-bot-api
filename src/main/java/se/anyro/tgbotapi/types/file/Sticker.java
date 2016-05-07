@@ -5,5 +5,6 @@ public class Sticker {
     public int width;
     public int height;
     public PhotoSize thumb;
+    public String emoji;
     public int file_size;
 }
