@@ -99,7 +99,8 @@ More information
 - Userinfobot [@userinfobot](https://telegram.me/userinfobot)
 - Groupinfobot [@groupinfobot](https://telegram.me/groupinfobot)
 - Chat Bridge Bot - [@chatbridgebot](https://telegram.me/chatbridgebot)
-- TgBotApi Example [@TgBotApiExampleBot](https://telegram.me/tgbotapiexamplebot)
+- Json Dump Bot - [@JsonDumpBot](https://telegram.me/JsonDumpBot)
+- TgBotApi Example [@TgBotApiExampleBot](https://telegram.me/TgBotApiExampleBot)
 
 #### Advanced Java for Telegram
 If you think the Bot API is too limiting you can use the Telegram API instead which is what ordinary Telegram clients use. You use it with an ordinary Telegram account or with a Bot account (using auth.importBotAuthorization).
