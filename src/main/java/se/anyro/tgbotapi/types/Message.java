@@ -11,15 +11,15 @@ import se.anyro.tgbotapi.types.file.Voice;
  * @see <a href="https://core.telegram.org/bots/api#message">Message</a>
  */
 public class Message {
-	public int message_id;
-	public User from;
-	public int date;
+    public int message_id;
+    public User from;
+    public int date;
     public Chat chat;
-	public User forward_from;
+    public User forward_from;
     public Chat forward_from_chat;
-	public int forward_date;
-	public Message reply_to_message;
-	public String text;
+    public int forward_date;
+    public Message reply_to_message;
+    public String text;
     public MessageEntity[] entities;
     public Audio audio;
     public Document document;
