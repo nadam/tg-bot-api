@@ -10,12 +10,17 @@ import se.anyro.tgbotapi.types.inline.InlineQuery;
 public class Update {
     public int update_id;
     public Message message;
+    public Message edited_message;
     public InlineQuery inline_query;
     public ChosenInlineResult chosen_inline_result;
     public CallbackQuery callback_query;
 
     public boolean isMessage() {
         return message != null;
+    }
+
+    public boolean isEditedMessage() {
+        return edited_message != null;
     }
 
     public boolean isInlineQuery() {
@@ -36,6 +41,9 @@ public class Update {
     public User fromUser() {
         if (isMessage()) {
             return message.from;
+        }
+        if (isEditedMessage()) {
+            return edited_message.from;
         }
         if (isInlineQuery()) {
             return inline_query.from;

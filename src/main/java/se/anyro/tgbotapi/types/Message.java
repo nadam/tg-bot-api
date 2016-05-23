@@ -19,6 +19,7 @@ public class Message {
     public Chat forward_from_chat;
     public int forward_date;
     public Message reply_to_message;
+    public int edit_date;
     public String text;
     public MessageEntity[] entities;
     public Audio audio;

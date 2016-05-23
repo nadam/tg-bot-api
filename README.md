@@ -1,9 +1,9 @@
 TgBotApi
 ========
 
-This library implements all the methods and types in [Telegram's Bot API](https://core.telegram.org/bots) including the new features in 2.0. [Telegram](https://telegram.org/) is an instant messenger for various platforms.
+This Java library implements all the methods and types in [Telegram's Bot API](https://core.telegram.org/bots) including the new features in 2.1. [Telegram](https://telegram.org/) is an instant messenger for various platforms.
 
-Please note that this is an early release and there might be several bugs. If you find a bug or know some way to improve the library please report it to me as [an issue](https://github.com/nadam/tg-bot-api/issues) or [in private](https://telegram.me/nadam). Just don't ask me to add boiler plate stuff like getters and setters. There are lots of other Java libraries if you prefer that.
+Please note that this is an early release. If you find a bug or know some way to improve the library please report it to me as [an issue](https://github.com/nadam/tg-bot-api/issues) or [in private](https://telegram.me/nadam). Just don't ask me to add boiler plate stuff like getters and setters. There are lots of other Java libraries if you prefer that.
 
 Technical scope and limitations
 -------------------------------
@@ -96,11 +96,12 @@ The code for other platforms will look quite similar.
 More information
 ----------------
 #### Bots using TgBotApi
+- TgBotApi Example [@TgBotApiExampleBot](https://telegram.me/TgBotApiExampleBot)
 - Userinfobot [@userinfobot](https://telegram.me/userinfobot)
 - Groupinfobot [@groupinfobot](https://telegram.me/groupinfobot)
 - Chat Bridge Bot - [@chatbridgebot](https://telegram.me/chatbridgebot)
 - Json Dump Bot - [@JsonDumpBot](https://telegram.me/JsonDumpBot)
-- TgBotApi Example [@TgBotApiExampleBot](https://telegram.me/TgBotApiExampleBot)
+- Jackpot Bot - [@jackpot_bot](https://telegram.me/jackpot_bot)
 
 #### Advanced Java for Telegram
 If you think the Bot API is too limiting you can use the Telegram API instead which is what ordinary Telegram clients use. You use it with an ordinary Telegram account or with a Bot account (using auth.importBotAuthorization).
@@ -111,6 +112,6 @@ If you think the Bot API is too limiting you can use the Telegram API instead wh
 #### Other stuff
 - [Google App Engine tutorial for Java](https://cloud.google.com/appengine/docs/java/gettingstarted/creating-guestbook)
 
-Licence
+License
 ----------------
-[Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+[Apache License 2.0](LICENSE)

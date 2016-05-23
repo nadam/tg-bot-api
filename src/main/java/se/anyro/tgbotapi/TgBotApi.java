@@ -12,7 +12,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import se.anyro.tgbotapi.types.Chat;
 import se.anyro.tgbotapi.types.ChatAction;
+import se.anyro.tgbotapi.types.ChatMember;
 import se.anyro.tgbotapi.types.Message;
 import se.anyro.tgbotapi.types.ParseMode;
 import se.anyro.tgbotapi.types.Update;
@@ -55,7 +57,12 @@ public class TgBotApi {
     private final String GET_FILE;
     private final String GET_FILE_URL;
     private final String KICK_CHAT_MEMBER;
+    private final String LEAVE_CHAT;
     private final String UNBAN_CHAT_MEMBER;
+    private final String GET_CHAT;
+    private final String GET_CHAT_ADMINISTRATORS;
+    private final String GET_CHAT_MEMBERS_COUNT;
+    private final String GET_CHAT_MEMBER;
     private final String ANSWER_CALLBACK_QUERY;
     private final String EDIT_MESSAGE_TEXT;
     private final String EDIT_MESSAGE_CAPTION;
@@ -106,6 +113,11 @@ public class TgBotApi {
         GET_FILE_URL = "https://api.telegram.org/file/bot" + token + '/';
         KICK_CHAT_MEMBER = BASE_URL + "/kickChatMember?";
         UNBAN_CHAT_MEMBER = BASE_URL + "/unbanChatMember?";
+        LEAVE_CHAT = BASE_URL + "/leaveChat?";
+        GET_CHAT = BASE_URL + "/getChat?";
+        GET_CHAT_ADMINISTRATORS = BASE_URL + "/getChatAdministrators?";
+        GET_CHAT_MEMBERS_COUNT = BASE_URL + "/getChatMembersCount?";
+        GET_CHAT_MEMBER = BASE_URL + "/getChatMember?";
         ANSWER_CALLBACK_QUERY = BASE_URL + "/answerCallbackQuery?";
         EDIT_MESSAGE_TEXT = BASE_URL + "/editMessageText?";
         EDIT_MESSAGE_CAPTION = BASE_URL + "/editMessageCaption?";
@@ -881,6 +893,20 @@ public class TgBotApi {
     }
 
     /**
+     * @see <a href="https://core.telegram.org/bots/api#leavechat">Official documentation of leaveChat</a>
+     */
+    public int leaveChat(long chatId) throws IOException {
+        return leaveChat(String.valueOf(chatId));
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#leavechat">Official documentation of leaveChat</a>
+     */
+    public int leaveChat(String channel) throws IOException {
+        return callMethod(LEAVE_CHAT + "chat_id=" + channel);
+    }
+
+    /**
      * @see <a href="https://core.telegram.org/bots/api#unbanchatmember">Official documentation of unbanChatMember</a>
      */
     public int unbanChatMember(long chatId, int userId) throws IOException {
@@ -892,6 +918,66 @@ public class TgBotApi {
      */
     public int unbanChatMember(String channel, int userId) throws IOException {
         return callMethod(UNBAN_CHAT_MEMBER + "chat_id=" + channel + "&user_id=" + userId);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#getchat">Official documentation of getChat</a>
+     */
+    public Chat getChat(long chatId) throws IOException {
+        return getChat(String.valueOf(chatId));
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#getchat">Official documentation of getChat</a>
+     */
+    public Chat getChat(String channel) throws IOException {
+        return callMethod(GET_CHAT + "chat_id=" + channel, Chat.class);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#getchatadministrators">Official documentation of
+     *      getChatAdministrators</a>
+     */
+    public ChatMember[] getChatAdministrators(long chatId) throws IOException {
+        return getChatAdministrators(String.valueOf(chatId));
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#getchatadministrators">Official documentation of
+     *      getChatAdministrators</a>
+     */
+    public ChatMember[] getChatAdministrators(String channel) throws IOException {
+        return callMethod(GET_CHAT_ADMINISTRATORS + "chat_id=" + channel, ChatMember[].class);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#getchatmemberscount">Official documentation of
+     *      getChatMembersCount</a>
+     */
+    public int getChatMembersCount(long chatId) throws IOException {
+        return getChatMembersCount(String.valueOf(chatId));
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#getchatmemberscount">Official documentation of
+     *      getChatMembersCount</a>
+     */
+    public int getChatMembersCount(String channel) throws IOException {
+        return callMethod(GET_CHAT_MEMBERS_COUNT + "chat_id=" + channel, Integer.class);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#getchatmember">Official documentation of getChatMember</a>
+     */
+    public ChatMember getChatMember(long chatId, int userId) throws IOException {
+        return getChatMember(String.valueOf(chatId), userId);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#getchatmember">Official documentation of getChatMember</a>
+     */
+    public ChatMember getChatMember(String channel, int userId) throws IOException {
+        return callMethod(GET_CHAT_MEMBER + "chat_id=" + channel + "&user_id=" + userId, ChatMember.class);
     }
 
     /**
