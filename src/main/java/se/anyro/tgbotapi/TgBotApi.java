@@ -951,6 +951,8 @@ public class TgBotApi {
     }
 
     /**
+     * Returns the number of members or 0 if an error occurs.
+     * 
      * @see <a href="https://core.telegram.org/bots/api#getchatmemberscount">Official documentation of
      *      getChatMembersCount</a>
      */
@@ -959,11 +961,14 @@ public class TgBotApi {
     }
 
     /**
+     * Returns the number of members or 0 if an error occurs.
+     * 
      * @see <a href="https://core.telegram.org/bots/api#getchatmemberscount">Official documentation of
      *      getChatMembersCount</a>
      */
     public int getChatMembersCount(String channel) throws IOException {
-        return callMethod(GET_CHAT_MEMBERS_COUNT + "chat_id=" + channel, Integer.class);
+        Integer result = callMethod(GET_CHAT_MEMBERS_COUNT + "chat_id=" + channel, Integer.class);
+        return result != null ? result : 0;
     }
 
     /**
