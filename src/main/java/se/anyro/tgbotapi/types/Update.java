@@ -15,6 +15,10 @@ public class Update {
     public ChosenInlineResult chosen_inline_result;
     public CallbackQuery callback_query;
 
+    public enum Type {
+        MESSAGE, EDITED_MESSAGE, INLINE_QUERY, CHOSEN_INLINE_RESULT, CALLBACK_QUERY
+    }
+
     public boolean isMessage() {
         return message != null;
     }
@@ -35,26 +39,39 @@ public class Update {
         return callback_query != null;
     }
 
+    public Type getType() {
+        if (isMessage()) {
+            return Type.MESSAGE;
+        } else if (isEditedMessage()) {
+            return Type.EDITED_MESSAGE;
+        } else if (isInlineQuery()) {
+            return Type.INLINE_QUERY;
+        } else if (isChosenInlineResult()) {
+            return Type.CHOSEN_INLINE_RESULT;
+        } else if (isCallbackQuery()) {
+            return Type.CALLBACK_QUERY;
+        }
+        return null;
+    }
+
     /**
      * Returns the user who sent the message. Might return null for messages in channels or new types of updates.
      */
     public User fromUser() {
-        if (isMessage()) {
+        switch (getType()) {
+        case MESSAGE:
             return message.from;
-        }
-        if (isEditedMessage()) {
+        case EDITED_MESSAGE:
             return edited_message.from;
-        }
-        if (isInlineQuery()) {
+        case INLINE_QUERY:
             return inline_query.from;
-        }
-        if (isChosenInlineResult()) {
+        case CHOSEN_INLINE_RESULT:
             return chosen_inline_result.from;
-        }
-        if (isCallbackQuery()) {
+        case CALLBACK_QUERY:
             return callback_query.from;
+        default:
+            return null;
         }
-        return null;
     }
 
     /**
