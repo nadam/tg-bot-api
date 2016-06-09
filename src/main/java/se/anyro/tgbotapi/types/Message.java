@@ -43,4 +43,8 @@ public class Message {
     public int migrate_to_chat_id;
     public int migrate_from_chat_id;
     public Message pinned_message;
+
+    public boolean isReply() {
+        return reply_to_message != null;
+    }
 }
