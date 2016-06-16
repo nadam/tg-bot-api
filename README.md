@@ -96,11 +96,11 @@ The code for other platforms will look quite similar.
 More information
 ----------------
 #### Bots using TgBotApi
-- TgBotApi Example [@TgBotApiExampleBot](https://telegram.me/TgBotApiExampleBot)
-- Userinfobot [@userinfobot](https://telegram.me/userinfobot)
+- [TgBotApi Example](https://github.com/nadam/tg-bot-api-example) [@TgBotApiExampleBot](https://telegram.me/TgBotApiExampleBot)
+- [Userinfobot](https://github.com/nadam/userinfobot) [@userinfobot](https://telegram.me/userinfobot)
 - Groupinfobot [@groupinfobot](https://telegram.me/groupinfobot)
-- Chat Bridge Bot - [@chatbridgebot](https://telegram.me/chatbridgebot)
-- Json Dump Bot - [@JsonDumpBot](https://telegram.me/JsonDumpBot)
+- [Chat Bridge Bot](https://github.com/nadam/chatbridgebot) - [@chatbridgebot](https://telegram.me/chatbridgebot)
+- [Json Dump Bot](https://github.com/nadam/jsondumpbot) - [@JsonDumpBot](https://telegram.me/JsonDumpBot)
 - Jackpot Bot - [@jackpot_bot](https://telegram.me/jackpot_bot)
 
 #### Advanced Java for Telegram
