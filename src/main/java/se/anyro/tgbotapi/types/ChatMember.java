@@ -17,4 +17,8 @@ public class ChatMember {
     public Status getStatus() {
         return Status.valueOf(status.toUpperCase());
     }
+
+    public boolean isOwner() {
+        return getStatus() == Status.CREATOR;
+    }
 }
