@@ -10,4 +10,15 @@ public class Chat {
     public String username;
     public String first_name;
     public String last_name;
+
+    public enum Type {
+        PRIVATE, GROUP, SUPERGROUP, CHANNEL
+    }
+
+    /**
+     * Get the type field as an enum value.
+     */
+    public Type getType() {
+        return Type.valueOf(type.toUpperCase());
+    }
 }
