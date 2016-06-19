@@ -87,7 +87,18 @@ public class TgBotApi {
      *            Your Bot API token from BotFather.
      * @param owner
      *            Your user ID
-     * @throws IOException
+     */
+    public TgBotApi(String token, long owner) {
+        this(token, owner, null);
+    }
+
+    /**
+     * @param token
+     *            Your Bot API token from BotFather.
+     * @param owner
+     *            Your user ID
+     * @param errorListener
+     *            Callback for http errors
      */
     public TgBotApi(String token, long owner, ErrorListener errorListener) {
 
@@ -948,24 +959,23 @@ public class TgBotApi {
     public byte[] downloadFile(File file) throws IOException {
         String url = GET_FILE_URL + file.file_path;
         HttpURLConnection con = createConnection(url);
-        if (con.getResponseCode() != 200) {
-            handleErrorResponse(con.getResponseCode(), con.getResponseMessage());
-            closeInputStream(con);
-            return null;
-        }
-        InputStream stream = con.getInputStream();
-        if (stream == null) {
-            return null;
-        }
+        try {
+            if (con.getResponseCode() >= 300) {
+                handleErrorResponse(con.getResponseCode(), con.getResponseMessage());
+                return null;
+            }
+            InputStream stream = con.getInputStream();
 
-        if (file.file_size > 0) {
-            byte[] result = new byte[file.file_size];
-            stream.read(result);
-            closeInputStream(con);
-            return result;
-        }
+            if (file.file_size > 0) {
+                byte[] result = new byte[file.file_size];
+                stream.read(result);
+                return result;
+            }
 
-        return readFully(stream);
+            return readFully(stream);
+        } finally {
+            closeInputStream(con);
+        }
     }
 
     /**
@@ -973,17 +983,16 @@ public class TgBotApi {
      */
     public byte[] downloadFromUrl(String url) throws IOException {
         HttpURLConnection con = createConnection(url);
-        if (con.getResponseCode() != 200) {
-            handleErrorResponse(con.getResponseCode(), con.getResponseMessage());
+        try {
+            if (con.getResponseCode() >= 300) {
+                handleErrorResponse(con.getResponseCode(), con.getResponseMessage());
+                return null;
+            }
+            InputStream stream = con.getInputStream();
+            return readFully(stream);
+        } finally {
             closeInputStream(con);
-            return null;
         }
-        InputStream stream = con.getInputStream();
-        if (stream == null) {
-            return null;
-        }
-
-        return readFully(stream);
     }
 
     private byte[] readFully(InputStream stream) throws IOException {
@@ -1304,22 +1313,25 @@ public class TgBotApi {
     public int callMethod(String url) throws IOException {
         HttpURLConnection con = createConnection(url);
         int responseCode = con.getResponseCode();
-        if (responseCode != 200) {
-            try {
-                InputStream stream = con.getInputStream();
-                try (Reader reader = new InputStreamReader(stream)) {
-                    JsonObject response = (JsonObject) PARSER.parse(reader);
-                    if (!response.getAsJsonPrimitive("ok").getAsBoolean()) {
-                        handleErrorResponse(response);
-                    } else {
-                        handleErrorResponse(responseCode, con.getResponseMessage());
+        try {
+            if (responseCode >= 300) {
+                try {
+                    InputStream stream = con.getInputStream();
+                    try (Reader reader = new InputStreamReader(stream)) {
+                        JsonObject response = (JsonObject) PARSER.parse(reader);
+                        if (!response.getAsJsonPrimitive("ok").getAsBoolean()) {
+                            handleErrorResponse(response);
+                        } else {
+                            handleErrorResponse(responseCode, con.getResponseMessage());
+                        }
                     }
+                } catch (Exception e) {
+                    handleErrorResponse(responseCode, con.getResponseMessage());
                 }
-            } catch (Exception e) {
-                handleErrorResponse(responseCode, con.getResponseMessage());
             }
+        } finally {
+            closeInputStream(con);
         }
-        closeInputStream(con);
         return responseCode;
     }
 
@@ -1351,20 +1363,22 @@ public class TgBotApi {
                 handleErrorResponse(response);
                 return null;
             }
+        } finally {
+            closeInputStream(con);
         }
     }
 
-    private void handleErrorResponse(JsonObject response) {
+    private void handleErrorResponse(JsonObject response) throws HttpResponseException {
         int errorCode = response.getAsJsonPrimitive("error_code").getAsInt();
         String description = response.getAsJsonPrimitive("description").getAsString();
         handleErrorResponse(errorCode, description);
     }
 
-    private void handleErrorResponse(int errorCode, String description) {
+    private void handleErrorResponse(int errorCode, String description) throws HttpResponseException {
         if (errorListener != null) {
             errorListener.onError(errorCode, description);
         } else {
-            System.out.println(errorCode + ", " + description);
+            throw new HttpResponseException(errorCode, description);
         }
     }
 
