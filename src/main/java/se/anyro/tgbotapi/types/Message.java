@@ -40,8 +40,8 @@ public class Message {
     public boolean group_chat_created;
     public boolean supergroup_chat_created;
     public boolean channel_chat_created;
-    public int migrate_to_chat_id;
-    public int migrate_from_chat_id;
+    public long migrate_to_chat_id;
+    public long migrate_from_chat_id;
     public Message pinned_message;
 
     public boolean isReply() {
