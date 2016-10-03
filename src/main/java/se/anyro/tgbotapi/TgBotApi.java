@@ -332,7 +332,6 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#sendmessage">Official documentation of sendMessage</a>
      */
     public int sendReply(Message message, String text) throws IOException {
-        text = urlEncode(text);
         return sendMessage(message.chat.id, text, null, false, message.message_id, null);
     }
 
