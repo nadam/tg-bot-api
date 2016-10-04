@@ -6,6 +6,7 @@ import se.anyro.tgbotapi.types.file.PhotoSize;
 import se.anyro.tgbotapi.types.file.Sticker;
 import se.anyro.tgbotapi.types.file.Video;
 import se.anyro.tgbotapi.types.file.Voice;
+import se.anyro.tgbotapi.types.games.Game;
 
 /**
  * @see <a href="https://core.telegram.org/bots/api#message">Message</a>
@@ -24,6 +25,7 @@ public class Message {
     public MessageEntity[] entities;
     public Audio audio;
     public Document document;
+    public Game game;
     public PhotoSize[] photo;
     public Sticker sticker;
     public Video video;

@@ -1,5 +1,7 @@
 package se.anyro.tgbotapi.types.reply_markup;
 
+import se.anyro.tgbotapi.types.games.CallbackGame;
+
 
 /**
  * Note! You must use exactly one of the optional fields.
@@ -13,6 +15,8 @@ public class InlineKeyboardButton {
     public String url;
     public String callback_data;
     public String switch_inline_query;
+    public String switch_inline_query_current_chat;
+    public CallbackGame callback_game;
 
     public InlineKeyboardButton(String text) {
         this.text = text;
@@ -37,6 +41,12 @@ public class InlineKeyboardButton {
     public static InlineKeyboardButton switchInlineQuery(String text, String query) {
         InlineKeyboardButton button = new InlineKeyboardButton(text);
         button.switch_inline_query = query;
+        return button;
+    }
+
+    public static InlineKeyboardButton switchInlineQueryCurrent(String text, String query) {
+        InlineKeyboardButton button = new InlineKeyboardButton(text);
+        button.switch_inline_query_current_chat = query;
         return button;
     }
 }

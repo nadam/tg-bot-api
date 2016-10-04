@@ -10,6 +10,7 @@ public class InlineQueryResultCachedAudio extends InlineQueryResult {
     public String type = "audio";
     public String id;
     public String audio_file_id;
+    public String caption;
     public InlineKeyboardMarkup reply_markup;
     public InputMessageContent input_message_content;
 

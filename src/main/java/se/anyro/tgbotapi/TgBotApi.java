@@ -17,10 +17,13 @@ import se.anyro.tgbotapi.types.ChatAction;
 import se.anyro.tgbotapi.types.ChatMember;
 import se.anyro.tgbotapi.types.Message;
 import se.anyro.tgbotapi.types.ParseMode;
+import se.anyro.tgbotapi.types.ResponseParameters;
 import se.anyro.tgbotapi.types.Update;
 import se.anyro.tgbotapi.types.User;
+import se.anyro.tgbotapi.types.WebhookInfo;
 import se.anyro.tgbotapi.types.file.File;
 import se.anyro.tgbotapi.types.file.UserProfilePhotos;
+import se.anyro.tgbotapi.types.games.GameHighScore;
 import se.anyro.tgbotapi.types.inline.CallbackQuery;
 import se.anyro.tgbotapi.types.inline.InlineQueryResult;
 import se.anyro.tgbotapi.types.reply_markup.InlineKeyboardMarkup;
@@ -40,6 +43,7 @@ public class TgBotApi {
 
     private final String GET_UPDATES;
     private final String SET_WEBHOOK;
+    private final String GET_WEBHOOK_INFO;
     private final String GET_ME;
     private final String SEND_MESSAGE;
     private final String FORWARD_MESSAGE;
@@ -68,6 +72,9 @@ public class TgBotApi {
     private final String EDIT_MESSAGE_CAPTION;
     private final String EDIT_MESSAGE_REPLY_MARKUP;
     private final String ANSWER_INLINE_QUERY;
+    private final String SEND_GAME;
+    private final String SET_GAME_SCORE;
+    private final String GET_GAME_HIGH_SCORES;
 
     private static final Gson GSON = new Gson();
     private static final JsonParser PARSER = new JsonParser();
@@ -106,6 +113,7 @@ public class TgBotApi {
 
         GET_UPDATES = BASE_URL + "/getUpdates?";
         SET_WEBHOOK = BASE_URL + "/setWebhook";
+        GET_WEBHOOK_INFO = BASE_URL + "/getWebhookInfo";
         GET_ME = BASE_URL + "/getMe";
         SEND_MESSAGE = BASE_URL + "/sendMessage?";
         FORWARD_MESSAGE = BASE_URL + "/forwardMessage?";
@@ -134,6 +142,9 @@ public class TgBotApi {
         EDIT_MESSAGE_CAPTION = BASE_URL + "/editMessageCaption?";
         EDIT_MESSAGE_REPLY_MARKUP = BASE_URL + "/editMessageReplyMarkup?";
         ANSWER_INLINE_QUERY = BASE_URL + "/answerInlineQuery?";
+        SEND_GAME = BASE_URL + "/sendGame?";
+        SET_GAME_SCORE = BASE_URL + "/setGameScore?";
+        GET_GAME_HIGH_SCORES = BASE_URL + "/getGameHighScores?";
 
         OWNER = owner;
         this.errorListener = errorListener;
@@ -222,6 +233,13 @@ public class TgBotApi {
         sender.addFormField("url", url);
         sender.addFilePart("certificate", certificate, "certificate");
         return sender.finish();
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#getwebhookinfo">Official documentation of getWebhookInfo</a>
+     */
+    public WebhookInfo getWebhookInfo() throws IOException {
+        return callMethod(GET_WEBHOOK_INFO, WebhookInfo.class);
     }
 
     /**
@@ -418,19 +436,19 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendphoto">Official documentation of sendPhoto</a>
      */
-    public int sendPhoto(long chatId, String fileId, String caption, int replyTo, ReplyMarkup replyMarkup)
+    public int sendPhoto(long chatId, String photo, String caption, int replyTo, ReplyMarkup replyMarkup)
             throws IOException {
-        return sendPhoto(String.valueOf(chatId), fileId, caption, replyTo, replyMarkup);
+        return sendPhoto(String.valueOf(chatId), photo, caption, replyTo, replyMarkup);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendphoto">Official documentation of sendPhoto</a>
      */
-    public int sendPhoto(String channel, String fileId, String caption, int replyTo, ReplyMarkup replyMarkup)
+    public int sendPhoto(String channel, String photo, String caption, int replyTo, ReplyMarkup replyMarkup)
             throws IOException {
         StringBuilder command = new StringBuilder(SEND_PHOTO).append('?');
         command.append("chat_id=").append(channel);
-        command.append("&photo=").append(fileId);
+        command.append("&photo=").append(photo);
         if (caption != null) {
             command.append("&caption=").append(urlEncode(caption));
         }
@@ -480,17 +498,22 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendaudio">Official documentation of sendAudio</a>
      */
-    public int sendAudio(long chatId, String fileId, int replyTo, ReplyMarkup replyMarkup) throws IOException {
-        return sendAudio(String.valueOf(chatId), fileId, replyTo, replyMarkup);
+    public int sendAudio(long chatId, String audio, String caption, int replyTo, ReplyMarkup replyMarkup)
+            throws IOException {
+        return sendAudio(String.valueOf(chatId), audio, caption, replyTo, replyMarkup);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendaudio">Official documentation of sendAudio</a>
      */
-    public int sendAudio(String channel, String fileId, int replyTo, ReplyMarkup replyMarkup) throws IOException {
+    public int sendAudio(String channel, String audio, String caption, int replyTo, ReplyMarkup replyMarkup)
+            throws IOException {
         StringBuilder command = new StringBuilder(SEND_AUDIO).append('?');
         command.append("chat_id=").append(channel);
-        command.append("&audio=").append(fileId);
+        command.append("&audio=").append(audio);
+        if (caption != null) {
+            command.append("&caption=").append(urlEncode(caption));
+        }
         if (disableNotification) {
             command.append("&disable_notification=true");
         }
@@ -506,19 +529,25 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendaudio">Official documentation of sendAudio</a>
      */
-    public int sendAudio(long chatId, InputStream audio, String filename, int duration, String performer, String title,
+    public int sendAudio(long chatId, InputStream audio, String caption, String filename, int duration,
+            String performer, String title,
             int replyTo, ReplyMarkup replyMarkup) throws IOException {
-        return sendAudio(String.valueOf(chatId), audio, filename, duration, performer, title, replyTo, replyMarkup);
+        return sendAudio(String.valueOf(chatId), audio, caption, filename, duration, performer, title, replyTo,
+                replyMarkup);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendaudio">Official documentation of sendAudio</a>
      */
-    public int sendAudio(String channel, InputStream audio, String filename, int duration, String performer,
+    public int sendAudio(String channel, InputStream audio, String caption, String filename, int duration,
+            String performer,
             String title, int replyTo, ReplyMarkup replyMarkup) throws IOException {
         FileSender sender = new FileSender(SEND_AUDIO);
         sender.addFormField("chat_id", channel);
         sender.addFilePart("audio", audio, filename);
+        if (caption != null) {
+            sender.addFormField("caption", caption);
+        }
         if (duration != 0) {
             sender.addFormField("duration", duration);
         }
@@ -543,19 +572,19 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#senddocument">Official documentation of sendDocument</a>
      */
-    public int sendDocument(long chatId, String fileId, String caption, int replyTo, ReplyMarkup replyMarkup)
+    public int sendDocument(long chatId, String document, String caption, int replyTo, ReplyMarkup replyMarkup)
             throws IOException {
-        return sendDocument(String.valueOf(chatId), fileId, caption, replyTo, replyMarkup);
+        return sendDocument(String.valueOf(chatId), document, caption, replyTo, replyMarkup);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#senddocument">Official documentation of sendDocument</a>
      */
-    public int sendDocument(String channel, String fileId, String caption, int replyTo, ReplyMarkup replyMarkup)
+    public int sendDocument(String channel, String document, String caption, int replyTo, ReplyMarkup replyMarkup)
             throws IOException {
         StringBuilder command = new StringBuilder(SEND_DOCUMENT).append('?');
         command.append("chat_id=").append(channel);
-        command.append("&document=").append(fileId);
+        command.append("&document=").append(document);
         if (caption != null) {
             command.append("&caption=").append(urlEncode(caption));
         }
@@ -605,17 +634,17 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendsticker">Official documentation of sendSticker</a>
      */
-    public int sendSticker(long chatId, String fileId, int replyTo, ReplyMarkup replyMarkup) throws IOException {
-        return sendSticker(String.valueOf(chatId), fileId, replyTo, replyMarkup);
+    public int sendSticker(long chatId, String sticker, int replyTo, ReplyMarkup replyMarkup) throws IOException {
+        return sendSticker(String.valueOf(chatId), sticker, replyTo, replyMarkup);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendsticker">Official documentation of sendSticker</a>
      */
-    public int sendSticker(String channel, String fileId, int replyTo, ReplyMarkup replyMarkup) throws IOException {
+    public int sendSticker(String channel, String sticker, int replyTo, ReplyMarkup replyMarkup) throws IOException {
         StringBuilder command = new StringBuilder(SEND_STICKER).append('?');
         command.append("chat_id=").append(channel);
-        command.append("&sticker=").append(fileId);
+        command.append("&sticker=").append(sticker);
         if (disableNotification) {
             command.append("&disable_notification=true");
         }
@@ -659,26 +688,26 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvideo">Official documentation of sendVideo</a>
      */
-    public int sendVideo(long chatId, String fileId, String caption) throws IOException {
-        return sendVideo(String.valueOf(chatId), fileId, caption, 0, null);
+    public int sendVideo(long chatId, String video, String caption) throws IOException {
+        return sendVideo(String.valueOf(chatId), video, caption, 0, null);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvideo">Official documentation of sendVideo</a>
      */
-    public int sendVideo(long chatId, String fileId, String caption, int replyTo, ReplyMarkup replyMarkup)
+    public int sendVideo(long chatId, String video, String caption, int replyTo, ReplyMarkup replyMarkup)
             throws IOException {
-        return sendVideo(String.valueOf(chatId), fileId, caption, replyTo, replyMarkup);
+        return sendVideo(String.valueOf(chatId), video, caption, replyTo, replyMarkup);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvideo">Official documentation of sendVideo</a>
      */
-    public int sendVideo(String channel, String fileId, String caption, int replyTo, ReplyMarkup replyMarkup)
+    public int sendVideo(String channel, String video, String caption, int replyTo, ReplyMarkup replyMarkup)
             throws IOException {
         StringBuilder command = new StringBuilder(SEND_VIDEO).append('?');
         command.append("chat_id=").append(channel);
-        command.append("&video=").append(fileId);
+        command.append("&video=").append(video);
         if (caption != null) {
             command.append("&caption=").append(urlEncode(caption));
         }
@@ -745,17 +774,22 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvoice">Official documentation of sendVoice</a>
      */
-    public int sendVoice(long chatId, String fileId, int replyTo, ReplyMarkup replyMarkup) throws IOException {
-        return sendVoice(String.valueOf(chatId), fileId, replyTo, replyMarkup);
+    public int sendVoice(long chatId, String voice, String caption, int replyTo, ReplyMarkup replyMarkup)
+            throws IOException {
+        return sendVoice(String.valueOf(chatId), voice, caption, replyTo, replyMarkup);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvoice">Official documentation of sendVoice</a>
      */
-    public int sendVoice(String channel, String fileId, int replyTo, ReplyMarkup replyMarkup) throws IOException {
+    public int sendVoice(String channel, String voice, String caption, int replyTo, ReplyMarkup replyMarkup)
+            throws IOException {
         StringBuilder command = new StringBuilder(SEND_VOICE).append('?');
         command.append("chat_id=").append(channel);
-        command.append("&voice=").append(fileId);
+        command.append("&voice=").append(voice);
+        if (caption != null) {
+            command.append("&caption=").append(urlEncode(caption));
+        }
         if (disableNotification) {
             command.append("&disable_notification=true");
         }
@@ -771,19 +805,22 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvoice">Official documentation of sendVoice</a>
      */
-    public int sendVoice(long chatId, InputStream voice, String filename, int duration, int replyTo,
+    public int sendVoice(long chatId, InputStream voice, String caption, String filename, int duration, int replyTo,
             ReplyMarkup replyMarkup) throws IOException {
-        return sendVoice(String.valueOf(chatId), voice, filename, duration, replyTo, replyMarkup);
+        return sendVoice(String.valueOf(chatId), voice, caption, filename, duration, replyTo, replyMarkup);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvoice">Official documentation of sendVoice</a>
      */
-    public int sendVoice(String channel, InputStream voice, String filename, int duration, int replyTo,
+    public int sendVoice(String channel, InputStream voice, String caption, String filename, int duration, int replyTo,
             ReplyMarkup replyMarkup) throws IOException {
         FileSender sender = new FileSender(SEND_VOICE);
         sender.addFormField("chat_id", channel);
         sender.addFilePart("voice", voice, filename);
+        if (caption != null) {
+            sender.addFormField("caption", caption);
+        }
         if (duration != 0) {
             sender.addFormField("duration", duration);
         }
@@ -1115,15 +1152,17 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#answercallbackquery">Official documentation of
      *      answerCallbackQuery</a>
      */
-    public int answerCallbackQuery(CallbackQuery callbackQuery, String text, boolean showAlert) throws IOException {
-        return answerCallbackQuery(callbackQuery.id, text, showAlert);
+    public int answerCallbackQuery(CallbackQuery callbackQuery, String text, boolean showAlert, String url)
+            throws IOException {
+        return answerCallbackQuery(callbackQuery.id, text, showAlert, url);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#answercallbackquery">Official documentation of
      *      answerCallbackQuery</a>
      */
-    public int answerCallbackQuery(String callbackQueryId, String text, boolean showAlert) throws IOException {
+    public int answerCallbackQuery(String callbackQueryId, String text, boolean showAlert, String url)
+            throws IOException {
         StringBuilder command = new StringBuilder(ANSWER_CALLBACK_QUERY);
         command.append("callback_query_id=").append(callbackQueryId);
         if (text != null) {
@@ -1131,6 +1170,9 @@ public class TgBotApi {
         }
         if (showAlert) {
             command.append("&show_alert=true");
+        }
+        if (url != null) {
+            command.append("&url=").append(urlEncode(url));
         }
         return callMethod(command.toString());
     }
@@ -1307,6 +1349,102 @@ public class TgBotApi {
     }
 
     /**
+     * @see <a href="https://core.telegram.org/bots/api#sendgame">Official documentation of sendGame</a>
+     */
+    public int sendGame(long chatId, String gameShortName, int replyTo, ReplyMarkup replyMarkup) throws IOException {
+        return sendGame(String.valueOf(chatId), gameShortName, replyTo, replyMarkup);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#sendgame">Official documentation of sendGame</a>
+     */
+    public int sendGame(String channel, String gameShortName, int replyTo, ReplyMarkup replyMarkup) throws IOException {
+        StringBuilder command = new StringBuilder(SEND_GAME);
+        command.append("chat_id=").append(channel);
+        command.append("&game_short_name=").append(gameShortName);
+        if (disableNotification) {
+            command.append("&disable_notification=true");
+        }
+        if (replyTo > 0) {
+            command.append("&reply_to_message_id=").append(replyTo);
+        }
+        if (replyMarkup != null) {
+            command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
+        }
+        return callMethod(command.toString());
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#setgamescore">Official documentation of setGameScore</a>
+     */
+    public int setGameScore(int userId, int score, long chatId, int messageId, boolean editMessage) throws IOException {
+        return setGameScore(userId, score, String.valueOf(chatId), messageId, editMessage);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#setgamescore">Official documentation of setGameScore</a>
+     */
+    public int setGameScore(int userId, int score, String channel, int messageId, boolean editMessage)
+            throws IOException {
+        StringBuilder command = new StringBuilder(SET_GAME_SCORE);
+        command.append("user_id=").append(userId);
+        command.append("&score=").append(score);
+        command.append("&chat_id=").append(channel);
+        command.append("&message_id=").append(messageId);
+        if (editMessage) {
+            command.append("&edit_message=True");
+        }
+        return callMethod(command.toString());
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#setgamescore">Official documentation of setGameScore</a>
+     */
+    public int setGameScore(int userId, int score, String inlineMessageId, boolean editMessage) throws IOException {
+        StringBuilder command = new StringBuilder(SET_GAME_SCORE);
+        command.append("user_id=").append(userId);
+        command.append("&score=").append(score);
+        command.append("&inline_message_id=").append(inlineMessageId);
+        if (editMessage) {
+            command.append("&edit_message=True");
+        }
+        return callMethod(command.toString());
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#getgamehighscores">Official documentation of
+     *      getGameHighScores</a>
+     */
+    public GameHighScore[] getGameHighScores(int userId, long chatId, int messageId)
+            throws IOException {
+        return getGameHighScores(userId, String.valueOf(chatId), messageId);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#getgamehighscores">Official documentation of
+     *      getGameHighScores</a>
+     */
+    public GameHighScore[] getGameHighScores(int userId, String channel, int messageId)
+            throws IOException {
+        StringBuilder command = new StringBuilder(GET_GAME_HIGH_SCORES);
+        command.append("user_id=").append(userId);
+        command.append("&chat_id=").append(channel);
+        command.append("&message_id=").append(messageId);
+        return callMethod(command.toString(), GameHighScore[].class);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#getgamehighscores">Official documentation of
+     *      getGameHighScores</a>
+     */
+    public GameHighScore[] getGameHighScores(int userId, String inlineMessageId) throws IOException {
+        StringBuilder command = new StringBuilder(GET_GAME_HIGH_SCORES);
+        command.append("user_id=").append(userId);
+        command.append("&inline_message_id=").append(inlineMessageId);
+        return callMethod(command.toString(), GameHighScore[].class);
+    }
+
+    /**
      * Call generic API method when you need the response code, but not the rest of the response data.
      */
     public int callMethod(String url) throws IOException {
@@ -1370,14 +1508,21 @@ public class TgBotApi {
     private void handleErrorResponse(JsonObject response) throws HttpResponseException {
         int errorCode = response.getAsJsonPrimitive("error_code").getAsInt();
         String description = response.getAsJsonPrimitive("description").getAsString();
-        handleErrorResponse(errorCode, description);
+        JsonElement parameters = response.get("parameters");
+        ResponseParameters responseParameters = GSON.fromJson(parameters, ResponseParameters.class);
+        handleErrorResponse(errorCode, description, responseParameters);
     }
 
     private void handleErrorResponse(int errorCode, String description) throws HttpResponseException {
+        handleErrorResponse(errorCode, description, null);
+    }
+
+    private void handleErrorResponse(int errorCode, String description, ResponseParameters responseParameters)
+            throws HttpResponseException {
         if (errorListener != null) {
             errorListener.onError(errorCode, description);
         } else {
-            throw new HttpResponseException(errorCode, description);
+            throw new HttpResponseException(errorCode, description, responseParameters);
         }
     }
 

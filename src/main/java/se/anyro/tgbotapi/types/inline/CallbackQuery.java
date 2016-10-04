@@ -11,7 +11,9 @@ public class CallbackQuery {
     public User from;
     public Message message;
     public String inline_message_id;
+    public String chat_instance;
     public String data;
+    public String game_short_name;
 
     public boolean isInline() {
         return inline_message_id != null;

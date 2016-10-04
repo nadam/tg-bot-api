@@ -11,6 +11,7 @@ public class InlineQueryResultVoice extends InlineQueryResult {
     public String id;
     public String voice_url;
     public String title;
+    public String caption;
     public int voice_duration;
     public InlineKeyboardMarkup reply_markup;
     public InputMessageContent input_message_content;

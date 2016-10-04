@@ -11,6 +11,7 @@ public class InlineQueryResultCachedVoice extends InlineQueryResult {
     public String id;
     public String voice_file_id;
     public String title;
+    public String caption;
     public InlineKeyboardMarkup reply_markup;
     public InputMessageContent input_message_content;
 
