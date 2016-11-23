@@ -18,6 +18,7 @@ public class Message {
     public Chat chat;
     public User forward_from;
     public Chat forward_from_chat;
+    public int forward_from_message_id;
     public int forward_date;
     public Message reply_to_message;
     public int edit_date;

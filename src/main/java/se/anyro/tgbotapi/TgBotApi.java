@@ -1152,16 +1152,16 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#answercallbackquery">Official documentation of
      *      answerCallbackQuery</a>
      */
-    public int answerCallbackQuery(CallbackQuery callbackQuery, String text, boolean showAlert, String url)
-            throws IOException {
-        return answerCallbackQuery(callbackQuery.id, text, showAlert, url);
+    public int answerCallbackQuery(CallbackQuery callbackQuery, String text, boolean showAlert, String url,
+            int cacheTime) throws IOException {
+        return answerCallbackQuery(callbackQuery.id, text, showAlert, url, cacheTime);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#answercallbackquery">Official documentation of
      *      answerCallbackQuery</a>
      */
-    public int answerCallbackQuery(String callbackQueryId, String text, boolean showAlert, String url)
+    public int answerCallbackQuery(String callbackQueryId, String text, boolean showAlert, String url, int cacheTime)
             throws IOException {
         StringBuilder command = new StringBuilder(ANSWER_CALLBACK_QUERY);
         command.append("callback_query_id=").append(callbackQueryId);
@@ -1173,6 +1173,9 @@ public class TgBotApi {
         }
         if (url != null) {
             command.append("&url=").append(urlEncode(url));
+        }
+        if (cacheTime > 0) {
+            command.append("&cache_time=").append(cacheTime);
         }
         return callMethod(command.toString());
     }
@@ -1377,37 +1380,39 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#setgamescore">Official documentation of setGameScore</a>
      */
-    public int setGameScore(int userId, int score, long chatId, int messageId, boolean editMessage) throws IOException {
-        return setGameScore(userId, score, String.valueOf(chatId), messageId, editMessage);
+    public int setGameScore(int userId, int score, boolean force, long chatId, int messageId)
+            throws IOException {
+        return setGameScore(userId, score, force, String.valueOf(chatId), messageId);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#setgamescore">Official documentation of setGameScore</a>
      */
-    public int setGameScore(int userId, int score, String channel, int messageId, boolean editMessage)
+    public int setGameScore(int userId, int score, boolean force, String channel, int messageId)
             throws IOException {
         StringBuilder command = new StringBuilder(SET_GAME_SCORE);
         command.append("user_id=").append(userId);
         command.append("&score=").append(score);
+        if (force) {
+            command.append("&force=True");
+        }
         command.append("&chat_id=").append(channel);
         command.append("&message_id=").append(messageId);
-        if (editMessage) {
-            command.append("&edit_message=True");
-        }
         return callMethod(command.toString());
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#setgamescore">Official documentation of setGameScore</a>
      */
-    public int setGameScore(int userId, int score, String inlineMessageId, boolean editMessage) throws IOException {
+    public int setGameScore(int userId, int score, boolean force, String inlineMessageId)
+            throws IOException {
         StringBuilder command = new StringBuilder(SET_GAME_SCORE);
         command.append("user_id=").append(userId);
         command.append("&score=").append(score);
-        command.append("&inline_message_id=").append(inlineMessageId);
-        if (editMessage) {
-            command.append("&edit_message=True");
+        if (force) {
+            command.append("&force=True");
         }
+        command.append("&inline_message_id=").append(inlineMessageId);
         return callMethod(command.toString());
     }
 
