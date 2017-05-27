@@ -3,6 +3,8 @@ package se.anyro.tgbotapi.types;
 import se.anyro.tgbotapi.types.inline.CallbackQuery;
 import se.anyro.tgbotapi.types.inline.ChosenInlineResult;
 import se.anyro.tgbotapi.types.inline.InlineQuery;
+import se.anyro.tgbotapi.types.payments.PreCheckoutQuery;
+import se.anyro.tgbotapi.types.payments.ShippingQuery;
 
 /**
  * @see <a href="https://core.telegram.org/bots/api#update">Update</a>
@@ -16,9 +18,11 @@ public class Update {
     public InlineQuery inline_query;
     public ChosenInlineResult chosen_inline_result;
     public CallbackQuery callback_query;
+    public ShippingQuery shipping_query;
+    public PreCheckoutQuery pre_checkout_query;
 
     public enum Type {
-        MESSAGE, EDITED_MESSAGE, CHANNEL_POST, EDITED_CHANNEL_POST, INLINE_QUERY, CHOSEN_INLINE_RESULT, CALLBACK_QUERY
+        MESSAGE, EDITED_MESSAGE, CHANNEL_POST, EDITED_CHANNEL_POST, INLINE_QUERY, CHOSEN_INLINE_RESULT, CALLBACK_QUERY, SHIPPING_QUERY, PRE_CHECKOUT_QUERY
     }
 
     public boolean isMessage() {
@@ -49,6 +53,14 @@ public class Update {
         return callback_query != null;
     }
 
+    public boolean isShippingQuery() {
+        return shipping_query != null;
+    }
+
+    public boolean isPreCheckoutQuery() {
+        return pre_checkout_query != null;
+    }
+
     public Type getType() {
         if (isMessage()) {
             return Type.MESSAGE;
@@ -64,6 +76,10 @@ public class Update {
             return Type.CHOSEN_INLINE_RESULT;
         } else if (isCallbackQuery()) {
             return Type.CALLBACK_QUERY;
+        } else if (isShippingQuery()) {
+            return Type.SHIPPING_QUERY;
+        } else if (isPreCheckoutQuery()) {
+            return Type.PRE_CHECKOUT_QUERY;
         }
         return null;
     }
@@ -91,6 +107,10 @@ public class Update {
             return chosen_inline_result.from;
         case CALLBACK_QUERY:
             return callback_query.from;
+        case SHIPPING_QUERY:
+            return shipping_query.from;
+        case PRE_CHECKOUT_QUERY:
+            return pre_checkout_query.from;
         default:
             return null;
         }

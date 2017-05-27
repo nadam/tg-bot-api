@@ -5,8 +5,11 @@ import se.anyro.tgbotapi.types.file.Document;
 import se.anyro.tgbotapi.types.file.PhotoSize;
 import se.anyro.tgbotapi.types.file.Sticker;
 import se.anyro.tgbotapi.types.file.Video;
+import se.anyro.tgbotapi.types.file.VideoNote;
 import se.anyro.tgbotapi.types.file.Voice;
 import se.anyro.tgbotapi.types.games.Game;
+import se.anyro.tgbotapi.types.payments.Invoice;
+import se.anyro.tgbotapi.types.payments.SuccessfulPayment;
 
 /**
  * @see <a href="https://core.telegram.org/bots/api#message">Message</a>
@@ -31,11 +34,12 @@ public class Message {
     public Sticker sticker;
     public Video video;
     public Voice voice;
+    public VideoNote video_note;
     public String caption;
     public Contact contact;
     public Location location;
     public Venue venue;
-    public User new_chat_member;
+    public User[] new_chat_members;
     public User left_chat_member;
     public String new_chat_title;
     public PhotoSize[] new_chat_photo;
@@ -46,6 +50,8 @@ public class Message {
     public long migrate_to_chat_id;
     public long migrate_from_chat_id;
     public Message pinned_message;
+    public Invoice invoice;
+    public SuccessfulPayment successful_payment;
 
     public boolean isReply() {
         return reply_to_message != null;

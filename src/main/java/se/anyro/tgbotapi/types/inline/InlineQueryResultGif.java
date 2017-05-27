@@ -12,6 +12,7 @@ public class InlineQueryResultGif extends InlineQueryResult {
     public String gif_url;
     public int gif_width;
     public int gif_height;
+    public int gif_duration;
     public String thumb_url;
     public String title;
     public String caption;

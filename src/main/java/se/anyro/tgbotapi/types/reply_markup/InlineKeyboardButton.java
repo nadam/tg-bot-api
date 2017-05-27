@@ -17,6 +17,7 @@ public class InlineKeyboardButton {
     public String switch_inline_query;
     public String switch_inline_query_current_chat;
     public CallbackGame callback_game;
+    public boolean pay;
 
     public InlineKeyboardButton(String text) {
         this.text = text;
@@ -47,6 +48,18 @@ public class InlineKeyboardButton {
     public static InlineKeyboardButton switchInlineQueryCurrent(String text, String query) {
         InlineKeyboardButton button = new InlineKeyboardButton(text);
         button.switch_inline_query_current_chat = query;
+        return button;
+    }
+
+    public static InlineKeyboardButton callbackGame(String text, CallbackGame callbackGame) {
+        InlineKeyboardButton button = new InlineKeyboardButton(text);
+        button.callback_game = callbackGame;
+        return button;
+    }
+
+    public static InlineKeyboardButton pay(String text) {
+        InlineKeyboardButton button = new InlineKeyboardButton(text);
+        button.pay = true;
         return button;
     }
 }

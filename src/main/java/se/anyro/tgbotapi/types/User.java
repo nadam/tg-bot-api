@@ -8,4 +8,5 @@ public class User {
     public String first_name;
     public String last_name;
     public String username;
+    public String language_code;
 }

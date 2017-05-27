@@ -26,6 +26,8 @@ import se.anyro.tgbotapi.types.file.UserProfilePhotos;
 import se.anyro.tgbotapi.types.games.GameHighScore;
 import se.anyro.tgbotapi.types.inline.CallbackQuery;
 import se.anyro.tgbotapi.types.inline.InlineQueryResult;
+import se.anyro.tgbotapi.types.payments.LabeledPrice;
+import se.anyro.tgbotapi.types.payments.ShippingOption;
 import se.anyro.tgbotapi.types.reply_markup.InlineKeyboardMarkup;
 import se.anyro.tgbotapi.types.reply_markup.ReplyMarkup;
 import se.anyro.tgbotapi.utils.FileSender;
@@ -43,6 +45,7 @@ public class TgBotApi {
 
     private final String GET_UPDATES;
     private final String SET_WEBHOOK;
+    private final String DELETE_WEBHOOK;
     private final String GET_WEBHOOK_INFO;
     private final String GET_ME;
     private final String SEND_MESSAGE;
@@ -53,6 +56,7 @@ public class TgBotApi {
     private final String SEND_STICKER;
     private final String SEND_VIDEO;
     private final String SEND_VOICE;
+    private final String SEND_VIDEO_NOTE;
     private final String SEND_LOCATION;
     private final String SEND_VENUE;
     private final String SEND_CONTACT;
@@ -71,7 +75,11 @@ public class TgBotApi {
     private final String EDIT_MESSAGE_TEXT;
     private final String EDIT_MESSAGE_CAPTION;
     private final String EDIT_MESSAGE_REPLY_MARKUP;
+    private final String DELETE_MESSAGE;
     private final String ANSWER_INLINE_QUERY;
+    private final String SEND_INVOICE;
+    private final String ANSWER_SHIPPING_QUERY;
+    private final String ANSWER_PRE_CHECKOUT_QUERY;    
     private final String SEND_GAME;
     private final String SET_GAME_SCORE;
     private final String GET_GAME_HIGH_SCORES;
@@ -113,6 +121,7 @@ public class TgBotApi {
 
         GET_UPDATES = BASE_URL + "/getUpdates?";
         SET_WEBHOOK = BASE_URL + "/setWebhook";
+        DELETE_WEBHOOK = BASE_URL + "/deleteWebhook";
         GET_WEBHOOK_INFO = BASE_URL + "/getWebhookInfo";
         GET_ME = BASE_URL + "/getMe";
         SEND_MESSAGE = BASE_URL + "/sendMessage?";
@@ -123,6 +132,7 @@ public class TgBotApi {
         SEND_STICKER = BASE_URL + "/sendSticker";
         SEND_VIDEO = BASE_URL + "/sendVideo";
         SEND_VOICE = BASE_URL + "/sendVoice";
+        SEND_VIDEO_NOTE = BASE_URL + "/sendVideoNote";
         SEND_LOCATION = BASE_URL + "/sendLocation?";
         SEND_VENUE = BASE_URL + "/sendVenue?";
         SEND_CONTACT = BASE_URL + "/sendContact?";
@@ -141,7 +151,11 @@ public class TgBotApi {
         EDIT_MESSAGE_TEXT = BASE_URL + "/editMessageText?";
         EDIT_MESSAGE_CAPTION = BASE_URL + "/editMessageCaption?";
         EDIT_MESSAGE_REPLY_MARKUP = BASE_URL + "/editMessageReplyMarkup?";
+        DELETE_MESSAGE = BASE_URL + "/deleteMessage?";
         ANSWER_INLINE_QUERY = BASE_URL + "/answerInlineQuery?";
+        SEND_INVOICE = BASE_URL + "/sendInvoice?";
+        ANSWER_SHIPPING_QUERY = BASE_URL + "/answerShippingQuery?";
+        ANSWER_PRE_CHECKOUT_QUERY = BASE_URL + "/answerPreCheckoutQuery?";
         SEND_GAME = BASE_URL + "/sendGame?";
         SET_GAME_SCORE = BASE_URL + "/setGameScore?";
         GET_GAME_HIGH_SCORES = BASE_URL + "/getGameHighScores?";
@@ -228,11 +242,29 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#setwebhook">Official documentation of setWebhook</a>
      * @see <a href="https://core.telegram.org/bots/self-signed">Telegram's self sign guide</a>
      */
-    public int setWebhook(String url, InputStream certificate) throws IOException {
+    public int setWebhook(String url, InputStream certificate, int maxConnections, String[] allowedUpdates)
+            throws IOException {
         FileSender sender = new FileSender(SET_WEBHOOK);
         sender.addFormField("url", url);
-        sender.addFilePart("certificate", certificate, "certificate");
+        if (certificate != null) {
+            sender.addFilePart("certificate", certificate, "certificate");
+        }
+        if (maxConnections > 0) {
+            sender.addFormField("max_connections", maxConnections);
+        }
+        if (allowedUpdates != null) {
+            sender.addFormField("allowed_updates", urlEncode(GSON.toJson(allowedUpdates)));
+        }
         return sender.finish();
+    }
+
+    /**
+     * Note! You can make this manually in the address field of your web browser instead of calling this method.
+     * 
+     * @see <a href="https://core.telegram.org/bots/api#deletewebhook">Official documentation of deleteWebhook</a>
+     */
+    public int deleteWebhook() throws IOException {
+        return callMethod(DELETE_WEBHOOK);
     }
 
     /**
@@ -530,8 +562,7 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#sendaudio">Official documentation of sendAudio</a>
      */
     public int sendAudio(long chatId, InputStream audio, String caption, String filename, int duration,
-            String performer, String title,
-            int replyTo, ReplyMarkup replyMarkup) throws IOException {
+            String performer, String title, int replyTo, ReplyMarkup replyMarkup) throws IOException {
         return sendAudio(String.valueOf(chatId), audio, caption, filename, duration, performer, title, replyTo,
                 replyMarkup);
     }
@@ -540,8 +571,7 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#sendaudio">Official documentation of sendAudio</a>
      */
     public int sendAudio(String channel, InputStream audio, String caption, String filename, int duration,
-            String performer,
-            String title, int replyTo, ReplyMarkup replyMarkup) throws IOException {
+            String performer, String title, int replyTo, ReplyMarkup replyMarkup) throws IOException {
         FileSender sender = new FileSender(SEND_AUDIO);
         sender.addFormField("chat_id", channel);
         sender.addFilePart("audio", audio, filename);
@@ -823,6 +853,69 @@ public class TgBotApi {
         }
         if (duration != 0) {
             sender.addFormField("duration", duration);
+        }
+        if (disableNotification) {
+            sender.addFormField("disable_notification", "true");
+        }
+        if (replyTo > 0) {
+            sender.addFormField("reply_to_message_id", replyTo);
+        }
+        if (replyMarkup != null) {
+            sender.addFormField("reply_markup", GSON.toJson(replyMarkup));
+        }
+        return sender.finish();
+
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#sendvideonote">Official documentation of sendVideoNote</a>
+     */
+    public int sendVideoNote(int chatId, InputStream videoNote, int replyTo, ReplyMarkup replyMarkup)
+            throws IOException {
+        return sendVideoNote(String.valueOf(chatId), videoNote, replyTo, replyMarkup);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#sendvideonote">Official documentation of sendVideoNote</a>
+     */
+    public int sendVideoNote(String channel, InputStream videoNote, int replyTo, ReplyMarkup replyMarkup)
+            throws IOException {
+        StringBuilder command = new StringBuilder(SEND_VIDEO_NOTE).append('?');
+        command.append("chat_id=").append(channel);
+        command.append("&video_note=").append(videoNote);
+        if (disableNotification) {
+            command.append("&disable_notification=true");
+        }
+        if (replyTo > 0) {
+            command.append("&reply_to_message_id=").append(replyTo);
+        }
+        if (replyMarkup != null) {
+            command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
+        }
+        return callMethod(command.toString());
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#sendvideonote">Official documentation of sendVideoNote</a>
+     */
+    public int sendVideoNote(long chatId, InputStream videoNote, String filename, int duration, int length,
+            int replyTo, ReplyMarkup replyMarkup) throws IOException {
+        return sendVideoNote(String.valueOf(chatId), videoNote, filename, duration, length, replyTo, replyMarkup);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#sendvideonote">Official documentation of sendVideoNote</a>
+     */
+    public int sendVideoNote(String channel, InputStream videoNote, String filename, int duration, int length,
+            int replyTo, ReplyMarkup replyMarkup) throws IOException {
+        FileSender sender = new FileSender(SEND_VIDEO_NOTE);
+        sender.addFormField("chat_id", channel);
+        sender.addFilePart("video_note", videoNote, filename);
+        if (duration != 0) {
+            sender.addFormField("duration", duration);
+        }
+        if (length > 0) {
+            sender.addFormField("length", length);
         }
         if (disableNotification) {
             sender.addFormField("disable_notification", "true");
@@ -1309,9 +1402,26 @@ public class TgBotApi {
     }
 
     /**
+     * @see <a href="https://core.telegram.org/bots/api#deleteMessage">Official documentation of
+     *      deleteMessage</a>
+     */
+    public int deleteMessage(int chatId, int messageId) throws IOException {
+        return deleteMessage(String.valueOf(chatId), messageId);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#deleteMessage">Official documentation of deleteMessage</a>
+     */
+    public int deleteMessage(String channel, int messageId) throws IOException {
+        StringBuilder command = new StringBuilder(DELETE_MESSAGE);
+        command.append("chat_id=").append(channel);
+        command.append("message_id=").append(messageId);
+        return callMethod(command.toString());
+    }
+
+    /**
      * @see <a href="https://core.telegram.org/bots/api#answerinlinequery">Official documentation of
      *      answerInlineQuery</a>
-     * @see <a href="https://core.telegram.org/bots/inline#collecting-feedback">Collecting feedback</a>
      */
     public int answerInlineQuery(String inlineQueryId, InlineQueryResult[] results, boolean isPersonal)
             throws IOException {
@@ -1347,6 +1457,105 @@ public class TgBotApi {
             if (switchPmParameter != null) {
                 command.append("&switch_pm_parameter=").append(switchPmParameter);
             }
+        }
+        return callMethod(command.toString());
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#sendinvoice">Official documentation of sendInvoice</a>
+     */
+    public int sendInvoice(int chatId, String title, String description, String payload, String providerToken,
+            String startParameter, String currency, LabeledPrice[] prices, String photoUrl, boolean needName,
+            boolean needPhoneNumber, boolean needEmail, boolean needShippingAddress, boolean isFlexible)
+            throws IOException {
+        return sendInvoice(chatId, title, description, payload, providerToken, startParameter, currency, prices,
+                photoUrl, 0, 0, 0, needName, needPhoneNumber, needEmail, needShippingAddress, isFlexible, 0, null);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#sendinvoice">Official documentation of sendInvoice</a>
+     */
+    public int sendInvoice(int chatId, String title, String description, String payload, String providerToken,
+            String startParameter, String currency, LabeledPrice[] prices, String photoUrl, int photoSize,
+            int photoWidth, int photoHeight, boolean needName, boolean needPhoneNumber, boolean needEmail,
+            boolean needShippingAddress, boolean isFlexible, int replyTo, ReplyMarkup replyMarkup)
+            throws IOException {
+        StringBuilder command = new StringBuilder(SEND_INVOICE);
+        command.append("chat_id=").append(chatId);
+        command.append("&title=").append(title);
+        command.append("&description=").append(description);
+        command.append("&payload=").append(payload);
+        command.append("&provider_token=").append(providerToken);
+        command.append("&start_parameter=").append(startParameter);
+        command.append("&currency=").append(currency);
+        command.append("&prices=").append(urlEncode(GSON.toJson(prices)));
+        if (photoUrl != null) {
+            command.append("&photo_url=").append(photoUrl);
+        }
+        if (photoSize > 0) {
+            command.append("&photo_size=").append(photoSize);
+        }
+        if (photoWidth > 0) {
+            command.append("&photo_width=").append(photoWidth);
+        }
+        if (photoHeight > 0) {
+            command.append("&photo_height=").append(photoHeight);
+        }
+        if (needName) {
+            command.append("&need_name=true");
+        }
+        if (needPhoneNumber) {
+            command.append("&need_phone_number=true");
+        }
+        if (needEmail) {
+            command.append("&need_email=true");
+        }
+        if (needShippingAddress) {
+            command.append("&need_shipping_address=true");
+        }
+        if (isFlexible) {
+            command.append("&is_flexible=true");
+        }
+        if (disableNotification) {
+            command.append("&disable_notification=true");
+        }
+        if (replyTo > 0) {
+            command.append("&reply_to_message_id=").append(replyTo);
+        }
+        if (replyMarkup != null) {
+            command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
+        }
+        return callMethod(command.toString());
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#answershippingquery">Official documentation of
+     *      answerShippingQuery</a>
+     */
+    public int answerShippingQuery(String shippingQueryId, boolean ok, ShippingOption[] shippingOptions,
+            String errorMessage) throws IOException {
+        StringBuilder command = new StringBuilder(ANSWER_SHIPPING_QUERY);
+        command.append("shipping_query_id=").append(shippingQueryId);
+        command.append("&ok=").append(ok);
+        if (shippingOptions != null) {
+            command.append("&shipping_options=").append(urlEncode(GSON.toJson(shippingOptions)));
+        }
+        if (errorMessage != null) {
+            command.append("&error_message=").append(errorMessage);
+        }
+        return callMethod(command.toString());
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#answerprecheckoutquery">Official documentation of
+     *      answerPreCheckoutQuery</a>
+     */
+    public int answerPreCheckoutQuery(String preCheckoutQueryId, boolean ok, String errorMessage) throws IOException {
+        StringBuilder command = new StringBuilder(ANSWER_PRE_CHECKOUT_QUERY);
+        command.append("pre_checkout_query_id=").append(preCheckoutQueryId);
+        command.append("&ok=").append(ok);
+        if (errorMessage != null) {
+            command.append("&error_message=").append(errorMessage);
         }
         return callMethod(command.toString());
     }
