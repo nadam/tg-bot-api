@@ -10,7 +10,10 @@ public class Chat {
     public String username;
     public String first_name;
     public String last_name;
-    public boolean all_members_are_admins;
+    public boolean all_members_are_administrators;
+    public ChatPhoto photo;
+    public String description;
+    public String invite_link;
 
     public enum Type {
         PRIVATE, GROUP, SUPERGROUP, CHANNEL

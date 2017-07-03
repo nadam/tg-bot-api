@@ -67,6 +67,15 @@ public class TgBotApi {
     private final String KICK_CHAT_MEMBER;
     private final String LEAVE_CHAT;
     private final String UNBAN_CHAT_MEMBER;
+    private final String RESTRICT_CHAT_MEMBER;
+    private final String PROMOTE_CHAT_MEMBER;
+    private final String EXPORT_CHAT_INVITE_LINK;
+    private final String SET_CHAT_PHOTO;
+    private final String DELETE_CHAT_PHOTO;
+    private final String SET_CHAT_TITLE;
+    private final String SET_CHAT_DESCRIPTION;
+    private final String PIN_CHAT_MESSAGE;
+    private final String UNPIN_CHAT_MESSAGE;
     private final String GET_CHAT;
     private final String GET_CHAT_ADMINISTRATORS;
     private final String GET_CHAT_MEMBERS_COUNT;
@@ -142,6 +151,15 @@ public class TgBotApi {
         GET_FILE_URL = "https://api.telegram.org/file/bot" + token + '/';
         KICK_CHAT_MEMBER = BASE_URL + "/kickChatMember?";
         UNBAN_CHAT_MEMBER = BASE_URL + "/unbanChatMember?";
+        RESTRICT_CHAT_MEMBER = BASE_URL + "/restrictChatMember?";
+        PROMOTE_CHAT_MEMBER = BASE_URL + "/promoteChatMember?";
+        EXPORT_CHAT_INVITE_LINK = BASE_URL + "/exportChatInviteLink?";
+        SET_CHAT_PHOTO = BASE_URL + "/setChatPhoto?";
+        DELETE_CHAT_PHOTO = BASE_URL + "/deleteChatPhoto?";
+        SET_CHAT_TITLE = BASE_URL + "/setChatTitle?";
+        SET_CHAT_DESCRIPTION = BASE_URL + "/setChatDescription?";
+        PIN_CHAT_MESSAGE = BASE_URL + "/pinChatMessage?";
+        UNPIN_CHAT_MESSAGE = BASE_URL + "/unpinChatMessage?";
         LEAVE_CHAT = BASE_URL + "/leaveChat?";
         GET_CHAT = BASE_URL + "/getChat?";
         GET_CHAT_ADMINISTRATORS = BASE_URL + "/getChatAdministrators?";
@@ -870,7 +888,7 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvideonote">Official documentation of sendVideoNote</a>
      */
-    public int sendVideoNote(int chatId, InputStream videoNote, int replyTo, ReplyMarkup replyMarkup)
+    public int sendVideoNote(long chatId, InputStream videoNote, int replyTo, ReplyMarkup replyMarkup)
             throws IOException {
         return sendVideoNote(String.valueOf(chatId), videoNote, replyTo, replyMarkup);
     }
@@ -1083,6 +1101,21 @@ public class TgBotApi {
     }
 
     /**
+     * Helper method for creating the file URL from a File object.
+     */
+    public String getFileUrl(File file) {
+        return GET_FILE_URL + file.file_path;
+    }
+
+    /**
+     * Helper method for creating the file URL from fileId.
+     */
+    public String getFileUrl(String fileId) throws IOException {
+        File file = getFile(fileId);
+        return getFileUrl(file);
+    }
+
+    /**
      * While the getFile() method only returns file info, this method actually downloads the file.
      */
     public byte[] downloadFile(File file) throws IOException {
@@ -1137,15 +1170,21 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#kickchatmember">Official documentation of kickChatMember</a>
      */
-    public int kickChatMember(long chatId, int userId) throws IOException {
-        return kickChatMember(String.valueOf(chatId), userId);
+    public int kickChatMember(long chatId, int userId, int untilDate) throws IOException {
+        return kickChatMember(String.valueOf(chatId), userId, untilDate);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#kickchatmember">Official documentation of kickChatMember</a>
      */
-    public int kickChatMember(String channel, int userId) throws IOException {
-        return callMethod(KICK_CHAT_MEMBER + "chat_id=" + channel + "&user_id=" + userId);
+    public int kickChatMember(String channel, int userId, int untilDate) throws IOException {
+        StringBuilder command = new StringBuilder(KICK_CHAT_MEMBER);
+        command.append("chat_id=").append(channel);
+        command.append("&user_id=").append(userId);
+        if (untilDate > 0) {
+            command.append("&until_date=").append(untilDate);
+        }
+        return callMethod(command.toString());
     }
 
     /**
@@ -1174,6 +1213,205 @@ public class TgBotApi {
      */
     public int unbanChatMember(String channel, int userId) throws IOException {
         return callMethod(UNBAN_CHAT_MEMBER + "chat_id=" + channel + "&user_id=" + userId);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#restrictchatmember">Official documentation of
+     *      restrictChatMember</a>
+     */
+    public int restrictChatMember(long chatId, int userId, int untilDate, boolean canSendMessages,
+            boolean canSendMediaMessages, boolean canSendOtherMessages, boolean canAddWebPagePreviews)
+            throws IOException {
+        return restrictChatMember(String.valueOf(chatId), userId, untilDate, canSendMessages, canSendMediaMessages,
+                canSendOtherMessages, canAddWebPagePreviews);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#restrictchatmember">Official documentation of
+     *      restrictChatMember</a>
+     */
+    public int restrictChatMember(String channel, int userId, int untilDate, boolean canSendMessages,
+            boolean canSendMediaMessages, boolean canSendOtherMessages, boolean canAddWebPagePreviews)
+            throws IOException {
+        StringBuilder command = new StringBuilder(RESTRICT_CHAT_MEMBER);
+        command.append("chat_id=").append(channel);
+        command.append("&user_id=").append(userId);
+        if (untilDate != 0) {
+            command.append("&until_date=").append(untilDate);
+        }
+        if (canSendOtherMessages || canAddWebPagePreviews) { // Implies canSendMediaMessages
+            if (canSendOtherMessages) {
+                command.append("&can_send_other_messages=True");
+            }
+            if (canAddWebPagePreviews) {
+                command.append("&can_add_web_page_previews=True");
+            }
+        } else if (canSendMediaMessages) { // Implies canSendMessages
+            command.append("&can_send_media_messages=True");
+        } else if (canSendMessages) {
+            command.append("&can_send_messages=True");
+        }
+        return callMethod(command.toString());
+    }
+    
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#promotechatmember">Official documentation of
+     *      promoteChatMember</a>
+     */
+    public int promoteChatMember(long chatId, int userId, boolean canChangeInfo, boolean canPostMessages,
+            boolean canEditMessages, boolean canDeleteMessages, boolean canInviteUsers, boolean canRestrictMembers,
+            boolean canPinMessages, boolean canPromoteMembers) throws IOException {
+        return promoteChatMember(String.valueOf(chatId), userId, canChangeInfo, canPostMessages, canEditMessages,
+                canDeleteMessages, canInviteUsers, canRestrictMembers, canPinMessages, canPromoteMembers);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#promotechatmember">Official documentation of
+     *      promoteChatMember</a>
+     */
+    public int promoteChatMember(String channel, int userId, boolean canChangeInfo, boolean canPostMessages,
+            boolean canEditMessages, boolean canDeleteMessages, boolean canInviteUsers, boolean canRestrictMembers,
+            boolean canPinMessages, boolean canPromoteMembers) throws IOException {
+        StringBuilder command = new StringBuilder(PROMOTE_CHAT_MEMBER);
+        command.append("chat_id=").append(channel);
+        command.append("&user_id=").append(userId);
+        if (canChangeInfo) {
+            command.append("&can_change_info=True");
+        }
+        if (canPostMessages) {
+            command.append("&can_post_messages=True");
+        }
+        if (canEditMessages) {
+            command.append("&can_edit_messages=True");
+        }
+        if (canDeleteMessages) {
+            command.append("&can_delete_messages=True");
+        }
+        if (canInviteUsers) {
+            command.append("&can_invite_users=True");
+        }
+        if (canRestrictMembers) {
+            command.append("&can_restrict_members=True");
+        }
+        if (canPinMessages) {
+            command.append("&can_pin_messages=True");
+        }
+        if (canPromoteMembers) {
+            command.append("&can_promote_members=True");
+        }
+
+        return callMethod(command.toString());
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#exportchatinvitelink">Official documentation of
+     *      exportChatInviteLink</a>
+     */
+    public String exportChatInviteLink(long chatId) throws IOException {
+        return exportChatInviteLink(String.valueOf(chatId));
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#exportchatinvitelink">Official documentation of
+     *      exportChatInviteLink</a>
+     */
+    public String exportChatInviteLink(String channel) throws IOException {
+        return callMethod(EXPORT_CHAT_INVITE_LINK + "chat_id=" + channel, String.class);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#setchatphoto">Official documentation of exportChatInviteLink</a>
+     */
+    public int setChatPhoto(long chatId, InputStream photo, String filename) throws IOException {
+        return setChatPhoto(String.valueOf(chatId), photo, filename);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#setchatphoto">Official documentation of exportChatInviteLink</a>
+     */
+    public int setChatPhoto(String channel, InputStream photo, String filename) throws IOException {
+        FileSender sender = new FileSender(SET_CHAT_PHOTO);
+        sender.addFormField("chat_id", channel);
+        sender.addFilePart("photo", photo, filename);
+        return sender.finish();
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#deletechatphoto">Official documentation of deleteChatPhoto</a>
+     */
+    public int deleteChatPhoto(long chatId) throws IOException {
+        return deleteChatPhoto(String.valueOf(chatId));
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#deletechatphoto">Official documentation of deleteChatPhoto</a>
+     */
+    public int deleteChatPhoto(String channel) throws IOException {
+        return callMethod(DELETE_CHAT_PHOTO + "chat_id=" + channel);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#setchattitle">Official documentation of setChatTitle</a>
+     */
+    public int setChatTitle(long chatId, int title) throws IOException {
+        return setChatTitle(String.valueOf(chatId), title);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#setchattitle">Official documentation of setChatTitle</a>
+     */
+    public int setChatTitle(String channel, int title) throws IOException {
+        return callMethod(SET_CHAT_TITLE + "chat_id=" + channel + "&title=" + title);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#setchatdescription">Official documentation of
+     *      setChatDescription</a>
+     */
+    public int setChatDescription(long chatId, int description) throws IOException {
+        return setChatDescription(String.valueOf(chatId), description);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#setchatdescription">Official documentation of
+     *      setChatDescription</a>
+     */
+    public int setChatDescription(String channel, int description) throws IOException {
+        return callMethod(SET_CHAT_DESCRIPTION + "chat_id=" + channel + "&description=" + description);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#pinchatmessage">Official documentation of pinChatMessage</a>
+     */
+    public int pinChatMessage(long chatId, String messageId) throws IOException {
+        return pinChatMessage(String.valueOf(chatId), messageId);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#pinchatmessage">Official documentation of pinChatMessage</a>
+     */
+    public int pinChatMessage(String channel, String messageId) throws IOException {
+        StringBuilder command = new StringBuilder(PIN_CHAT_MESSAGE);
+        command.append("chat_id=").append(channel);
+        command.append("&message_id=").append(messageId);
+        if (disableNotification) {
+            command.append("&disable_notification=true");
+        }
+        return callMethod(command.toString());
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#unpinchatmessage">Official documentation of unpinChatMessage</a>
+     */
+    public int unpinChatMessage(long chatId) throws IOException {
+        return unpinChatMessage(String.valueOf(chatId));
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#unpinchatmessage">Official documentation of unpinChatMessage</a>
+     */
+    public int unpinChatMessage(String channel) throws IOException {
+        return callMethod(UNPIN_CHAT_MESSAGE + "chat_id=" + channel);
     }
 
     /**
@@ -1405,7 +1643,7 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#deleteMessage">Official documentation of
      *      deleteMessage</a>
      */
-    public int deleteMessage(int chatId, int messageId) throws IOException {
+    public int deleteMessage(long chatId, int messageId) throws IOException {
         return deleteMessage(String.valueOf(chatId), messageId);
     }
 
@@ -1415,7 +1653,7 @@ public class TgBotApi {
     public int deleteMessage(String channel, int messageId) throws IOException {
         StringBuilder command = new StringBuilder(DELETE_MESSAGE);
         command.append("chat_id=").append(channel);
-        command.append("message_id=").append(messageId);
+        command.append("&message_id=").append(messageId);
         return callMethod(command.toString());
     }
 
@@ -1464,7 +1702,7 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendinvoice">Official documentation of sendInvoice</a>
      */
-    public int sendInvoice(int chatId, String title, String description, String payload, String providerToken,
+    public int sendInvoice(long chatId, String title, String description, String payload, String providerToken,
             String startParameter, String currency, LabeledPrice[] prices, String photoUrl, boolean needName,
             boolean needPhoneNumber, boolean needEmail, boolean needShippingAddress, boolean isFlexible)
             throws IOException {
@@ -1475,7 +1713,7 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendinvoice">Official documentation of sendInvoice</a>
      */
-    public int sendInvoice(int chatId, String title, String description, String payload, String providerToken,
+    public int sendInvoice(long chatId, String title, String description, String payload, String providerToken,
             String startParameter, String currency, LabeledPrice[] prices, String photoUrl, int photoSize,
             int photoWidth, int photoHeight, boolean needName, boolean needPhoneNumber, boolean needEmail,
             boolean needShippingAddress, boolean isFlexible, int replyTo, ReplyMarkup replyMarkup)
