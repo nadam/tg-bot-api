@@ -372,7 +372,8 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendmessage">Official documentation of sendMessage</a>
      */
-    public int sendMessage(String channel, String text, ParseMode parseMode, boolean disablePreview) throws IOException {
+    public int sendMessage(String channel, String text, ParseMode parseMode, boolean disablePreview, int replyTo,
+            ReplyMarkup replyMarkup) throws IOException {
         text = urlEncode(text);
         StringBuilder command = new StringBuilder(SEND_MESSAGE);
         command.append("chat_id=").append(channel);
@@ -385,6 +386,12 @@ public class TgBotApi {
         }
         if (disableNotification) {
             command.append("&disable_notification=true");
+        }
+        if (replyTo > 0) {
+            command.append("&reply_to_message_id=").append(replyTo);
+        }
+        if (replyMarkup != null) {
+            command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
         }
         return callMethod(command.toString());
     }
@@ -1915,7 +1922,11 @@ public class TgBotApi {
                         }
                     }
                 } catch (Exception e) {
-                    handleErrorResponse(responseCode, con.getResponseMessage());
+                    if (e instanceof HttpResponseException) {
+                        throw e;
+                    } else {
+                        handleErrorResponse(responseCode, con.getResponseMessage());
+                    }
                 }
             }
         } finally {
