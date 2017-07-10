@@ -126,4 +126,31 @@ public class Update {
         }
         return 0;
     }
+
+    public Chat chat() {
+        Type type = getType();
+        if (type == null) {
+            return null;
+        }
+        switch (type) {
+        case MESSAGE:
+            return message.chat;
+        case EDITED_MESSAGE:
+            return edited_message.chat;
+        case CHANNEL_POST:
+            return channel_post.chat;
+        case EDITED_CHANNEL_POST:
+            return edited_channel_post.chat;
+        case CALLBACK_QUERY:
+            if (callback_query.message != null) {
+                return callback_query.message.chat;
+            }
+        case INLINE_QUERY:
+        case CHOSEN_INLINE_RESULT:
+        case SHIPPING_QUERY:
+        case PRE_CHECKOUT_QUERY:
+        default:
+            return null;
+        }
+    }
 }

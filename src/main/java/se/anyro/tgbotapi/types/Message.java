@@ -20,7 +20,7 @@ public class Message {
     public int date;
     public Chat chat;
     public User forward_from;
-    public Chat forward_from_chat;
+    public Chat forward_from_chat; // Only for channels
     public int forward_from_message_id;
     public int forward_date;
     public Message reply_to_message;
@@ -55,5 +55,9 @@ public class Message {
 
     public boolean isReply() {
         return reply_to_message != null;
+    }
+
+    public boolean isForwardedFromChannel() {
+        return forward_from_chat != null;
     }
 }

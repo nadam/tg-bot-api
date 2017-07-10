@@ -23,6 +23,19 @@ public class Chat {
      * Get the type field as an enum value.
      */
     public Type getType() {
-        return Type.valueOf(type.toUpperCase());
+        try {
+            return Type.valueOf(type.toUpperCase());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public boolean isPrivate() {
+        return Type.PRIVATE.toString().equals(type);
+    }
+
+    public boolean isGroupOrSupergroup() {
+        Type type = getType();
+        return type == Type.GROUP || type == Type.SUPERGROUP;
     }
 }
