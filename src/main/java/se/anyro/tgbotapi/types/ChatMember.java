@@ -34,7 +34,11 @@ public class ChatMember {
      * Get the status field as an enum value.
      */
     public Status getStatus() {
-        return Status.valueOf(status.toUpperCase());
+        try {
+            return Status.valueOf(status.toUpperCase());
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public boolean isOwner() {
