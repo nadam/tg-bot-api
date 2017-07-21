@@ -17,7 +17,7 @@ public class InlineKeyboardButton {
     public String switch_inline_query;
     public String switch_inline_query_current_chat;
     public CallbackGame callback_game;
-    public boolean pay;
+    public Boolean pay;
 
     public InlineKeyboardButton(String text) {
         this.text = text;
