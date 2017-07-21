@@ -30,6 +30,7 @@ import se.anyro.tgbotapi.types.payments.LabeledPrice;
 import se.anyro.tgbotapi.types.payments.ShippingOption;
 import se.anyro.tgbotapi.types.reply_markup.InlineKeyboardMarkup;
 import se.anyro.tgbotapi.types.reply_markup.ReplyMarkup;
+import se.anyro.tgbotapi.types.stickers.MaskPosition;
 import se.anyro.tgbotapi.utils.FileSender;
 
 import com.google.gson.Gson;
@@ -53,7 +54,6 @@ public class TgBotApi {
     private final String SEND_PHOTO;
     private final String SEND_AUDIO;
     private final String SEND_DOCUMENT;
-    private final String SEND_STICKER;
     private final String SEND_VIDEO;
     private final String SEND_VOICE;
     private final String SEND_VIDEO_NOTE;
@@ -85,6 +85,14 @@ public class TgBotApi {
     private final String EDIT_MESSAGE_CAPTION;
     private final String EDIT_MESSAGE_REPLY_MARKUP;
     private final String DELETE_MESSAGE;
+    private final String SEND_STICKER;
+    private final String GET_STICKER_SET;
+    private final String UPLOAD_STICKER_FILE;
+    private final String CREATE_NEW_STICKER_SET;
+    private final String ADD_STICKER_TO_SET;
+    private final String SET_STICKER_POSITION_IN_SET;
+    private final String DELETE_STICKER_FROM_SET;
+    
     private final String ANSWER_INLINE_QUERY;
     private final String SEND_INVOICE;
     private final String ANSWER_SHIPPING_QUERY;
@@ -138,7 +146,6 @@ public class TgBotApi {
         SEND_PHOTO = BASE_URL + "/sendPhoto";
         SEND_AUDIO = BASE_URL + "/sendAudio";
         SEND_DOCUMENT = BASE_URL + "/sendDocument";
-        SEND_STICKER = BASE_URL + "/sendSticker";
         SEND_VIDEO = BASE_URL + "/sendVideo";
         SEND_VOICE = BASE_URL + "/sendVoice";
         SEND_VIDEO_NOTE = BASE_URL + "/sendVideoNote";
@@ -170,6 +177,13 @@ public class TgBotApi {
         EDIT_MESSAGE_CAPTION = BASE_URL + "/editMessageCaption?";
         EDIT_MESSAGE_REPLY_MARKUP = BASE_URL + "/editMessageReplyMarkup?";
         DELETE_MESSAGE = BASE_URL + "/deleteMessage?";
+        SEND_STICKER = BASE_URL + "/sendSticker";
+        GET_STICKER_SET = BASE_URL + "/getStickerSet?";
+        UPLOAD_STICKER_FILE = BASE_URL + "/uploadStickerFile";
+        CREATE_NEW_STICKER_SET = BASE_URL + "/createNewStickerSet";
+        ADD_STICKER_TO_SET = BASE_URL + "/addStickerToSet";
+        SET_STICKER_POSITION_IN_SET = BASE_URL + "/setStickerPositionInSet?";
+        DELETE_STICKER_FROM_SET = BASE_URL + "/deleteStickerFromSet?";
         ANSWER_INLINE_QUERY = BASE_URL + "/answerInlineQuery?";
         SEND_INVOICE = BASE_URL + "/sendInvoice?";
         ANSWER_SHIPPING_QUERY = BASE_URL + "/answerShippingQuery?";
@@ -674,60 +688,6 @@ public class TgBotApi {
         if (caption != null) {
             sender.addFormField("caption", caption);
         }
-        if (disableNotification) {
-            sender.addFormField("disable_notification", "true");
-        }
-        if (replyTo > 0) {
-            sender.addFormField("reply_to_message_id", replyTo);
-        }
-        if (replyMarkup != null) {
-            sender.addFormField("reply_markup", GSON.toJson(replyMarkup));
-        }
-        return sender.finish();
-    }
-
-    /**
-     * @see <a href="https://core.telegram.org/bots/api#sendsticker">Official documentation of sendSticker</a>
-     */
-    public int sendSticker(long chatId, String sticker, int replyTo, ReplyMarkup replyMarkup) throws IOException {
-        return sendSticker(String.valueOf(chatId), sticker, replyTo, replyMarkup);
-    }
-
-    /**
-     * @see <a href="https://core.telegram.org/bots/api#sendsticker">Official documentation of sendSticker</a>
-     */
-    public int sendSticker(String channel, String sticker, int replyTo, ReplyMarkup replyMarkup) throws IOException {
-        StringBuilder command = new StringBuilder(SEND_STICKER).append('?');
-        command.append("chat_id=").append(channel);
-        command.append("&sticker=").append(sticker);
-        if (disableNotification) {
-            command.append("&disable_notification=true");
-        }
-        if (replyTo > 0) {
-            command.append("&reply_to_message_id=").append(replyTo);
-        }
-        if (replyMarkup != null) {
-            command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
-        }
-        return callMethod(command.toString());
-    }
-
-    /**
-     * @see <a href="https://core.telegram.org/bots/api#sendsticker">Official documentation of sendSticker</a>
-     */
-    public int sendSticker(long chatId, InputStream sticker, String filename, int replyTo, ReplyMarkup replyMarkup)
-            throws IOException {
-        return sendSticker(String.valueOf(chatId), sticker, filename, replyTo, replyMarkup);
-    }
-
-    /**
-     * @see <a href="https://core.telegram.org/bots/api#sendsticker">Official documentation of sendSticker</a>
-     */
-    public int sendSticker(String channel, InputStream sticker, String filename, int replyTo, ReplyMarkup replyMarkup)
-            throws IOException {
-        FileSender sender = new FileSender(SEND_STICKER);
-        sender.addFormField("chat_id", channel);
-        sender.addFilePart("sticker", sticker, filename);
         if (disableNotification) {
             sender.addFormField("disable_notification", "true");
         }
@@ -1661,6 +1621,174 @@ public class TgBotApi {
         StringBuilder command = new StringBuilder(DELETE_MESSAGE);
         command.append("chat_id=").append(channel);
         command.append("&message_id=").append(messageId);
+        return callMethod(command.toString());
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#sendsticker">Official documentation of sendSticker</a>
+     */
+    public int sendSticker(long chatId, String sticker, int replyTo, ReplyMarkup replyMarkup) throws IOException {
+        return sendSticker(String.valueOf(chatId), sticker, replyTo, replyMarkup);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#sendsticker">Official documentation of sendSticker</a>
+     */
+    public int sendSticker(String channel, String sticker, int replyTo, ReplyMarkup replyMarkup) throws IOException {
+        StringBuilder command = new StringBuilder(SEND_STICKER).append('?');
+        command.append("chat_id=").append(channel);
+        command.append("&sticker=").append(sticker);
+        if (disableNotification) {
+            command.append("&disable_notification=true");
+        }
+        if (replyTo > 0) {
+            command.append("&reply_to_message_id=").append(replyTo);
+        }
+        if (replyMarkup != null) {
+            command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
+        }
+        return callMethod(command.toString());
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#sendsticker">Official documentation of sendSticker</a>
+     */
+    public int sendSticker(long chatId, InputStream sticker, String filename, int replyTo, ReplyMarkup replyMarkup)
+            throws IOException {
+        return sendSticker(String.valueOf(chatId), sticker, filename, replyTo, replyMarkup);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#sendsticker">Official documentation of sendSticker</a>
+     */
+    public int sendSticker(String channel, InputStream sticker, String filename, int replyTo, ReplyMarkup replyMarkup)
+            throws IOException {
+        FileSender sender = new FileSender(SEND_STICKER);
+        sender.addFormField("chat_id", channel);
+        sender.addFilePart("sticker", sticker, filename);
+        if (disableNotification) {
+            sender.addFormField("disable_notification", "true");
+        }
+        if (replyTo > 0) {
+            sender.addFormField("reply_to_message_id", replyTo);
+        }
+        if (replyMarkup != null) {
+            sender.addFormField("reply_markup", GSON.toJson(replyMarkup));
+        }
+        return sender.finish();
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#getstickerset">Official documentation of getStickerSet</a>
+     */
+    public int getStickerSet(String name) throws IOException {
+        StringBuilder command = new StringBuilder(GET_STICKER_SET).append("name=").append(name);
+        return callMethod(command.toString());
+    }
+    
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#uploadstickerfile">Official documentation of
+     *      uploadStickerFile</a>
+     */
+    public int uploadStickerFile(int userId, InputStream pngSticker) throws IOException {
+        FileSender sender = new FileSender(UPLOAD_STICKER_FILE);
+        sender.addFormField("user_id", userId);
+        sender.addFilePart("png_sticker", pngSticker, "sticker");
+        return sender.finish();
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#createnewstickerset">Official documentation of
+     *      createNewStickerSet</a>
+     */
+    public int createNewStickerSet(int userId, String name, String title, InputStream pngSticker, String emojis,
+            boolean isMasks, MaskPosition maskPosition) throws IOException {
+        FileSender sender = new FileSender(CREATE_NEW_STICKER_SET);
+        sender.addFormField("user_id", userId);
+        sender.addFormField("name", name);
+        sender.addFormField("title", title);
+        sender.addFilePart("png_sticker", pngSticker, "sticker");
+        sender.addFormField("emojis", emojis);
+        if (isMasks) {
+            sender.addFormField("is_masks", "true");
+        }
+        if (maskPosition != null) {
+            sender.addFormField("mask_position", GSON.toJson(maskPosition));
+        }
+        return sender.finish();
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#createnewstickerset">Official documentation of
+     *      createNewStickerSet</a>
+     */
+    public int createNewStickerSet(int userId, String name, String title, String pngSticker, String emojis,
+            boolean isMasks, MaskPosition maskPosition) throws IOException {
+        StringBuilder command = new StringBuilder(CREATE_NEW_STICKER_SET).append('?');
+        command.append("user_id=").append(userId);
+        command.append("&name=").append(name);
+        command.append("&title=").append(title);
+        command.append("&png_sticker=").append(pngSticker);
+        command.append("&emojis=").append(emojis);
+        if (isMasks) {
+            command.append("&is_masks=true");
+        }
+        if (maskPosition != null) {
+            command.append("&mask_position=").append(urlEncode(GSON.toJson(maskPosition)));
+        }
+        return callMethod(command.toString());
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#addstickertoset">Official documentation of addStickerToSet</a>
+     */
+    public int addStickerToSet(int userId, String name, InputStream pngSticker, String emojis, MaskPosition maskPosition)
+            throws IOException {
+        FileSender sender = new FileSender(ADD_STICKER_TO_SET);
+        sender.addFormField("user_id", userId);
+        sender.addFormField("name", name);
+        sender.addFilePart("png_sticker", pngSticker, "sticker");
+        sender.addFormField("emojis", emojis);
+        if (maskPosition != null) {
+            sender.addFormField("mask_position", GSON.toJson(maskPosition));
+        }
+        return sender.finish();
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#addstickertoset">Official documentation of addStickerToSet</a>
+     */
+    public int addStickerToSet(int userId, String name, String pngSticker, String emojis, MaskPosition maskPosition)
+            throws IOException {
+        StringBuilder command = new StringBuilder(ADD_STICKER_TO_SET).append('?');
+        command.append("user_id=").append(userId);
+        command.append("&name=").append(name);
+        command.append("&png_sticker=").append(pngSticker);
+        command.append("&emojis=").append(emojis);
+        if (maskPosition != null) {
+            command.append("&mask_position=").append(urlEncode(GSON.toJson(maskPosition)));
+        }
+        return callMethod(command.toString());
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#setstickerpositioninset">Official documentation of
+     *      setStickerPositionInSet</a>
+     */
+    public int setStickerPositionInSet(String sticker, int position) throws IOException {
+        StringBuilder command = new StringBuilder(SET_STICKER_POSITION_IN_SET);
+        command.append("sticker=").append(sticker);
+        command.append("position=").append(position);
+        return callMethod(command.toString());
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#deletestickerfromset">Official documentation of
+     *      deleteStickerFromSet</a>
+     */
+    public int deleteStickerFromSet(String sticker) throws IOException {
+        StringBuilder command = new StringBuilder(DELETE_STICKER_FROM_SET);
+        command.append("sticker=").append(sticker);
         return callMethod(command.toString());
     }
 

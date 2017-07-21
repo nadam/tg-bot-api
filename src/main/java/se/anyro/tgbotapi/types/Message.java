@@ -3,13 +3,13 @@ package se.anyro.tgbotapi.types;
 import se.anyro.tgbotapi.types.file.Audio;
 import se.anyro.tgbotapi.types.file.Document;
 import se.anyro.tgbotapi.types.file.PhotoSize;
-import se.anyro.tgbotapi.types.file.Sticker;
 import se.anyro.tgbotapi.types.file.Video;
 import se.anyro.tgbotapi.types.file.VideoNote;
 import se.anyro.tgbotapi.types.file.Voice;
 import se.anyro.tgbotapi.types.games.Game;
 import se.anyro.tgbotapi.types.payments.Invoice;
 import se.anyro.tgbotapi.types.payments.SuccessfulPayment;
+import se.anyro.tgbotapi.types.stickers.Sticker;
 
 /**
  * @see <a href="https://core.telegram.org/bots/api#message">Message</a>
