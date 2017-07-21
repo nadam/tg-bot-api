@@ -53,11 +53,30 @@ public class Message {
     public Invoice invoice;
     public SuccessfulPayment successful_payment;
 
+    private static final String VIDEO_MP4 = "video/mp4";
+
     public boolean isReply() {
         return reply_to_message != null;
     }
 
     public boolean isForwardedFromChannel() {
         return forward_from_chat != null;
+    }
+
+    public boolean isGif() {
+        return document != null && VIDEO_MP4.equals(document.mime_type);
+    }
+
+    /**
+     * Did the user forward a message that isn't his/her own message?
+     */
+    public boolean isForwardedFromOther() {
+        if (forward_date == 0) {
+            return false; // Not forwarded
+        }
+        if (forward_from == null || from == null) {
+            return true;
+        }
+        return from.id != forward_from.id;
     }
 }
