@@ -31,7 +31,7 @@ public class Chat {
     }
 
     public boolean isPrivate() {
-        return Type.PRIVATE.toString().equals(type);
+        return Type.PRIVATE.toString().equals(type.toUpperCase());
     }
 
     public boolean isGroupOrSupergroup() {
