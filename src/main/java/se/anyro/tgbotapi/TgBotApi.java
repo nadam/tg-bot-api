@@ -423,7 +423,7 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#forwardmessage">Official documentation of forwardMessage</a>
      */
-    public int forwardMessage(long chatId, long fromChatId, int messageId) throws IOException {
+    public Message forwardMessage(long chatId, long fromChatId, int messageId) throws IOException {
         StringBuilder command = new StringBuilder(FORWARD_MESSAGE);
         command.append("chat_id=").append(chatId);
         command.append("&from_chat_id=").append(fromChatId);
@@ -431,7 +431,7 @@ public class TgBotApi {
             command.append("&disable_notification=true");
         }
         command.append("&message_id=").append(messageId);
-        return callMethod(command.toString());
+        return callMethod(command.toString(), Message.class);
     }
 
     /**
@@ -479,7 +479,7 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#forwardmessage">Official documentation of forwardMessage</a>
      */
-    public int forwardMessage(long chatId, Message message) throws IOException {
+    public Message forwardMessage(long chatId, Message message) throws IOException {
         return forwardMessage(chatId, message.chat.id, message.message_id);
     }
 
