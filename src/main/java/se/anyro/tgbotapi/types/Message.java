@@ -79,4 +79,13 @@ public class Message {
         }
         return from.id != forward_from.id;
     }
+
+    /**
+     * Returns true if the message is just a notification such as a new group name or a member leaving a group.
+     */
+    public boolean isNotification() {
+        return new_chat_members != null || left_chat_member != null || new_chat_title != null || new_chat_photo != null
+                || delete_chat_photo || group_chat_created || supergroup_chat_created || channel_chat_created
+                || migrate_to_chat_id > 0 || migrate_from_chat_id > 0 || pinned_message != null;
+    }
 }
