@@ -51,9 +51,9 @@ public class InlineKeyboardButton {
         return button;
     }
 
-    public static InlineKeyboardButton callbackGame(String text, CallbackGame callbackGame) {
+    public static InlineKeyboardButton callbackGame(String text) {
         InlineKeyboardButton button = new InlineKeyboardButton(text);
-        button.callback_game = callbackGame;
+        button.callback_game = new CallbackGame();
         return button;
     }
 
