@@ -1137,6 +1137,13 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#kickchatmember">Official documentation of kickChatMember</a>
      */
+    public int kickChatMember(long chatId, int userId) throws IOException {
+        return kickChatMember(String.valueOf(chatId), userId, 0);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#kickchatmember">Official documentation of kickChatMember</a>
+     */
     public int kickChatMember(long chatId, int userId, int untilDate) throws IOException {
         return kickChatMember(String.valueOf(chatId), userId, untilDate);
     }
