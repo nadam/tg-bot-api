@@ -259,6 +259,40 @@ public class TgBotApi {
         return callMethod(GET_UPDATES + "offset=" + offset + "&limit=" + limit + "&timeout=" + timeout, Update[].class);
     }
 
+
+    /**
+     * Use this method to receive incoming updates using long polling. An Array of Update objects is returned.
+     *
+     * Only use this method if you don't use a webhook.
+     *
+     * @see <a href="https://core.telegram.org/bots/api#getupdates">Official documentation of getUpdate</a>
+     */
+    public Update[] getUpdates(int offset, int limit) throws IOException {
+        return callMethod(GET_UPDATES + "offset=" + offset + "&limit=" + limit, Update[].class);
+    }
+
+    /**
+     * Use this method to receive incoming updates using long polling. An Array of Update objects is returned.
+     *
+     * Only use this method if you don't use a webhook.
+     *
+     * @see <a href="https://core.telegram.org/bots/api#getupdates">Official documentation of getUpdate</a>
+     */
+    public Update[] getUpdates(int offset) throws IOException {
+        return callMethod(GET_UPDATES + "offset=" + offset, Update[].class);
+    }
+
+    /**
+     * Use this method to receive incoming updates using long polling. An Array of Update objects is returned.
+     *
+     * Only use this method if you don't use a webhook.
+     *
+     * @see <a href="https://core.telegram.org/bots/api#getupdates">Official documentation of getUpdate</a>
+     */
+    public Update[] getUpdates() throws IOException {
+        return callMethod(BASE_URL + "/getUpdates", Update[].class);
+    }
+
     /**
      * Note! You can make this manually in the address field of your web browser instead of calling this method.
      * 
