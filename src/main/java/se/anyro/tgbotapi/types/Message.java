@@ -55,6 +55,23 @@ public class Message {
 
     private static final String VIDEO_MP4 = "video/mp4";
 
+    /**
+     * Returns text or caption depending on what is set or an empty string if none is available.
+     */
+    public String getSafeTextOrCaption() {
+        if (text != null) {
+            return text;
+        } else if (caption != null) {
+            return caption;
+        } else {
+            return "";
+        }
+    }
+
+    public boolean isGif() {
+        return document != null && VIDEO_MP4.equals(document.mime_type);
+    }
+
     public boolean isReply() {
         return reply_to_message != null;
     }
@@ -63,8 +80,8 @@ public class Message {
         return forward_from_chat != null;
     }
 
-    public boolean isGif() {
-        return document != null && VIDEO_MP4.equals(document.mime_type);
+    public boolean isForwardedFrom(long channel) {
+        return forward_from_chat != null && forward_from_chat.id == channel;
     }
 
     /**
