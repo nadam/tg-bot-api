@@ -5,7 +5,7 @@ package se.anyro.tgbotapi.types.reply_markup;
  */
 public class ForceReply extends ReplyMarkup {
     public boolean force_reply = true;
-    public boolean selective;
+    public Boolean selective;
 
     public ForceReply() {
     }

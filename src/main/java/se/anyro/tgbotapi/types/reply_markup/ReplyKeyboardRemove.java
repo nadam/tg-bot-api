@@ -5,7 +5,7 @@ package se.anyro.tgbotapi.types.reply_markup;
  */
 public class ReplyKeyboardRemove extends ReplyMarkup {
     public boolean remove_keyboard = true;
-    public boolean selective;
+    public Boolean selective;
 
     public ReplyKeyboardRemove() {
     }
