@@ -393,7 +393,7 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendmessage">Official documentation of sendMessage</a>
      */
-    public int sendMessage(long chatId, String text, ParseMode parseMode, boolean disablePreview, int replyTo,
+    public Message sendMessage(long chatId, String text, ParseMode parseMode, boolean disablePreview, int replyTo,
             ReplyMarkup replyMarkup) throws IOException {
         text = urlEncode(text);
         StringBuilder command = new StringBuilder(SEND_MESSAGE);
@@ -414,7 +414,7 @@ public class TgBotApi {
         if (replyMarkup != null) {
             command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
         }
-        return callMethod(command.toString());
+        return callMethod(command.toString(), Message.class);
     }
 
     /**
@@ -454,7 +454,7 @@ public class TgBotApi {
      * 
      * @see <a href="https://core.telegram.org/bots/api#sendmessage">Official documentation of sendMessage</a>
      */
-    public int sendReply(Message message, String text) throws IOException {
+    public Message sendReply(Message message, String text) throws IOException {
         return sendMessage(message.chat.id, text, null, false, message.message_id, null);
     }
 
@@ -463,7 +463,7 @@ public class TgBotApi {
      * 
      * @see <a href="https://core.telegram.org/bots/api#sendmessage">Official documentation of sendMessage</a>
      */
-    public int sendReply(Message message, String text, ParseMode parseMode, boolean disablePreview,
+    public Message sendReply(Message message, String text, ParseMode parseMode, boolean disablePreview,
             ReplyMarkup replyMarkup) throws IOException {
         return sendMessage(message.chat.id, text, parseMode, disablePreview, message.message_id, replyMarkup);
     }
@@ -541,7 +541,7 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendphoto">Official documentation of sendPhoto</a>
      */
-    public int sendPhoto(long chatId, String photo, String caption, int replyTo, ReplyMarkup replyMarkup)
+    public Message sendPhoto(long chatId, String photo, String caption, int replyTo, ReplyMarkup replyMarkup)
             throws IOException {
         return sendPhoto(String.valueOf(chatId), photo, caption, replyTo, replyMarkup);
     }
@@ -549,7 +549,7 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendphoto">Official documentation of sendPhoto</a>
      */
-    public int sendPhoto(String channel, String photo, String caption, int replyTo, ReplyMarkup replyMarkup)
+    public Message sendPhoto(String channel, String photo, String caption, int replyTo, ReplyMarkup replyMarkup)
             throws IOException {
         StringBuilder command = new StringBuilder(SEND_PHOTO).append('?');
         command.append("chat_id=").append(channel);
@@ -566,13 +566,13 @@ public class TgBotApi {
         if (replyMarkup != null) {
             command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
         }
-        return callMethod(command.toString());
+        return callMethod(command.toString(), Message.class);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendphoto">Official documentation of sendPhoto</a>
      */
-    public int sendPhoto(long chatId, InputStream photo, String filename, String caption, int replyTo,
+    public Message sendPhoto(long chatId, InputStream photo, String filename, String caption, int replyTo,
             ReplyMarkup replyMarkup) throws IOException {
         return sendPhoto(String.valueOf(chatId), photo, filename, caption, replyTo, replyMarkup);
     }
@@ -580,7 +580,7 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendphoto">Official documentation of sendPhoto</a>
      */
-    public int sendPhoto(String channel, InputStream photo, String filename, String caption, int replyTo,
+    public Message sendPhoto(String channel, InputStream photo, String filename, String caption, int replyTo,
             ReplyMarkup replyMarkup) throws IOException {
         FileSender sender = new FileSender(SEND_PHOTO);
         sender.addFormField("chat_id", channel);
@@ -597,7 +597,7 @@ public class TgBotApi {
         if (replyMarkup != null) {
             sender.addFormField("reply_markup", GSON.toJson(replyMarkup));
         }
-        return sender.finish();
+        return sender.finish(Message.class);
     }
 
     /**
@@ -675,7 +675,7 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#senddocument">Official documentation of sendDocument</a>
      */
-    public int sendDocument(long chatId, String document, String caption, int replyTo, ReplyMarkup replyMarkup)
+    public Message sendDocument(long chatId, String document, String caption, int replyTo, ReplyMarkup replyMarkup)
             throws IOException {
         return sendDocument(String.valueOf(chatId), document, caption, replyTo, replyMarkup);
     }
@@ -683,7 +683,7 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#senddocument">Official documentation of sendDocument</a>
      */
-    public int sendDocument(String channel, String document, String caption, int replyTo, ReplyMarkup replyMarkup)
+    public Message sendDocument(String channel, String document, String caption, int replyTo, ReplyMarkup replyMarkup)
             throws IOException {
         StringBuilder command = new StringBuilder(SEND_DOCUMENT).append('?');
         command.append("chat_id=").append(channel);
@@ -700,7 +700,7 @@ public class TgBotApi {
         if (replyMarkup != null) {
             command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
         }
-        return callMethod(command.toString());
+        return callMethod(command.toString(), Message.class);
     }
 
     /**

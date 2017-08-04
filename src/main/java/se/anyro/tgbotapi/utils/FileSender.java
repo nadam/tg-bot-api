@@ -5,13 +5,23 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
+import se.anyro.tgbotapi.HttpResponseException;
+import se.anyro.tgbotapi.types.ResponseParameters;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 /**
- * Simple multipart HTTP POST for sending a file.
+ * Simple multipart HTTP POST for sending a file and optionally parse the response.
  */
 public class FileSender {
 
@@ -27,12 +37,15 @@ public class FileSender {
     private static final byte[] CONTENT_TYPE_TEXT = "Content-Type: text/plain; charset=UTF-8\r\n".getBytes();
     private static final byte[] CONTENT_TYPE_FILE = "Content-Type: application/octet-stream\r\n".getBytes();
     private static final byte[] TRANSFER_ENCODING_BINARY = "Content-Transfer-Encoding: binary\r\n".getBytes();
+    
+    private static final Gson GSON = new Gson();
+    private static final JsonParser PARSER = new JsonParser();
 
     private HttpURLConnection connection;
     private OutputStream out;
 
-    public FileSender(String requestURL) throws IOException {
-        URL url = new URL(requestURL);
+    public FileSender(String requestUrl) throws IOException {
+        URL url = new URL(requestUrl);
         connection = (HttpURLConnection) url.openConnection();
         connection.setUseCaches(false);
         connection.setDoOutput(true);
@@ -90,6 +103,9 @@ public class FileSender {
         out.write(CR_LF);
     }
 
+    /**
+     * Write the last part and close the stream. Response data is ignored.
+     */
     public int finish() throws IOException {
         out.write(BOUNDARY_END);
         out.close();
@@ -98,6 +114,27 @@ public class FileSender {
         return responseCode;
     }
 
+    /**
+     * Write the last part and parse the response.
+     */
+    public <T> T finish(Class<T> responseClass) throws IOException {
+        out.write(BOUNDARY_END);
+        out.close();
+        try (Reader reader = new InputStreamReader(connection.getInputStream())) {
+            JsonObject response = (JsonObject) PARSER.parse(reader);
+            if (response.getAsJsonPrimitive("ok").getAsBoolean()) {
+                JsonElement result = response.get("result");
+                return GSON.fromJson(result, responseClass);
+            } else {
+                int errorCode = response.getAsJsonPrimitive("error_code").getAsInt();
+                String description = response.getAsJsonPrimitive("description").getAsString();
+                JsonElement parameters = response.get("parameters");
+                ResponseParameters responseParameters = GSON.fromJson(parameters, ResponseParameters.class);
+                throw new HttpResponseException(errorCode, description, responseParameters);
+            }
+        }
+    }
+    
     private void closeInputStream(HttpURLConnection con) {
         try {
             con.getInputStream().close();
