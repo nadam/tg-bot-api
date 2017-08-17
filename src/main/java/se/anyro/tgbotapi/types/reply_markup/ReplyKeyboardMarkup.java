@@ -138,5 +138,53 @@ public class ReplyKeyboardMarkup extends ReplyMarkup {
             }
             return new ReplyKeyboardMarkup(keyboard);
         }
+
+        public ReplyKeyboardMarkup toMarkup(boolean resize_keyboard) {
+            int numRows = this.keyboard.size();
+            KeyboardButton[][] keyboard = new KeyboardButton[numRows][];
+            for (int i = 0; i < numRows; ++i) {
+                List<KeyboardButton> row = this.keyboard.get(i);
+                int numButtons = row.size();
+                keyboard[i] = row.toArray(new KeyboardButton[numButtons]);
+            }
+
+            ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup(keyboard);
+
+            markup.resize_keyboard = resize_keyboard;
+            return markup;
+        }
+
+        public ReplyKeyboardMarkup toMarkup(boolean resize_keyboard, Boolean one_time_keyboard) {
+            int numRows = this.keyboard.size();
+            KeyboardButton[][] keyboard = new KeyboardButton[numRows][];
+            for (int i = 0; i < numRows; ++i) {
+                List<KeyboardButton> row = this.keyboard.get(i);
+                int numButtons = row.size();
+                keyboard[i] = row.toArray(new KeyboardButton[numButtons]);
+            }
+
+            ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup(keyboard);
+
+            markup.resize_keyboard = resize_keyboard;
+            markup.one_time_keyboard = one_time_keyboard;
+            return markup;
+        }
+
+        public ReplyKeyboardMarkup toMarkup(boolean resize_keyboard, Boolean one_time_keyboard, Boolean selective) {
+            int numRows = this.keyboard.size();
+            KeyboardButton[][] keyboard = new KeyboardButton[numRows][];
+            for (int i = 0; i < numRows; ++i) {
+                List<KeyboardButton> row = this.keyboard.get(i);
+                int numButtons = row.size();
+                keyboard[i] = row.toArray(new KeyboardButton[numButtons]);
+            }
+
+            ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup(keyboard);
+
+            markup.resize_keyboard = resize_keyboard;
+            markup.one_time_keyboard = one_time_keyboard;
+            markup.selective = selective;
+            return markup;
+        }
     }
 }
