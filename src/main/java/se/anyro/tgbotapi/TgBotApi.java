@@ -58,6 +58,8 @@ public class TgBotApi {
     private final String SEND_VOICE;
     private final String SEND_VIDEO_NOTE;
     private final String SEND_LOCATION;
+    private final String EDIT_MESSAGE_LIVE_LOCATION;
+    private final String STOP_MESSAGE_LIVE_LOCATION;
     private final String SEND_VENUE;
     private final String SEND_CONTACT;
     private final String SEND_CHAT_ACTION;
@@ -80,6 +82,8 @@ public class TgBotApi {
     private final String GET_CHAT_ADMINISTRATORS;
     private final String GET_CHAT_MEMBERS_COUNT;
     private final String GET_CHAT_MEMBER;
+    private final String SET_CHAT_STICKER_SET;
+    private final String DELETE_CHAT_STICKER_SET;
     private final String ANSWER_CALLBACK_QUERY;
     private final String EDIT_MESSAGE_TEXT;
     private final String EDIT_MESSAGE_CAPTION;
@@ -150,6 +154,8 @@ public class TgBotApi {
         SEND_VOICE = BASE_URL + "/sendVoice";
         SEND_VIDEO_NOTE = BASE_URL + "/sendVideoNote";
         SEND_LOCATION = BASE_URL + "/sendLocation?";
+        EDIT_MESSAGE_LIVE_LOCATION = BASE_URL + "/editMessageLiveLocation?";
+        STOP_MESSAGE_LIVE_LOCATION = BASE_URL + "/stopMessageLiveLocation?";
         SEND_VENUE = BASE_URL + "/sendVenue?";
         SEND_CONTACT = BASE_URL + "/sendContact?";
         SEND_CHAT_ACTION = BASE_URL + "/sendChatAction?";
@@ -172,6 +178,8 @@ public class TgBotApi {
         GET_CHAT_ADMINISTRATORS = BASE_URL + "/getChatAdministrators?";
         GET_CHAT_MEMBERS_COUNT = BASE_URL + "/getChatMembersCount?";
         GET_CHAT_MEMBER = BASE_URL + "/getChatMember?";
+        SET_CHAT_STICKER_SET = BASE_URL + "/setChatStickerSet?";
+        DELETE_CHAT_STICKER_SET = BASE_URL + "/deleteChatStickerSet?";
         ANSWER_CALLBACK_QUERY = BASE_URL + "/answerCallbackQuery?";
         EDIT_MESSAGE_TEXT = BASE_URL + "/editMessageText?";
         EDIT_MESSAGE_CAPTION = BASE_URL + "/editMessageCaption?";
@@ -952,26 +960,107 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendlocation">Official documentation of sendLocation</a>
      */
-    public int sendLocation(long chatId, float latitude, float longitude, int replyTo, ReplyMarkup replyMarkup)
-            throws IOException {
-        return sendLocation(String.valueOf(chatId), latitude, longitude, replyTo, replyMarkup);
+    public int sendLocation(long chatId, float latitude, float longitude, int livePeriod, int replyTo,
+            ReplyMarkup replyMarkup) throws IOException {
+        return sendLocation(String.valueOf(chatId), latitude, longitude, livePeriod, replyTo, replyMarkup);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendlocation">Official documentation of sendLocation</a>
      */
-    public int sendLocation(String channel, float latitude, float longitude, int replyTo,
+    public int sendLocation(String channel, float latitude, float longitude, int livePeriod, int replyTo,
             ReplyMarkup replyMarkup) throws IOException {
         StringBuilder command = new StringBuilder(SEND_LOCATION);
         command.append("chat_id=").append(channel);
         command.append("&latitude=").append(latitude);
         command.append("&longitude=").append(longitude);
+        if (livePeriod > 0) {
+            command.append("&live_period=").append(livePeriod);
+        }
         if (disableNotification) {
             command.append("&disable_notification=true");
         }
         if (replyTo > 0) {
             command.append("&reply_to_message_id=").append(replyTo);
         }
+        if (replyMarkup != null) {
+            command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
+        }
+        return callMethod(command.toString());
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#editmessagelivelocation">Official documentation of
+     *      editMessageLiveLocation</a>
+     */
+    public int editMessageLiveLocation(long chatId, int messageId, float latitude,
+            float longitude, ReplyMarkup replyMarkup) throws IOException {
+        return editMessageLiveLocation(String.valueOf(chatId), messageId, latitude, longitude, replyMarkup);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#editmessagelivelocation">Official documentation of
+     *      editMessageLiveLocation</a>
+     */
+    public int editMessageLiveLocation(String channel, int messageId, float latitude, float longitude,
+            ReplyMarkup replyMarkup) throws IOException {
+        StringBuilder command = new StringBuilder(EDIT_MESSAGE_LIVE_LOCATION);
+        command.append("chat_id=").append(channel);
+        command.append("&message_id=").append(messageId);
+        command.append("&latitude=").append(latitude);
+        command.append("&longitude=").append(longitude);
+        if (replyMarkup != null) {
+            command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
+        }
+        return callMethod(command.toString());
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#editmessagelivelocation">Official documentation of
+     *      editMessageLiveLocation</a>
+     */
+    public int editMessageLiveLocation(String inlineMessageId, float latitude, float longitude, ReplyMarkup replyMarkup)
+            throws IOException {
+        StringBuilder command = new StringBuilder(EDIT_MESSAGE_LIVE_LOCATION);
+        command.append("inline_message_id=").append(inlineMessageId);
+        command.append("&latitude=").append(latitude);
+        command.append("&longitude=").append(longitude);
+        if (replyMarkup != null) {
+            command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
+        }
+        return callMethod(command.toString());
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#stopmessagelivelocation">Official documentation of
+     *      stopMessageLiveLocation</a>
+     */
+    public int stopMessageLiveLocation(long chatId, int messageId, ReplyMarkup replyMarkup)
+            throws IOException {
+        return stopMessageLiveLocation(String.valueOf(chatId), messageId, replyMarkup);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#stopmessagelivelocation">Official documentation of
+     *      stopMessageLiveLocation</a>
+     */
+    public int stopMessageLiveLocation(String channel, int messageId, ReplyMarkup replyMarkup) throws IOException {
+        StringBuilder command = new StringBuilder(STOP_MESSAGE_LIVE_LOCATION);
+        command.append("chat_id=").append(channel);
+        command.append("&message_id=").append(messageId);
+        if (replyMarkup != null) {
+            command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
+        }
+        return callMethod(command.toString());
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#stopmessagelivelocation">Official documentation of
+     *      stopMessageLiveLocation</a>
+     */
+    public int stopMessageLiveLocation(String inlineMessageId, ReplyMarkup replyMarkup) throws IOException {
+        StringBuilder command = new StringBuilder(STOP_MESSAGE_LIVE_LOCATION);
+        command.append("inline_message_id=").append(inlineMessageId);
         if (replyMarkup != null) {
             command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
         }
@@ -1485,6 +1574,38 @@ public class TgBotApi {
      */
     public ChatMember getChatMember(String channel, int userId) throws IOException {
         return callMethod(GET_CHAT_MEMBER + "chat_id=" + channel + "&user_id=" + userId, ChatMember.class);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#setchatstickerset">Official documentation of
+     *      setChatStickerSet</a>
+     */
+    public ChatMember setChatStickerSet(long chatId, String name) throws IOException {
+        return setChatStickerSet(String.valueOf(chatId), name);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#setchatstickerset">Official documentation of
+     *      setChatStickerSet</a>
+     */
+    public ChatMember setChatStickerSet(String channel, String name) throws IOException {
+        return callMethod(SET_CHAT_STICKER_SET + "chat_id=" + channel + "&sticker_set_name=" + name, ChatMember.class);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#deletechatstickerset">Official documentation of
+     *      deleteChatStickerSet</a>
+     */
+    public ChatMember deleteChatStickerSet(long chatId, int userId) throws IOException {
+        return deleteChatStickerSet(String.valueOf(chatId));
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#deletechatstickerset">Official documentation of
+     *      deleteChatStickerSet</a>
+     */
+    public ChatMember deleteChatStickerSet(String channel) throws IOException {
+        return callMethod(DELETE_CHAT_STICKER_SET + "chat_id=" + channel, ChatMember.class);
     }
 
     /**

@@ -22,11 +22,14 @@ public class Message {
     public User forward_from;
     public Chat forward_from_chat; // Only for channels
     public int forward_from_message_id;
+    public String forward_signature;
     public int forward_date;
     public Message reply_to_message;
     public int edit_date;
+    public String author_signature;
     public String text;
     public MessageEntity[] entities;
+    public MessageEntity[] caption_entities;
     public Audio audio;
     public Document document;
     public Game game;

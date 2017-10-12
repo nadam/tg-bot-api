@@ -14,6 +14,9 @@ public class Chat {
     public ChatPhoto photo;
     public String description;
     public String invite_link;
+    public Message pinned_message;
+    public String sticker_set_name;
+    public boolean can_set_sticker_set;
 
     public enum Type {
         PRIVATE, GROUP, SUPERGROUP, CHANNEL
