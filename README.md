@@ -1,7 +1,7 @@
 TgBotApi
 ========
 
-This Java library implements all the methods and types in [Telegram's Bot API](https://core.telegram.org/bots) including the new features in 3.4. [Telegram](https://telegram.org/) is an instant messenger for various platforms.
+This Java library implements all the methods and types in [Telegram's Bot API](https://core.telegram.org/bots) including the new features in 3.5. [Telegram](https://telegram.org/) is an instant messenger for various platforms.
 
 If you find a bug or know some way to improve the library please report it to me as [an issue](https://github.com/nadam/tg-bot-api/issues) or [in private](https://telegram.me/nadam). Just don't ask me to add boiler plate stuff like getters and setters. There are lots of other Java libraries if you prefer that.
 
@@ -24,13 +24,13 @@ Features
 Including in your project
 -------------------------
 #### Dependencies
-The project depends on [GSON](https://github.com/google/gson 2.5). I have currently only used it together with [Google App Engine](https://cloud.google.com/appengine/) (which includes GSON), but it should be possible to use it with any platform.
+The project depends on [GSON](https://github.com/google/gson 2.8.2). I have currently only used it together with [Google App Engine](https://cloud.google.com/appengine/) (which includes GSON), but it should be possible to use it with any platform.
 
 #### Binary
 No binaries published yet. Will be published when the project is more stable.
 
 #### Building from source code
-A pom.xml for Maven is included in the project. For other options just make sure you include GSON 2.5 or later.
+A pom.xml for Maven is included in the project. For other options just make sure you include GSON 2.8.2 or later.
 
 Using the library
 -----------------

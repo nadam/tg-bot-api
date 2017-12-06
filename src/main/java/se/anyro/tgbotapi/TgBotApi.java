@@ -22,6 +22,7 @@ import se.anyro.tgbotapi.types.Update;
 import se.anyro.tgbotapi.types.User;
 import se.anyro.tgbotapi.types.WebhookInfo;
 import se.anyro.tgbotapi.types.file.File;
+import se.anyro.tgbotapi.types.file.InputMedia;
 import se.anyro.tgbotapi.types.file.UserProfilePhotos;
 import se.anyro.tgbotapi.types.games.GameHighScore;
 import se.anyro.tgbotapi.types.inline.CallbackQuery;
@@ -57,6 +58,7 @@ public class TgBotApi {
     private final String SEND_VIDEO;
     private final String SEND_VOICE;
     private final String SEND_VIDEO_NOTE;
+    private final String SEND_MEDIA_GROUP;
     private final String SEND_LOCATION;
     private final String EDIT_MESSAGE_LIVE_LOCATION;
     private final String STOP_MESSAGE_LIVE_LOCATION;
@@ -153,6 +155,7 @@ public class TgBotApi {
         SEND_VIDEO = BASE_URL + "/sendVideo";
         SEND_VOICE = BASE_URL + "/sendVoice";
         SEND_VIDEO_NOTE = BASE_URL + "/sendVideoNote";
+        SEND_MEDIA_GROUP = BASE_URL + "/sendMediaGroup";
         SEND_LOCATION = BASE_URL + "/sendLocation?";
         EDIT_MESSAGE_LIVE_LOCATION = BASE_URL + "/editMessageLiveLocation?";
         STOP_MESSAGE_LIVE_LOCATION = BASE_URL + "/stopMessageLiveLocation?";
@@ -897,7 +900,7 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvideonote">Official documentation of sendVideoNote</a>
      */
-    public int sendVideoNote(long chatId, InputStream videoNote, int replyTo, ReplyMarkup replyMarkup)
+    public int sendVideoNote(long chatId, String videoNote, int replyTo, ReplyMarkup replyMarkup)
             throws IOException {
         return sendVideoNote(String.valueOf(chatId), videoNote, replyTo, replyMarkup);
     }
@@ -905,7 +908,7 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvideonote">Official documentation of sendVideoNote</a>
      */
-    public int sendVideoNote(String channel, InputStream videoNote, int replyTo, ReplyMarkup replyMarkup)
+    public int sendVideoNote(String channel, String videoNote, int replyTo, ReplyMarkup replyMarkup)
             throws IOException {
         StringBuilder command = new StringBuilder(SEND_VIDEO_NOTE).append('?');
         command.append("chat_id=").append(channel);
@@ -954,9 +957,38 @@ public class TgBotApi {
             sender.addFormField("reply_markup", GSON.toJson(replyMarkup));
         }
         return sender.finish();
-
     }
 
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#sendmediagroup">Official documentation of sendMediaGroup</a>
+     */
+    public int sendMediaGroup(long chatId, InputMedia[] media, int replyTo) throws IOException {
+        return sendMediaGroup(String.valueOf(chatId), media, replyTo);
+    }
+
+    /**
+     * Note! Media must include 2-10 items.
+     * 
+     * @see <a href="https://core.telegram.org/bots/api#sendmediagroup">Official documentation of sendMediaGroup</a>
+     */
+    public int sendMediaGroup(String channel, InputMedia[] media, int replyTo) throws IOException {
+        FileSender sender = new FileSender(SEND_MEDIA_GROUP);
+        sender.addFormField("chat_id", channel);
+        sender.addFormField("media", GSON.toJson(media));
+        for (InputMedia im : media) {
+            if (im.mediaStream != null) {
+                sender.addFilePart(im.filename, im.mediaStream, im.filename);
+            }
+        }
+        if (disableNotification) {
+            sender.addFormField("disable_notification", "true");
+        }
+        if (replyTo > 0) {
+            sender.addFormField("reply_to_message_id", replyTo);
+        }
+        return sender.finish();
+    }
+    
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendlocation">Official documentation of sendLocation</a>
      */
@@ -2000,20 +2032,21 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#sendinvoice">Official documentation of sendInvoice</a>
      */
     public int sendInvoice(long chatId, String title, String description, String payload, String providerToken,
-            String startParameter, String currency, LabeledPrice[] prices, String photoUrl, boolean needName,
-            boolean needPhoneNumber, boolean needEmail, boolean needShippingAddress, boolean isFlexible)
-            throws IOException {
+            String startParameter, String currency, LabeledPrice[] prices, String providerData, String photoUrl,
+            boolean needName, boolean needPhoneNumber, boolean needEmail, boolean needShippingAddress,
+            boolean isFlexible) throws IOException {
         return sendInvoice(chatId, title, description, payload, providerToken, startParameter, currency, prices,
-                photoUrl, 0, 0, 0, needName, needPhoneNumber, needEmail, needShippingAddress, isFlexible, 0, null);
+                providerData, photoUrl, 0, 0, 0, needName, needPhoneNumber, needEmail, needShippingAddress, isFlexible,
+                0, null);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendinvoice">Official documentation of sendInvoice</a>
      */
     public int sendInvoice(long chatId, String title, String description, String payload, String providerToken,
-            String startParameter, String currency, LabeledPrice[] prices, String photoUrl, int photoSize,
-            int photoWidth, int photoHeight, boolean needName, boolean needPhoneNumber, boolean needEmail,
-            boolean needShippingAddress, boolean isFlexible, int replyTo, ReplyMarkup replyMarkup)
+            String startParameter, String currency, LabeledPrice[] prices, String providerData, String photoUrl,
+            int photoSize, int photoWidth, int photoHeight, boolean needName, boolean needPhoneNumber,
+            boolean needEmail, boolean needShippingAddress, boolean isFlexible, int replyTo, ReplyMarkup replyMarkup)
             throws IOException {
         StringBuilder command = new StringBuilder(SEND_INVOICE);
         command.append("chat_id=").append(chatId);
@@ -2024,6 +2057,9 @@ public class TgBotApi {
         command.append("&start_parameter=").append(startParameter);
         command.append("&currency=").append(currency);
         command.append("&prices=").append(urlEncode(GSON.toJson(prices)));
+        if (providerData != null) {
+            command.append("&provider_data=").append(providerData);
+        }
         if (photoUrl != null) {
             command.append("&photo_url=").append(photoUrl);
         }
