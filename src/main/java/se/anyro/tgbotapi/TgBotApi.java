@@ -614,7 +614,7 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendaudio">Official documentation of sendAudio</a>
      */
-    public int sendAudio(long chatId, String audio, String caption, int replyTo, ReplyMarkup replyMarkup)
+    public Message sendAudio(long chatId, String audio, String caption, int replyTo, ReplyMarkup replyMarkup)
             throws IOException {
         return sendAudio(String.valueOf(chatId), audio, caption, replyTo, replyMarkup);
     }
@@ -622,7 +622,7 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendaudio">Official documentation of sendAudio</a>
      */
-    public int sendAudio(String channel, String audio, String caption, int replyTo, ReplyMarkup replyMarkup)
+    public Message sendAudio(String channel, String audio, String caption, int replyTo, ReplyMarkup replyMarkup)
             throws IOException {
         StringBuilder command = new StringBuilder(SEND_AUDIO).append('?');
         command.append("chat_id=").append(channel);
@@ -639,7 +639,7 @@ public class TgBotApi {
         if (replyMarkup != null) {
             command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
         }
-        return callMethod(command.toString());
+        return callMethod(command.toString(), Message.class);
     }
 
     /**
@@ -748,14 +748,14 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvideo">Official documentation of sendVideo</a>
      */
-    public int sendVideo(long chatId, String video, String caption) throws IOException {
+    public Message sendVideo(long chatId, String video, String caption) throws IOException {
         return sendVideo(String.valueOf(chatId), video, caption, 0, null);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvideo">Official documentation of sendVideo</a>
      */
-    public int sendVideo(long chatId, String video, String caption, int replyTo, ReplyMarkup replyMarkup)
+    public Message sendVideo(long chatId, String video, String caption, int replyTo, ReplyMarkup replyMarkup)
             throws IOException {
         return sendVideo(String.valueOf(chatId), video, caption, replyTo, replyMarkup);
     }
@@ -763,7 +763,7 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvideo">Official documentation of sendVideo</a>
      */
-    public int sendVideo(String channel, String video, String caption, int replyTo, ReplyMarkup replyMarkup)
+    public Message sendVideo(String channel, String video, String caption, int replyTo, ReplyMarkup replyMarkup)
             throws IOException {
         StringBuilder command = new StringBuilder(SEND_VIDEO).append('?');
         command.append("chat_id=").append(channel);
@@ -780,7 +780,7 @@ public class TgBotApi {
         if (replyMarkup != null) {
             command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
         }
-        return callMethod(command.toString());
+        return callMethod(command.toString(), Message.class);
     }
 
     /**
@@ -834,7 +834,7 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvoice">Official documentation of sendVoice</a>
      */
-    public int sendVoice(long chatId, String voice, String caption, int replyTo, ReplyMarkup replyMarkup)
+    public Message sendVoice(long chatId, String voice, String caption, int replyTo, ReplyMarkup replyMarkup)
             throws IOException {
         return sendVoice(String.valueOf(chatId), voice, caption, replyTo, replyMarkup);
     }
@@ -842,7 +842,7 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvoice">Official documentation of sendVoice</a>
      */
-    public int sendVoice(String channel, String voice, String caption, int replyTo, ReplyMarkup replyMarkup)
+    public Message sendVoice(String channel, String voice, String caption, int replyTo, ReplyMarkup replyMarkup)
             throws IOException {
         StringBuilder command = new StringBuilder(SEND_VOICE).append('?');
         command.append("chat_id=").append(channel);
@@ -859,7 +859,7 @@ public class TgBotApi {
         if (replyMarkup != null) {
             command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
         }
-        return callMethod(command.toString());
+        return callMethod(command.toString(), Message.class);
     }
 
     /**
