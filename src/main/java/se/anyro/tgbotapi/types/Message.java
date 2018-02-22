@@ -55,6 +55,7 @@ public class Message {
     public Message pinned_message;
     public Invoice invoice;
     public SuccessfulPayment successful_payment;
+    public String connected_website;
 
     private static final String VIDEO_MP4 = "video/mp4";
 

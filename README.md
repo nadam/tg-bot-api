@@ -1,7 +1,7 @@
 TgBotApi
 ========
 
-This Java library implements all the methods and types in [Telegram's Bot API](https://core.telegram.org/bots) including the new features in 3.5. [Telegram](https://telegram.org/) is an instant messenger for various platforms.
+This Java library implements all the methods and types in [Telegram's Bot API](https://core.telegram.org/bots) including the new features in 3.6. [Telegram](https://telegram.org/) is an instant messenger for various platforms.
 
 If you find a bug or know some way to improve the library please report it to me as [an issue](https://github.com/nadam/tg-bot-api/issues) or [in private](https://telegram.me/nadam). Just don't ask me to add boiler plate stuff like getters and setters. There are lots of other Java libraries if you prefer that.
 

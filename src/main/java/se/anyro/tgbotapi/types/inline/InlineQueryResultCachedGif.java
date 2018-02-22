@@ -12,6 +12,7 @@ public class InlineQueryResultCachedGif extends InlineQueryResult {
     public String gif_file_id;
     public String title;
     public String caption;
+    public String parse_mode;
     public InlineKeyboardMarkup reply_markup;
     public InputMessageContent input_message_content;
 

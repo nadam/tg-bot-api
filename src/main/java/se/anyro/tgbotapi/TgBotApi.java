@@ -552,21 +552,24 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendphoto">Official documentation of sendPhoto</a>
      */
-    public Message sendPhoto(long chatId, String photo, String caption, int replyTo, ReplyMarkup replyMarkup)
-            throws IOException {
-        return sendPhoto(String.valueOf(chatId), photo, caption, replyTo, replyMarkup);
+    public Message sendPhoto(long chatId, String photo, String caption, ParseMode parseMode, int replyTo,
+            ReplyMarkup replyMarkup) throws IOException {
+        return sendPhoto(String.valueOf(chatId), photo, caption, parseMode, replyTo, replyMarkup);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendphoto">Official documentation of sendPhoto</a>
      */
-    public Message sendPhoto(String channel, String photo, String caption, int replyTo, ReplyMarkup replyMarkup)
-            throws IOException {
+    public Message sendPhoto(String channel, String photo, String caption, ParseMode parseMode, int replyTo,
+            ReplyMarkup replyMarkup) throws IOException {
         StringBuilder command = new StringBuilder(SEND_PHOTO).append('?');
         command.append("chat_id=").append(channel);
         command.append("&photo=").append(photo);
         if (caption != null) {
             command.append("&caption=").append(urlEncode(caption));
+        }
+        if (parseMode != null) {
+            command.append("&parse_mode=").append(parseMode.VALUE);
         }
         if (disableNotification) {
             command.append("&disable_notification=true");
@@ -583,21 +586,24 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendphoto">Official documentation of sendPhoto</a>
      */
-    public Message sendPhoto(long chatId, InputStream photo, String filename, String caption, int replyTo,
-            ReplyMarkup replyMarkup) throws IOException {
-        return sendPhoto(String.valueOf(chatId), photo, filename, caption, replyTo, replyMarkup);
+    public Message sendPhoto(long chatId, InputStream photo, String filename, String caption, ParseMode parseMode,
+            int replyTo, ReplyMarkup replyMarkup) throws IOException {
+        return sendPhoto(String.valueOf(chatId), photo, filename, caption, parseMode, replyTo, replyMarkup);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendphoto">Official documentation of sendPhoto</a>
      */
-    public Message sendPhoto(String channel, InputStream photo, String filename, String caption, int replyTo,
-            ReplyMarkup replyMarkup) throws IOException {
+    public Message sendPhoto(String channel, InputStream photo, String filename, String caption, ParseMode parseMode,
+            int replyTo, ReplyMarkup replyMarkup) throws IOException {
         FileSender sender = new FileSender(SEND_PHOTO);
         sender.addFormField("chat_id", channel);
         sender.addFilePart("photo", photo, filename);
         if (caption != null) {
             sender.addFormField("caption", caption);
+        }
+        if (parseMode != null) {
+            sender.addFormField("parse_mode", parseMode.VALUE);
         }
         if (disableNotification) {
             sender.addFormField("disable_notification", "true");
@@ -614,21 +620,24 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendaudio">Official documentation of sendAudio</a>
      */
-    public Message sendAudio(long chatId, String audio, String caption, int replyTo, ReplyMarkup replyMarkup)
-            throws IOException {
-        return sendAudio(String.valueOf(chatId), audio, caption, replyTo, replyMarkup);
+    public Message sendAudio(long chatId, String audio, String caption, ParseMode parseMode, int replyTo,
+            ReplyMarkup replyMarkup) throws IOException {
+        return sendAudio(String.valueOf(chatId), audio, caption, parseMode, replyTo, replyMarkup);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendaudio">Official documentation of sendAudio</a>
      */
-    public Message sendAudio(String channel, String audio, String caption, int replyTo, ReplyMarkup replyMarkup)
-            throws IOException {
+    public Message sendAudio(String channel, String audio, String caption, ParseMode parseMode, int replyTo,
+            ReplyMarkup replyMarkup) throws IOException {
         StringBuilder command = new StringBuilder(SEND_AUDIO).append('?');
         command.append("chat_id=").append(channel);
         command.append("&audio=").append(audio);
         if (caption != null) {
             command.append("&caption=").append(urlEncode(caption));
+        }
+        if (parseMode != null) {
+            command.append("&parse_mode=").append(parseMode.VALUE);
         }
         if (disableNotification) {
             command.append("&disable_notification=true");
@@ -645,22 +654,25 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendaudio">Official documentation of sendAudio</a>
      */
-    public int sendAudio(long chatId, InputStream audio, String caption, String filename, int duration,
-            String performer, String title, int replyTo, ReplyMarkup replyMarkup) throws IOException {
-        return sendAudio(String.valueOf(chatId), audio, caption, filename, duration, performer, title, replyTo,
-                replyMarkup);
+    public int sendAudio(long chatId, InputStream audio, String caption, ParseMode parseMode, String filename,
+            int duration, String performer, String title, int replyTo, ReplyMarkup replyMarkup) throws IOException {
+        return sendAudio(String.valueOf(chatId), audio, caption, parseMode, filename, duration, performer, title,
+                replyTo, replyMarkup);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendaudio">Official documentation of sendAudio</a>
      */
-    public int sendAudio(String channel, InputStream audio, String caption, String filename, int duration,
-            String performer, String title, int replyTo, ReplyMarkup replyMarkup) throws IOException {
+    public int sendAudio(String channel, InputStream audio, String caption, ParseMode parseMode, String filename,
+            int duration, String performer, String title, int replyTo, ReplyMarkup replyMarkup) throws IOException {
         FileSender sender = new FileSender(SEND_AUDIO);
         sender.addFormField("chat_id", channel);
         sender.addFilePart("audio", audio, filename);
         if (caption != null) {
             sender.addFormField("caption", caption);
+        }
+        if (parseMode != null) {
+            sender.addFormField("parse_mode", parseMode.VALUE);
         }
         if (duration != 0) {
             sender.addFormField("duration", duration);
@@ -686,21 +698,24 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#senddocument">Official documentation of sendDocument</a>
      */
-    public Message sendDocument(long chatId, String document, String caption, int replyTo, ReplyMarkup replyMarkup)
-            throws IOException {
-        return sendDocument(String.valueOf(chatId), document, caption, replyTo, replyMarkup);
+    public Message sendDocument(long chatId, String document, String caption, ParseMode parseMode, int replyTo,
+            ReplyMarkup replyMarkup) throws IOException {
+        return sendDocument(String.valueOf(chatId), document, caption, parseMode, replyTo, replyMarkup);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#senddocument">Official documentation of sendDocument</a>
      */
-    public Message sendDocument(String channel, String document, String caption, int replyTo, ReplyMarkup replyMarkup)
-            throws IOException {
+    public Message sendDocument(String channel, String document, String caption, ParseMode parseMode, int replyTo,
+            ReplyMarkup replyMarkup) throws IOException {
         StringBuilder command = new StringBuilder(SEND_DOCUMENT).append('?');
         command.append("chat_id=").append(channel);
         command.append("&document=").append(document);
         if (caption != null) {
             command.append("&caption=").append(urlEncode(caption));
+        }
+        if (parseMode != null) {
+            command.append("&parse_mode=").append(parseMode.VALUE);
         }
         if (disableNotification) {
             command.append("&disable_notification=true");
@@ -717,21 +732,24 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#senddocument">Official documentation of sendDocument</a>
      */
-    public int sendDocument(long chatId, InputStream document, String filename, String caption, int replyTo,
-            ReplyMarkup replyMarkup) throws IOException {
-        return sendDocument(String.valueOf(chatId), document, filename, caption, replyTo, replyMarkup);
+    public int sendDocument(long chatId, InputStream document, String filename, String caption, ParseMode parseMode,
+            int replyTo, ReplyMarkup replyMarkup) throws IOException {
+        return sendDocument(String.valueOf(chatId), document, filename, caption, parseMode, replyTo, replyMarkup);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#senddocument">Official documentation of sendDocument</a>
      */
-    public int sendDocument(String channel, InputStream document, String filename, String caption, int replyTo,
-            ReplyMarkup replyMarkup) throws IOException {
+    public int sendDocument(String channel, InputStream document, String filename, String caption, ParseMode parseMode,
+            int replyTo, ReplyMarkup replyMarkup) throws IOException {
         FileSender sender = new FileSender(SEND_DOCUMENT);
         sender.addFormField("chat_id", channel);
         sender.addFilePart("document", document, filename);
         if (caption != null) {
             sender.addFormField("caption", caption);
+        }
+        if (parseMode != null) {
+            sender.addFormField("parse_mode", parseMode.VALUE);
         }
         if (disableNotification) {
             sender.addFormField("disable_notification", "true");
@@ -748,28 +766,31 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvideo">Official documentation of sendVideo</a>
      */
-    public Message sendVideo(long chatId, String video, String caption) throws IOException {
-        return sendVideo(String.valueOf(chatId), video, caption, 0, null);
+    public Message sendVideo(long chatId, String video, String caption, ParseMode parseMode) throws IOException {
+        return sendVideo(String.valueOf(chatId), video, caption, parseMode, 0, null);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvideo">Official documentation of sendVideo</a>
      */
-    public Message sendVideo(long chatId, String video, String caption, int replyTo, ReplyMarkup replyMarkup)
-            throws IOException {
-        return sendVideo(String.valueOf(chatId), video, caption, replyTo, replyMarkup);
+    public Message sendVideo(long chatId, String video, String caption, ParseMode parseMode, int replyTo,
+            ReplyMarkup replyMarkup) throws IOException {
+        return sendVideo(String.valueOf(chatId), video, caption, parseMode, replyTo, replyMarkup);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvideo">Official documentation of sendVideo</a>
      */
-    public Message sendVideo(String channel, String video, String caption, int replyTo, ReplyMarkup replyMarkup)
-            throws IOException {
+    public Message sendVideo(String channel, String video, String caption, ParseMode parseMode, int replyTo,
+            ReplyMarkup replyMarkup) throws IOException {
         StringBuilder command = new StringBuilder(SEND_VIDEO).append('?');
         command.append("chat_id=").append(channel);
         command.append("&video=").append(video);
         if (caption != null) {
             command.append("&caption=").append(urlEncode(caption));
+        }
+        if (parseMode != null) {
+            command.append("&parse_mode=").append(parseMode.VALUE);
         }
         if (disableNotification) {
             command.append("&disable_notification=true");
@@ -786,24 +807,29 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvideo">Official documentation of sendVideo</a>
      */
-    public int sendVideo(long chatId, InputStream video, String filename, String caption) throws IOException {
-        return sendVideo(String.valueOf(chatId), video, filename, 0, 0, 0, caption, 0, null);
+    public int sendVideo(long chatId, InputStream video, String filename, String caption, ParseMode parseMode,
+            boolean supportsStreaming)
+            throws IOException {
+        return sendVideo(String.valueOf(chatId), video, filename, 0, 0, 0, caption, parseMode, supportsStreaming, 0,
+                null);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvideo">Official documentation of sendVideo</a>
      */
     public int sendVideo(long chatId, InputStream video, String filename, int duration, int width, int height,
-            String caption, int replyTo, ReplyMarkup replyMarkup) throws IOException {
-        return sendVideo(String.valueOf(chatId), video, filename, duration, width, height, caption, replyTo,
-                replyMarkup);
+            String caption, ParseMode parseMode, boolean supportsStreaming, int replyTo, ReplyMarkup replyMarkup)
+            throws IOException {
+        return sendVideo(String.valueOf(chatId), video, filename, duration, width, height, caption, parseMode,
+                supportsStreaming, replyTo, replyMarkup);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvideo">Official documentation of sendVideo</a>
      */
     public int sendVideo(String channel, InputStream video, String filename, int duration, int width, int height,
-            String caption, int replyTo, ReplyMarkup replyMarkup) throws IOException {
+            String caption, ParseMode parseMode, boolean supportsStreaming, int replyTo, ReplyMarkup replyMarkup)
+            throws IOException {
         FileSender sender = new FileSender(SEND_VIDEO);
         sender.addFormField("chat_id", channel);
         sender.addFilePart("video", video, filename);
@@ -819,6 +845,12 @@ public class TgBotApi {
         if (caption != null) {
             sender.addFormField("caption", caption);
         }
+        if (parseMode != null) {
+            sender.addFormField("parse_mode", parseMode.VALUE);
+        }
+        if (supportsStreaming) {
+            sender.addFormField("supports_streaming", "true");
+        }
         if (disableNotification) {
             sender.addFormField("disable_notification", "true");
         }
@@ -834,21 +866,24 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvoice">Official documentation of sendVoice</a>
      */
-    public Message sendVoice(long chatId, String voice, String caption, int replyTo, ReplyMarkup replyMarkup)
-            throws IOException {
-        return sendVoice(String.valueOf(chatId), voice, caption, replyTo, replyMarkup);
+    public Message sendVoice(long chatId, String voice, String caption, ParseMode parseMode, int replyTo,
+            ReplyMarkup replyMarkup) throws IOException {
+        return sendVoice(String.valueOf(chatId), voice, caption, parseMode, replyTo, replyMarkup);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvoice">Official documentation of sendVoice</a>
      */
-    public Message sendVoice(String channel, String voice, String caption, int replyTo, ReplyMarkup replyMarkup)
-            throws IOException {
+    public Message sendVoice(String channel, String voice, String caption, ParseMode parseMode, int replyTo,
+            ReplyMarkup replyMarkup) throws IOException {
         StringBuilder command = new StringBuilder(SEND_VOICE).append('?');
         command.append("chat_id=").append(channel);
         command.append("&voice=").append(voice);
         if (caption != null) {
             command.append("&caption=").append(urlEncode(caption));
+        }
+        if (parseMode != null) {
+            command.append("&parse_mode=").append(parseMode.VALUE);
         }
         if (disableNotification) {
             command.append("&disable_notification=true");
@@ -865,21 +900,24 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvoice">Official documentation of sendVoice</a>
      */
-    public int sendVoice(long chatId, InputStream voice, String caption, String filename, int duration, int replyTo,
-            ReplyMarkup replyMarkup) throws IOException {
-        return sendVoice(String.valueOf(chatId), voice, caption, filename, duration, replyTo, replyMarkup);
+    public int sendVoice(long chatId, InputStream voice, String caption, ParseMode parseMode, String filename,
+            int duration, int replyTo, ReplyMarkup replyMarkup) throws IOException {
+        return sendVoice(String.valueOf(chatId), voice, caption, parseMode, filename, duration, replyTo, replyMarkup);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvoice">Official documentation of sendVoice</a>
      */
-    public int sendVoice(String channel, InputStream voice, String caption, String filename, int duration, int replyTo,
-            ReplyMarkup replyMarkup) throws IOException {
+    public int sendVoice(String channel, InputStream voice, String caption, ParseMode parseMode, String filename,
+            int duration, int replyTo, ReplyMarkup replyMarkup) throws IOException {
         FileSender sender = new FileSender(SEND_VOICE);
         sender.addFormField("chat_id", channel);
         sender.addFilePart("voice", voice, filename);
         if (caption != null) {
             sender.addFormField("caption", caption);
+        }
+        if (parseMode != null) {
+            sender.addFormField("parse_mode", parseMode.VALUE);
         }
         if (duration != 0) {
             sender.addFormField("duration", duration);
@@ -1725,21 +1763,24 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#editmessagecaption">Official documentation of
      *      editMessageCaption</a>
      */
-    public int editMessageCaption(long chatId, int messageId, String caption, InlineKeyboardMarkup replyMarkup)
-            throws IOException {
-        return editMessageCaption(String.valueOf(chatId), messageId, caption, replyMarkup);
+    public int editMessageCaption(long chatId, int messageId, String caption, ParseMode parseMode,
+            InlineKeyboardMarkup replyMarkup) throws IOException {
+        return editMessageCaption(String.valueOf(chatId), messageId, caption, parseMode, replyMarkup);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#editmessagecaption">Official documentation of
      *      editMessageCaption</a>
      */
-    public int editMessageCaption(String channel, int messageId, String caption, InlineKeyboardMarkup replyMarkup)
-            throws IOException {
+    public int editMessageCaption(String channel, int messageId, String caption, ParseMode parseMode,
+            InlineKeyboardMarkup replyMarkup) throws IOException {
         StringBuilder command = new StringBuilder(EDIT_MESSAGE_CAPTION);
         command.append("chat_id=").append(channel);
         command.append("&message_id=").append(messageId);
         command.append("&caption=").append(urlEncode(caption));
+        if (parseMode != null) {
+            command.append("&parse_mode=").append(parseMode.VALUE);
+        }
         if (replyMarkup != null) {
             command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
         }
@@ -1750,11 +1791,14 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#editmessagecaption">Official documentation of
      *      editMessageCaption</a>
      */
-    public int editMessageCaption(String inlineMessageId, String caption, InlineKeyboardMarkup replyMarkup)
-            throws IOException {
+    public int editMessageCaption(String inlineMessageId, String caption, ParseMode parseMode,
+            InlineKeyboardMarkup replyMarkup) throws IOException {
         StringBuilder command = new StringBuilder(EDIT_MESSAGE_CAPTION);
         command.append("inline_message_id=").append(inlineMessageId);
         command.append("&caption=").append(urlEncode(caption));
+        if (parseMode != null) {
+            command.append("&parse_mode=").append(parseMode.VALUE);
+        }
         if (replyMarkup != null) {
             command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
         }

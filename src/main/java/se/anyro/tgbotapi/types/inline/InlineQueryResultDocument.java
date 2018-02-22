@@ -11,6 +11,7 @@ public class InlineQueryResultDocument extends InlineQueryResult {
     public String id;
     public String title;
     public String caption;
+    public String parse_mode;
     public String document_url;
     public String mime_type;
     public String description;

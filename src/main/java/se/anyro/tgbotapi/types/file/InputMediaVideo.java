@@ -10,6 +10,7 @@ public class InputMediaVideo extends InputMedia {
     public int width;
     public int height;
     public int duration;
+    public Boolean supports_streaming;
 
     public InputMediaVideo() {
         super("video", null);

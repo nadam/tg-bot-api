@@ -13,6 +13,7 @@ public class InlineQueryResultCachedPhoto extends InlineQueryResult {
     public String title;
     public String description;
     public String caption;
+    public String parse_mode;
     public InlineKeyboardMarkup reply_markup;
     public InputMessageContent input_message_content;
 

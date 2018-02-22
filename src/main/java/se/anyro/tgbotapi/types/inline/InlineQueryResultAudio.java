@@ -12,6 +12,7 @@ public class InlineQueryResultAudio extends InlineQueryResult {
     public String audio_url;
     public String title;
     public String caption;
+    public String parse_mode;
     public String performer;
     public int audio_duration;
     public InlineKeyboardMarkup reply_markup;
