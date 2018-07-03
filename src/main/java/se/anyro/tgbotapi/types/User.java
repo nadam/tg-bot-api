@@ -10,4 +10,18 @@ public class User {
     public String last_name;
     public String username;
     public String language_code;
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(id).append(' ');
+        builder.append(first_name);
+        if (last_name != null) {
+            builder.append(' ').append(last_name);
+        }
+        if (username != null) {
+            builder.append(" @").append(username);
+        }
+        return super.toString();
+    }
 }

@@ -41,4 +41,21 @@ public class Chat {
         Type type = getType();
         return type == Type.GROUP || type == Type.SUPERGROUP;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(type).append(' ');
+        builder.append(title);
+        if (first_name != null) {
+            builder.append(' ').append(first_name);
+        }
+        if (last_name != null) {
+            builder.append(' ').append(last_name);
+        }
+        if (username != null) {
+            builder.append(" @").append(username);
+        }
+        return super.toString();
+    }
 }
