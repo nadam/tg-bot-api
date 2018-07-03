@@ -2393,7 +2393,7 @@ public class TgBotApi {
     /**
      * Send message and stack trace to the bot owner.
      */
-    public void debug(String message, Exception e) {
+    public void debug(String message, Throwable e) {
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));
         String stackTrace = sw.toString();
@@ -2416,7 +2416,7 @@ public class TgBotApi {
     /**
      * Send stack trace to the bot owner.
      */
-    public void debug(Exception e) {
+    public void debug(Throwable e) {
         debug(null, e);
     }
 
