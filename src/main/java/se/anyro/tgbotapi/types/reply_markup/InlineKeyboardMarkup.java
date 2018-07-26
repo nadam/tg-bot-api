@@ -108,6 +108,11 @@ public class InlineKeyboardMarkup extends ReplyMarkup {
             return addButton(InlineKeyboardButton.callbackData(text, data));
         }
 
+        // Short cut since callback buttons are so common
+        public Builder addButton(String text, String data) {
+            return addCallbackDataButton(text, data);
+        }
+
         public Builder addSwitchInlineQueryButton(String text, String query) {
             return addButton(InlineKeyboardButton.switchInlineQuery(text, query));
         }
