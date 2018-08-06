@@ -12,6 +12,7 @@ public class InlineQueryResultContact extends InlineQueryResult {
     public String phone_number;
     public String first_name;
     public String last_name;
+    public String vcard;
     public InlineKeyboardMarkup reply_markup;
     public InputMessageContent input_message_content;
     public String thumb_url;

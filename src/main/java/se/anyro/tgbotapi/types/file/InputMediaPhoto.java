@@ -7,15 +7,16 @@ import java.io.InputStream;
  */
 public class InputMediaPhoto extends InputMedia {
 
+    public String type = "photo";
+
     public InputMediaPhoto() {
-        super("photo", null);
     }
 
     public InputMediaPhoto(String media) {
-        super("photo", media);
+        super(media);
     }
 
     public InputMediaPhoto(String type, InputStream mediaStream, String filename) {
-        super("photo", mediaStream, filename);
+        super(mediaStream, filename);
     }
 }

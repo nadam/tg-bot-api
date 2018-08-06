@@ -11,6 +11,7 @@ public class InputVenueMessageContent extends InputMessageContent {
     public String title;
     public String address;
     public String foursquare_id;
+    public String foursquare_type;
 
     public InputVenueMessageContent(float latitude, float longitude, String title, String address) {
         this.latitude = latitude;

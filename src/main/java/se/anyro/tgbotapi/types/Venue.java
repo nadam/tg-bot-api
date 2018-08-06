@@ -8,4 +8,5 @@ public class Venue {
     String title;
     String address;
     String foursquare_id;
+    String foursquare_type;
 }

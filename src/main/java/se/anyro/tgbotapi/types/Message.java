@@ -6,7 +6,9 @@ import se.anyro.tgbotapi.types.file.PhotoSize;
 import se.anyro.tgbotapi.types.file.Video;
 import se.anyro.tgbotapi.types.file.VideoNote;
 import se.anyro.tgbotapi.types.file.Voice;
+import se.anyro.tgbotapi.types.games.Animation;
 import se.anyro.tgbotapi.types.games.Game;
+import se.anyro.tgbotapi.types.passport.PassportData;
 import se.anyro.tgbotapi.types.payments.Invoice;
 import se.anyro.tgbotapi.types.payments.SuccessfulPayment;
 import se.anyro.tgbotapi.types.stickers.Sticker;
@@ -32,6 +34,7 @@ public class Message {
     public MessageEntity[] caption_entities;
     public Audio audio;
     public Document document;
+    public Animation animation;
     public Game game;
     public PhotoSize[] photo;
     public Sticker sticker;
@@ -56,6 +59,7 @@ public class Message {
     public Invoice invoice;
     public SuccessfulPayment successful_payment;
     public String connected_website;
+    public PassportData passport_data;
 
     private static final String VIDEO_MP4 = "video/mp4";
 

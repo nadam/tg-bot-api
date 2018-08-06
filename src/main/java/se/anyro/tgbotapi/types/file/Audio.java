@@ -10,4 +10,5 @@ public class Audio {
     public String title;
     public String mime_type;
     public int file_size;
+    public PhotoSize thumb;
 }

@@ -8,4 +8,5 @@ public class Contact {
     public String first_name;
     public String last_name;
     public int user_id;
+    public String vcard;
 }

@@ -11,32 +11,40 @@ import se.anyro.tgbotapi.types.ParseMode;
  */
 public abstract class InputMedia {
 
-    public String type;
     public String media;
+    public String thumb;
     public String caption;
     public String parse_mode;
 
     // Not part of JSON serialization
-    public transient InputStream mediaStream;
     public transient String filename;
+    public transient InputStream mediaStream;
+    public transient InputStream thumbStream;
     
-    protected InputMedia(String type) {
-        this.type = type;
+    public InputMedia() {
     }
 
-    protected InputMedia(String type, String media) {
-        this(type);
+    protected InputMedia(String media) {
         this.media = media;
     }
 
-    protected InputMedia(String type, InputStream mediaStream, String filename) {
-        this(type);
+    protected InputMedia(InputStream mediaStream, String filename) {
         this.media = "attach://" + filename;
-        this.mediaStream = mediaStream;
         this.filename = filename;
+        this.mediaStream = mediaStream;
+    }
+
+    public InputMedia(InputStream mediaStream, String filename, InputStream thumbStream) {
+        this(mediaStream, filename);
+        this.thumb = "attach://" + getThumbFilename();
+        this.thumbStream = thumbStream;
     }
 
     public void setParseMode(ParseMode parseMode) {
         this.parse_mode = parseMode.VALUE;
+    }
+
+    public String getThumbFilename() {
+        return "thumb_" + filename;
     }
 }

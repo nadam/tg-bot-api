@@ -7,21 +7,24 @@ import java.io.InputStream;
  */
 public class InputMediaVideo extends InputMedia {
 
-    public int width;
-    public int height;
-    public int duration;
+    public String type = "video";
+    public Integer width;
+    public Integer height;
+    public Integer duration;
     public Boolean supports_streaming;
 
     public InputMediaVideo() {
-        super("video", null);
     }
 
     public InputMediaVideo(String media) {
-        super("video", media);
+        super(media);
     }
 
     public InputMediaVideo(String type, InputStream mediaStream, String filename) {
-        super("video", mediaStream, filename);
+        super(mediaStream, filename);
     }
 
+    public InputMediaVideo(String type, InputStream mediaStream, String filename, InputStream thumbStream) {
+        super(mediaStream, filename, thumbStream);
+    }
 }

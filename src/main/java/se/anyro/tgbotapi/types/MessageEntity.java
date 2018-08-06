@@ -11,7 +11,7 @@ public class MessageEntity {
     public User user;
 
     public enum Type {
-        MENTION, HASHTAG, BOT_COMMAND, URL, EMAIL, BOLD, ITALIC, CODE, PRE, TEXT_LINK, TEXT_MENTION
+        MENTION, HASHTAG, CASHTAG, BOT_COMMAND, URL, EMAIL, PHONE_NUMBER, BOLD, ITALIC, CODE, PRE, TEXT_LINK, TEXT_MENTION
     }
 
     /**
