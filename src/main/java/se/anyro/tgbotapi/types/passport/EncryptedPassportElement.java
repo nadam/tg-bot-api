@@ -13,6 +13,8 @@ public class EncryptedPassportElement {
     public PassportFile front_side;
     public PassportFile reverse_side;
     public PassportFile selfie;
+    public PassportFile[] translation;
+    public String hash;
 
     public enum Type {
         PERSONAL_DETAILS, PASSPORT, DRIVER_LICENSE, IDENTITY_CARD, INTERNAL_PASSPORT, ADDRESS, UTILITY_BILL, 

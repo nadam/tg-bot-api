@@ -18,7 +18,7 @@ public class PassportElementError {
         this.message = message;
     }
 
-    // Base class for single file errors (FrontSide, ReverseSide, Selfie and File)
+    // Base class for single file errors (FrontSide, ReverseSide, Selfie, Unspecified, etc.)
     public static class File extends PassportElementError {
         public String file_hash;
 
@@ -29,6 +29,20 @@ public class PassportElementError {
         protected File(String source, String type, String fileHash, String message) {
             super(source, type, message);
             this.file_hash = fileHash;
+        }
+    }
+
+    // Base class for multi-file errors (TranslationFiles and Files)
+    public static class Files extends PassportElementError {
+        public String[] file_hashes;
+
+        protected Files(String source) {
+            super(source);
+        }
+
+        protected Files(String source, String type, String[] fileHashes, String message) {
+            super(source, type, message);
+            this.file_hashes = fileHashes;
         }
     }
 }
