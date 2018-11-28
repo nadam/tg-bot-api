@@ -11,6 +11,10 @@ public class User {
     public String username;
     public String language_code;
 
+    public String getUrl() {
+        return "tg://user?id=" + id;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -22,6 +26,6 @@ public class User {
         if (username != null) {
             builder.append(" @").append(username);
         }
-        return super.toString();
+        return builder.toString();
     }
 }
