@@ -23,11 +23,24 @@ Features
 
 Including in your project
 -------------------------
+### Gradle
+```
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
+```
+```
+dependencies {
+    implementation 'se.anyro:tg-bot-api:2.0.0'
+}
+```
+
 #### Dependencies
 The project depends on [GSON](https://github.com/google/gson 2.8.2). I have currently only used it together with [Google App Engine](https://cloud.google.com/appengine/) (which includes GSON), but it should be possible to use it with any platform.
 
 #### Binary
-No binaries published yet. Will be published when the project is more stable.
+Latest binaries available in the [Releases section](https://github.com/nadam/tg-bot-api/releases).
 
 #### Building from source code
 A pom.xml for Maven is included in the project. For other options just make sure you include GSON 2.8.2 or later.
