@@ -32,7 +32,7 @@ repositories {
 ```
 ```
 dependencies {
-    implementation 'se.anyro:tg-bot-api:2.0.0'
+    implementation 'com.github.nadam:tg-bot-api:2.0.0'
 }
 ```
 
