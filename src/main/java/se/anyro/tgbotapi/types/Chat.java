@@ -56,6 +56,6 @@ public class Chat {
         if (username != null) {
             builder.append(" @").append(username);
         }
-        return super.toString();
+        return builder.toString();
     }
 }
