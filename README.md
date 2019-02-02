@@ -37,7 +37,7 @@ dependencies {
 ```
 
 #### Dependencies
-The project depends on [GSON](https://github.com/google/gson 2.8.2). I have currently only used it together with [Google App Engine](https://cloud.google.com/appengine/) (which includes GSON), but it should be possible to use it with any platform.
+The project depends on [GSON](https://github.com/google/gson) 2.8.2. I have currently only used it together with [Google App Engine](https://cloud.google.com/appengine/) (which includes GSON), but it should be possible to use it with any platform.
 
 #### Binary
 Latest binaries available in the [Releases section](https://github.com/nadam/tg-bot-api/releases).
