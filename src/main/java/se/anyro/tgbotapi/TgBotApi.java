@@ -116,6 +116,8 @@ public class TgBotApi {
 
     private final long OWNER;
 
+    private static final int READ_TIMEOUT = 8000;
+
     private boolean disableNotification = false;
 
     private ErrorListener errorListener;
@@ -146,7 +148,7 @@ public class TgBotApi {
 
         BASE_URL = "https://api.telegram.org/bot" + token;
 
-        GET_UPDATES = BASE_URL + "/getUpdates?";
+        GET_UPDATES = BASE_URL + "/getUpdates";
         SET_WEBHOOK = BASE_URL + "/setWebhook";
         DELETE_WEBHOOK = BASE_URL + "/deleteWebhook";
         GET_WEBHOOK_INFO = BASE_URL + "/getWebhookInfo";
@@ -272,30 +274,32 @@ public class TgBotApi {
      * 
      * @see <a href="https://core.telegram.org/bots/api#getupdates">Official documentation of getUpdate</a>
      */
+    public Update[] getUpdates(int offset, int limit, int timeout, String[] allowedUpdates) throws IOException {
+        StringBuilder command = new StringBuilder(GET_UPDATES).append('?');
+        command.append("limit=").append(limit);
+        if (offset > 0) {
+            command.append("&offset=").append(offset);
+        }
+        if (timeout > 0) {
+            command.append("&timeout=").append(timeout);
+        }
+        if (allowedUpdates != null) {
+            command.append("&allowed_updates=").append(urlEncode(GSON.toJson(allowedUpdates)));
+        }
+        // Make sure the read timeout is longer than the poll timeout
+        int readTimeout = timeout * 1000 + READ_TIMEOUT;
+        return callMethod(command.toString(), Update[].class, readTimeout);
+    }
+
+    /**
+     * Use this method to receive incoming updates using long polling. An Array of Update objects is returned.
+     *
+     * Only use this method if you don't use a webhook.
+     *
+     * @see <a href="https://core.telegram.org/bots/api#getupdates">Official documentation of getUpdate</a>
+     */
     public Update[] getUpdates(int offset, int limit, int timeout) throws IOException {
-        return callMethod(GET_UPDATES + "offset=" + offset + "&limit=" + limit + "&timeout=" + timeout, Update[].class);
-    }
-
-    /**
-     * Use this method to receive incoming updates using long polling. An Array of Update objects is returned.
-     *
-     * Only use this method if you don't use a webhook.
-     *
-     * @see <a href="https://core.telegram.org/bots/api#getupdates">Official documentation of getUpdate</a>
-     */
-    public Update[] getUpdates(int offset, int limit) throws IOException {
-        return callMethod(GET_UPDATES + "offset=" + offset + "&limit=" + limit, Update[].class);
-    }
-
-    /**
-     * Use this method to receive incoming updates using long polling. An Array of Update objects is returned.
-     *
-     * Only use this method if you don't use a webhook.
-     *
-     * @see <a href="https://core.telegram.org/bots/api#getupdates">Official documentation of getUpdate</a>
-     */
-    public Update[] getUpdates(int offset) throws IOException {
-        return callMethod(GET_UPDATES + "offset=" + offset, Update[].class);
+        return getUpdates(offset, limit, timeout, null);
     }
 
     /**
@@ -306,7 +310,7 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#getupdates">Official documentation of getUpdate</a>
      */
     public Update[] getUpdates() throws IOException {
-        return callMethod(BASE_URL + "/getUpdates", Update[].class);
+        return callMethod(GET_UPDATES, Update[].class);
     }
 
     /**
@@ -382,10 +386,9 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#sendmessage">Official documentation of sendMessage</a>
      */
     public int sendMessage(long chatId, String text) throws IOException {
-        text = urlEncode(text);
         StringBuilder command = new StringBuilder(SEND_MESSAGE);
         command.append("chat_id=").append(chatId);
-        command.append("&text=").append(text);
+        command.append("&text=").append(urlEncode(text));
         if (disableNotification) {
             command.append("&disable_notification=true");
         }
@@ -396,10 +399,9 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#sendmessage">Official documentation of sendMessage</a>
      */
     public int sendMessage(String channel, String text) throws IOException {
-        text = urlEncode(text);
         StringBuilder command = new StringBuilder(SEND_MESSAGE);
         command.append("chat_id=").append(channel);
-        command.append("&text=").append(text);
+        command.append("&text=").append(urlEncode(text));
         if (disableNotification) {
             command.append("&disable_notification=true");
         }
@@ -411,10 +413,9 @@ public class TgBotApi {
      */
     public Message sendMessage(long chatId, String text, ParseMode parseMode, boolean disablePreview, int replyTo,
             ReplyMarkup replyMarkup) throws IOException {
-        text = urlEncode(text);
         StringBuilder command = new StringBuilder(SEND_MESSAGE);
         command.append("chat_id=").append(chatId);
-        command.append("&text=").append(text);
+        command.append("&text=").append(urlEncode(text));
         if (parseMode != null) {
             command.append("&parse_mode=").append(parseMode.VALUE);
         }
@@ -438,10 +439,9 @@ public class TgBotApi {
      */
     public int sendMessage(String channel, String text, ParseMode parseMode, boolean disablePreview, int replyTo,
             ReplyMarkup replyMarkup) throws IOException {
-        text = urlEncode(text);
         StringBuilder command = new StringBuilder(SEND_MESSAGE);
         command.append("chat_id=").append(channel);
-        command.append("&text=").append(text);
+        command.append("&text=").append(urlEncode(text));
         if (parseMode != null) {
             command.append("&parse_mode=").append(parseMode.VALUE);
         }
@@ -2459,7 +2459,11 @@ public class TgBotApi {
      * @throws IOException
      */
     public <T> T callMethod(String url, Class<T> responseClass) throws IOException {
-        HttpURLConnection con = createConnection(url);
+        return callMethod(url, responseClass, READ_TIMEOUT);
+    }
+
+    private <T> T callMethod(String url, Class<T> responseClass, int readTimeout) throws IOException {
+        HttpURLConnection con = createConnection(url, readTimeout);
         InputStream stream = con.getInputStream();
 
         // From the documentation: "The response contains a JSON object, which always has a Boolean field ‘ok’ and may
@@ -2503,14 +2507,18 @@ public class TgBotApi {
     }
 
     /**
-     * Helper method for connecting to the Bot API with reasonable timeout values.
+     * Helper methods for connecting to the Bot API with reasonable timeout values.
      */
-    private HttpURLConnection createConnection(String url) throws IOException {
+    private HttpURLConnection createConnection(String url, int readTimeout) throws IOException {
         HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
         con.setConnectTimeout(4000);
-        con.setReadTimeout(8000);
+        con.setReadTimeout(readTimeout);
         con.connect();
         return con;
+    }
+
+    private HttpURLConnection createConnection(String url) throws IOException {
+        return createConnection(url, READ_TIMEOUT);
     }
 
     private void closeInputStream(HttpURLConnection con) {
