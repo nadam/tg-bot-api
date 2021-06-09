@@ -20,8 +20,7 @@ public class Markdown {
             return text;
         }
         int pos = 0;
-        int entityStart = entities[0].offset;
-        StringBuilder builder = new StringBuilder(text.substring(0, entityStart));
+        StringBuilder builder = new StringBuilder();
         for (MessageEntity entity : entities) {
 
             // Plain text before the entity

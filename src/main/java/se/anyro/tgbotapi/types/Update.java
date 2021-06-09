@@ -5,6 +5,8 @@ import se.anyro.tgbotapi.types.inline.ChosenInlineResult;
 import se.anyro.tgbotapi.types.inline.InlineQuery;
 import se.anyro.tgbotapi.types.payments.PreCheckoutQuery;
 import se.anyro.tgbotapi.types.payments.ShippingQuery;
+import se.anyro.tgbotapi.types.poll.Poll;
+import se.anyro.tgbotapi.types.poll.PollAnswer;
 
 /**
  * @see <a href="https://core.telegram.org/bots/api#update">Update</a>
@@ -20,9 +22,11 @@ public class Update {
     public CallbackQuery callback_query;
     public ShippingQuery shipping_query;
     public PreCheckoutQuery pre_checkout_query;
+    public Poll poll;
+    public PollAnswer poll_answer;
 
     public enum Type {
-        MESSAGE, EDITED_MESSAGE, CHANNEL_POST, EDITED_CHANNEL_POST, INLINE_QUERY, CHOSEN_INLINE_RESULT, CALLBACK_QUERY, SHIPPING_QUERY, PRE_CHECKOUT_QUERY
+        MESSAGE, EDITED_MESSAGE, CHANNEL_POST, EDITED_CHANNEL_POST, INLINE_QUERY, CHOSEN_INLINE_RESULT, CALLBACK_QUERY, SHIPPING_QUERY, PRE_CHECKOUT_QUERY, POLL, POLL_ANSWER, UNKNOWN
     }
 
     public boolean isMessage() {
@@ -61,6 +65,14 @@ public class Update {
         return pre_checkout_query != null;
     }
 
+    public boolean isPoll() {
+        return poll != null;
+    }
+
+    public boolean isPollAnswer() {
+        return poll_answer != null;
+    }
+
     public Type getType() {
         if (isMessage()) {
             return Type.MESSAGE;
@@ -80,8 +92,12 @@ public class Update {
             return Type.SHIPPING_QUERY;
         } else if (isPreCheckoutQuery()) {
             return Type.PRE_CHECKOUT_QUERY;
+        } else if (isPoll()) {
+            return Type.POLL;
+        } else if (isPollAnswer()) {
+            return Type.POLL_ANSWER;
         }
-        return null;
+        return Type.UNKNOWN;
     }
 
     /**
@@ -111,6 +127,10 @@ public class Update {
             return shipping_query.from;
         case PRE_CHECKOUT_QUERY:
             return pre_checkout_query.from;
+        case POLL:
+            return null;
+        case POLL_ANSWER:
+            return poll_answer.user;
         default:
             return null;
         }
