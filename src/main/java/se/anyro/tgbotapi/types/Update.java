@@ -139,7 +139,7 @@ public class Update {
     /**
      * Returns the id of the user who sent the message. Might return 0 for messages in channels or new types of updates.
      */
-    public int fromUserId() {
+    public long fromUserId() {
         User from = fromUser();
         if (from != null) {
             return from.id;

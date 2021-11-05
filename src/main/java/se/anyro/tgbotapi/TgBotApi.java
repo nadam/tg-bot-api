@@ -235,7 +235,7 @@ public class TgBotApi {
     /**
      * Returns the user id of the bot if possible or returns 0.
      */
-    public int getBotId() {
+    public long getBotId() {
         if (botUser == null) {
             try {
                 getMe();
@@ -1748,14 +1748,14 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#getchatmember">Official documentation of getChatMember</a>
      */
-    public ChatMember getChatMember(long chatId, int userId) throws IOException {
+    public ChatMember getChatMember(long chatId, long userId) throws IOException {
         return getChatMember(String.valueOf(chatId), userId);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#getchatmember">Official documentation of getChatMember</a>
      */
-    public ChatMember getChatMember(String channel, int userId) throws IOException {
+    public ChatMember getChatMember(String channel, long userId) throws IOException {
         return callMethod(GET_CHAT_MEMBER + "chat_id=" + channel + "&user_id=" + userId, ChatMember.class);
     }
 
@@ -1779,7 +1779,7 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#deletechatstickerset">Official documentation of
      *      deleteChatStickerSet</a>
      */
-    public ChatMember deleteChatStickerSet(long chatId, int userId) throws IOException {
+    public ChatMember deleteChatStickerSet(long chatId, long userId) throws IOException {
         return deleteChatStickerSet(String.valueOf(chatId));
     }
 
@@ -2076,7 +2076,7 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#uploadstickerfile">Official documentation of
      *      uploadStickerFile</a>
      */
-    public int uploadStickerFile(int userId, InputStream pngSticker) throws IOException {
+    public int uploadStickerFile(long userId, InputStream pngSticker) throws IOException {
         FileSender sender = new FileSender(UPLOAD_STICKER_FILE);
         sender.addFormField("user_id", userId);
         sender.addFilePart("png_sticker", pngSticker, "sticker");
@@ -2087,7 +2087,7 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#createnewstickerset">Official documentation of
      *      createNewStickerSet</a>
      */
-    public int createNewStickerSet(int userId, String name, String title, InputStream pngSticker, String emojis,
+    public int createNewStickerSet(long userId, String name, String title, InputStream pngSticker, String emojis,
             boolean isMasks, MaskPosition maskPosition) throws IOException {
         FileSender sender = new FileSender(CREATE_NEW_STICKER_SET);
         sender.addFormField("user_id", userId);
