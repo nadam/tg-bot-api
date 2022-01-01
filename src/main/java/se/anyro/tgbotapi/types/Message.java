@@ -25,6 +25,7 @@ public class Message {
     public Chat forward_from_chat; // Only for channels
     public int forward_from_message_id;
     public String forward_signature;
+    public String forward_sender_name;
     public int forward_date;
     public Message reply_to_message;
     public int edit_date;
