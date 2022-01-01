@@ -122,6 +122,8 @@ public class TgBotApi {
 
     private ErrorListener errorListener;
 
+    private int lastResponseCode = 0;
+
     public interface ErrorListener {
         void onError(int errorCode, String description);
     }
@@ -213,6 +215,14 @@ public class TgBotApi {
 
         OWNER = owner;
         this.errorListener = errorListener;
+    }
+
+    /**
+     * Returns the last HTTP response code returned from Telegram server. Might return the wrong code in a
+     * multi-threaded environment.
+     */
+    public int getLastResponseCode() {
+        return lastResponseCode;
     }
 
     /**
@@ -1342,7 +1352,7 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#getuserprofilephotos">Official documentation of
      *      getUserProfilePhotos</a>
      */
-    public UserProfilePhotos getUserProfilePhotos(int userId) throws IOException {
+    public UserProfilePhotos getUserProfilePhotos(long userId) throws IOException {
         return callMethod(GET_USER_PROFILE_PHOTOS + "user_id=" + userId, UserProfilePhotos.class);
     }
 
@@ -1350,7 +1360,7 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#getuserprofilephotos">Official documentation of
      *      getUserProfilePhotos</a>
      */
-    public UserProfilePhotos getUserProfilePhotos(int userId, int offset, int limit) throws IOException {
+    public UserProfilePhotos getUserProfilePhotos(long userId, int offset, int limit) throws IOException {
         return callMethod(GET_USER_PROFILE_PHOTOS + "user_id=" + userId + "&offset=" + offset + "&limit=" + limit,
                 UserProfilePhotos.class);
     }
@@ -1395,8 +1405,9 @@ public class TgBotApi {
         String url = GET_FILE_URL + file.file_path;
         HttpURLConnection con = createConnection(url);
         try {
-            if (con.getResponseCode() >= 300) {
-                handleErrorResponse(con.getResponseCode(), con.getResponseMessage());
+            int responseCode = lastResponseCode = con.getResponseCode();
+            if (responseCode >= 300) {
+                handleErrorResponse(responseCode, con.getResponseMessage());
                 return null;
             }
             InputStream stream = con.getInputStream();
@@ -1419,8 +1430,9 @@ public class TgBotApi {
     public byte[] downloadFromUrl(String url) throws IOException {
         HttpURLConnection con = createConnection(url);
         try {
-            if (con.getResponseCode() >= 300) {
-                handleErrorResponse(con.getResponseCode(), con.getResponseMessage());
+            int responseCode = lastResponseCode = con.getResponseCode();
+            if (responseCode >= 300) {
+                handleErrorResponse(responseCode, con.getResponseMessage());
                 return null;
             }
             InputStream stream = con.getInputStream();
@@ -1443,21 +1455,21 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#kickchatmember">Official documentation of kickChatMember</a>
      */
-    public int kickChatMember(long chatId, int userId) throws IOException {
+    public int kickChatMember(long chatId, long userId) throws IOException {
         return kickChatMember(String.valueOf(chatId), userId, 0);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#kickchatmember">Official documentation of kickChatMember</a>
      */
-    public int kickChatMember(long chatId, int userId, int untilDate) throws IOException {
+    public int kickChatMember(long chatId, long userId, int untilDate) throws IOException {
         return kickChatMember(String.valueOf(chatId), userId, untilDate);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#kickchatmember">Official documentation of kickChatMember</a>
      */
-    public int kickChatMember(String channel, int userId, int untilDate) throws IOException {
+    public int kickChatMember(String channel, long userId, int untilDate) throws IOException {
         StringBuilder command = new StringBuilder(KICK_CHAT_MEMBER);
         command.append("chat_id=").append(channel);
         command.append("&user_id=").append(userId);
@@ -1484,14 +1496,14 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#unbanchatmember">Official documentation of unbanChatMember</a>
      */
-    public int unbanChatMember(long chatId, int userId) throws IOException {
+    public int unbanChatMember(long chatId, long userId) throws IOException {
         return unbanChatMember(String.valueOf(chatId), userId);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#unbanchatmember">Official documentation of unbanChatMember</a>
      */
-    public int unbanChatMember(String channel, int userId) throws IOException {
+    public int unbanChatMember(String channel, long userId) throws IOException {
         return callMethod(UNBAN_CHAT_MEMBER + "chat_id=" + channel + "&user_id=" + userId);
     }
 
@@ -1499,7 +1511,7 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#restrictchatmember">Official documentation of
      *      restrictChatMember</a>
      */
-    public int restrictChatMember(long chatId, int userId, int untilDate, boolean canSendMessages,
+    public int restrictChatMember(long chatId, long userId, int untilDate, boolean canSendMessages,
             boolean canSendMediaMessages, boolean canSendOtherMessages, boolean canAddWebPagePreviews)
             throws IOException {
         return restrictChatMember(String.valueOf(chatId), userId, untilDate, canSendMessages, canSendMediaMessages,
@@ -1510,7 +1522,7 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#restrictchatmember">Official documentation of
      *      restrictChatMember</a>
      */
-    public int restrictChatMember(String channel, int userId, int untilDate, boolean canSendMessages,
+    public int restrictChatMember(String channel, long userId, int untilDate, boolean canSendMessages,
             boolean canSendMediaMessages, boolean canSendOtherMessages, boolean canAddWebPagePreviews)
             throws IOException {
         StringBuilder command = new StringBuilder(RESTRICT_CHAT_MEMBER);
@@ -1538,7 +1550,7 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#promotechatmember">Official documentation of
      *      promoteChatMember</a>
      */
-    public int promoteChatMember(long chatId, int userId, boolean canChangeInfo, boolean canPostMessages,
+    public int promoteChatMember(long chatId, long userId, boolean canChangeInfo, boolean canPostMessages,
             boolean canEditMessages, boolean canDeleteMessages, boolean canInviteUsers, boolean canRestrictMembers,
             boolean canPinMessages, boolean canPromoteMembers) throws IOException {
         return promoteChatMember(String.valueOf(chatId), userId, canChangeInfo, canPostMessages, canEditMessages,
@@ -1549,7 +1561,7 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#promotechatmember">Official documentation of
      *      promoteChatMember</a>
      */
-    public int promoteChatMember(String channel, int userId, boolean canChangeInfo, boolean canPostMessages,
+    public int promoteChatMember(String channel, long userId, boolean canChangeInfo, boolean canPostMessages,
             boolean canEditMessages, boolean canDeleteMessages, boolean canInviteUsers, boolean canRestrictMembers,
             boolean canPinMessages, boolean canPromoteMembers) throws IOException {
         StringBuilder command = new StringBuilder(PROMOTE_CHAT_MEMBER);
@@ -2108,7 +2120,7 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#createnewstickerset">Official documentation of
      *      createNewStickerSet</a>
      */
-    public int createNewStickerSet(int userId, String name, String title, String pngSticker, String emojis,
+    public int createNewStickerSet(long userId, String name, String title, String pngSticker, String emojis,
             boolean isMasks, MaskPosition maskPosition) throws IOException {
         StringBuilder command = new StringBuilder(CREATE_NEW_STICKER_SET).append('?');
         command.append("user_id=").append(userId);
@@ -2128,7 +2140,8 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#addstickertoset">Official documentation of addStickerToSet</a>
      */
-    public int addStickerToSet(int userId, String name, InputStream pngSticker, String emojis, MaskPosition maskPosition)
+    public int addStickerToSet(long userId, String name, InputStream pngSticker, String emojis,
+            MaskPosition maskPosition)
             throws IOException {
         FileSender sender = new FileSender(ADD_STICKER_TO_SET);
         sender.addFormField("user_id", userId);
@@ -2144,7 +2157,7 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#addstickertoset">Official documentation of addStickerToSet</a>
      */
-    public int addStickerToSet(int userId, String name, String pngSticker, String emojis, MaskPosition maskPosition)
+    public int addStickerToSet(long userId, String name, String pngSticker, String emojis, MaskPosition maskPosition)
             throws IOException {
         StringBuilder command = new StringBuilder(ADD_STICKER_TO_SET).append('?');
         command.append("user_id=").append(userId);
@@ -2352,14 +2365,14 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#setgamescore">Official documentation of setGameScore</a>
      */
-    public int setGameScore(int userId, int score, boolean force, long chatId, int messageId) throws IOException {
+    public int setGameScore(long userId, int score, boolean force, long chatId, int messageId) throws IOException {
         return setGameScore(userId, score, force, String.valueOf(chatId), messageId);
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#setgamescore">Official documentation of setGameScore</a>
      */
-    public int setGameScore(int userId, int score, boolean force, String channel, int messageId) throws IOException {
+    public int setGameScore(long userId, int score, boolean force, String channel, int messageId) throws IOException {
         StringBuilder command = new StringBuilder(SET_GAME_SCORE);
         command.append("user_id=").append(userId);
         command.append("&score=").append(score);
@@ -2374,7 +2387,7 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#setgamescore">Official documentation of setGameScore</a>
      */
-    public int setGameScore(int userId, int score, boolean force, String inlineMessageId) throws IOException {
+    public int setGameScore(long userId, int score, boolean force, String inlineMessageId) throws IOException {
         StringBuilder command = new StringBuilder(SET_GAME_SCORE);
         command.append("user_id=").append(userId);
         command.append("&score=").append(score);
@@ -2389,7 +2402,7 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#getgamehighscores">Official documentation of
      *      getGameHighScores</a>
      */
-    public GameHighScore[] getGameHighScores(int userId, long chatId, int messageId) throws IOException {
+    public GameHighScore[] getGameHighScores(long userId, long chatId, int messageId) throws IOException {
         return getGameHighScores(userId, String.valueOf(chatId), messageId);
     }
 
@@ -2397,7 +2410,7 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#getgamehighscores">Official documentation of
      *      getGameHighScores</a>
      */
-    public GameHighScore[] getGameHighScores(int userId, String channel, int messageId) throws IOException {
+    public GameHighScore[] getGameHighScores(long userId, String channel, int messageId) throws IOException {
         StringBuilder command = new StringBuilder(GET_GAME_HIGH_SCORES);
         command.append("user_id=").append(userId);
         command.append("&chat_id=").append(channel);
@@ -2409,7 +2422,7 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#getgamehighscores">Official documentation of
      *      getGameHighScores</a>
      */
-    public GameHighScore[] getGameHighScores(int userId, String inlineMessageId) throws IOException {
+    public GameHighScore[] getGameHighScores(long userId, String inlineMessageId) throws IOException {
         StringBuilder command = new StringBuilder(GET_GAME_HIGH_SCORES);
         command.append("user_id=").append(userId);
         command.append("&inline_message_id=").append(inlineMessageId);
@@ -2421,7 +2434,7 @@ public class TgBotApi {
      */
     public int callMethod(String url) throws IOException {
         HttpURLConnection con = createConnection(url);
-        int responseCode = con.getResponseCode();
+        int responseCode = lastResponseCode = con.getResponseCode();
         try {
             if (responseCode >= 300) {
                 try {
@@ -2464,6 +2477,7 @@ public class TgBotApi {
 
     private <T> T callMethod(String url, Class<T> responseClass, int readTimeout) throws IOException {
         HttpURLConnection con = createConnection(url, readTimeout);
+        lastResponseCode = con.getResponseCode();
         InputStream stream = con.getInputStream();
 
         // From the documentation: "The response contains a JSON object, which always has a Boolean field ‘ok’ and may
