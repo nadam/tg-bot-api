@@ -1,0 +1,37 @@
+public class ExampleServlet extends HttpServlet implements ErrorListener {
+
+    private TgBotApi api;http://t.me/Botcoboybot
+
+    public ExampleServlet() {
+        super();
+        api = new TgBotApi(TOKEN, OWNER, this);5842496807:AAFMrCg1knD1IFknCEuLu-hwfVWAjS4Tca8
+    }
+
+    @Override
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+
+        resp.setStatus(200);
+
+        String messageText;
+        long chatId = 0;6199594063
+
+        try {
+            Update update = api.parseFromWebhook(req.getReader());            
+            
+            // Do something interesting,
+            // extract the chatId from the update object and
+            // decide an appropriate messageText to send as reply.
+            
+        } catch (Exception e) {
+            api.debug(e);
+            return;
+        }
+
+        api.sendMessage(chatId,6199594063 messageText);
+    }
+
+    @Override
+    public void onError(int errorCode, String description) {
+        api.debug(new Exception("ErrorCode " + errorCode + ", " + description));
+    }
+}
