@@ -11,6 +11,7 @@ import se.anyro.tgbotapi.types.games.Game;
 import se.anyro.tgbotapi.types.passport.PassportData;
 import se.anyro.tgbotapi.types.payments.Invoice;
 import se.anyro.tgbotapi.types.payments.SuccessfulPayment;
+import se.anyro.tgbotapi.types.poll.Poll;
 import se.anyro.tgbotapi.types.stickers.Sticker;
 
 /**
@@ -61,6 +62,7 @@ public class Message {
     public SuccessfulPayment successful_payment;
     public String connected_website;
     public PassportData passport_data;
+    public Poll poll;
 
     private static final String VIDEO_MP4 = "video/mp4";
 

@@ -29,6 +29,7 @@ import se.anyro.tgbotapi.types.inline.CallbackQuery;
 import se.anyro.tgbotapi.types.inline.InlineQueryResult;
 import se.anyro.tgbotapi.types.payments.LabeledPrice;
 import se.anyro.tgbotapi.types.payments.ShippingOption;
+import se.anyro.tgbotapi.types.poll.Poll;
 import se.anyro.tgbotapi.types.reply_markup.InlineKeyboardMarkup;
 import se.anyro.tgbotapi.types.reply_markup.ReplyMarkup;
 import se.anyro.tgbotapi.types.stickers.MaskPosition;
@@ -65,6 +66,8 @@ public class TgBotApi {
     private final String STOP_MESSAGE_LIVE_LOCATION;
     private final String SEND_VENUE;
     private final String SEND_CONTACT;
+    private final String SEND_POLL;
+    private final String STOP_POLL;
     private final String SEND_CHAT_ACTION;
     private final String GET_USER_PROFILE_PHOTOS;
     private final String GET_FILE;
@@ -170,6 +173,8 @@ public class TgBotApi {
         STOP_MESSAGE_LIVE_LOCATION = BASE_URL + "/stopMessageLiveLocation?";
         SEND_VENUE = BASE_URL + "/sendVenue?";
         SEND_CONTACT = BASE_URL + "/sendContact?";
+        SEND_POLL = BASE_URL + "/sendPoll?";
+        STOP_POLL = BASE_URL + "/stopPoll?";
         SEND_CHAT_ACTION = BASE_URL + "/sendChatAction?";
         GET_USER_PROFILE_PHOTOS = BASE_URL + "/getUserProfilePhotos?";
         GET_FILE = BASE_URL + "/getFile?";
@@ -1256,6 +1261,55 @@ public class TgBotApi {
             command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
         }
         return callMethod(command.toString());
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#sendpoll">Official documentation of sendPoll</a>
+     */
+    public Message sendPoll(long chatId, String question, String[] options, int replyTo, ReplyMarkup replyMarkup)
+            throws IOException {
+        return sendPoll(String.valueOf(chatId), question, options, replyTo, replyMarkup);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#sendpoll">Official documentation of sendPoll</a>
+     */
+    public Message sendPoll(String channel, String question, String[] options, int replyTo, ReplyMarkup replyMarkup)
+            throws IOException {
+        StringBuilder command = new StringBuilder(SEND_POLL);
+        command.append("chat_id=").append(channel);
+        command.append("&question=").append(urlEncode(question));
+        command.append("&options=").append(urlEncode(GSON.toJson(options)));
+        if (disableNotification) {
+            command.append("&disable_notification=true");
+        }
+        if (replyTo > 0) {
+            command.append("&reply_to_message_id=").append(replyTo);
+        }
+        if (replyMarkup != null) {
+            command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
+        }
+        return callMethod(command.toString(), Message.class);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#stoppoll">Official documentation of stopPoll</a>
+     */
+    public Poll stopPoll(long chatId, int messageId, ReplyMarkup replyMarkup) throws IOException {
+        return stopPoll(String.valueOf(chatId), messageId, replyMarkup);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#stoppoll">Official documentation of stopPoll</a>
+     */
+    public Poll stopPoll(String channel, int messageId, ReplyMarkup replyMarkup) throws IOException {
+        StringBuilder command = new StringBuilder(STOP_POLL);
+        command.append("chat_id=").append(channel);
+        command.append("&message_id=").append(messageId);
+        if (replyMarkup != null) {
+            command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
+        }
+        return callMethod(command.toString(), Poll.class);
     }
 
     /**
