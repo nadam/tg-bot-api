@@ -15,6 +15,7 @@ import java.net.URLEncoder;
 import se.anyro.tgbotapi.types.Chat;
 import se.anyro.tgbotapi.types.ChatAction;
 import se.anyro.tgbotapi.types.ChatMember;
+import se.anyro.tgbotapi.types.ChatPermissions;
 import se.anyro.tgbotapi.types.Message;
 import se.anyro.tgbotapi.types.ParseMode;
 import se.anyro.tgbotapi.types.ResponseParameters;
@@ -82,6 +83,7 @@ public class TgBotApi {
     private final String DELETE_CHAT_PHOTO;
     private final String SET_CHAT_TITLE;
     private final String SET_CHAT_DESCRIPTION;
+    private final String SET_CHAT_PERMISSIONS;
     private final String PIN_CHAT_MESSAGE;
     private final String UNPIN_CHAT_MESSAGE;
     private final String GET_CHAT;
@@ -188,6 +190,7 @@ public class TgBotApi {
         DELETE_CHAT_PHOTO = BASE_URL + "/deleteChatPhoto?";
         SET_CHAT_TITLE = BASE_URL + "/setChatTitle?";
         SET_CHAT_DESCRIPTION = BASE_URL + "/setChatDescription?";
+        SET_CHAT_PERMISSIONS = BASE_URL + "/setChatPermissions?";
         PIN_CHAT_MESSAGE = BASE_URL + "/pinChatMessage?";
         UNPIN_CHAT_MESSAGE = BASE_URL + "/unpinChatMessage?";
         LEAVE_CHAT = BASE_URL + "/leaveChat?";
@@ -1605,6 +1608,31 @@ public class TgBotApi {
     }
 
     /**
+     * @see <a href="https://core.telegram.org/bots/api#restrictchatmember">Official documentation of
+     *      restrictChatMember</a>
+     */
+    public int restrictChatMember(long chatId, long userId, ChatPermissions permissions, int untilDate)
+            throws IOException {
+        return restrictChatMember(String.valueOf(chatId), userId, permissions, untilDate);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#restrictchatmember">Official documentation of
+     *      restrictChatMember</a>
+     */
+    public int restrictChatMember(String channel, long userId, ChatPermissions permissions, int untilDate)
+            throws IOException {
+        StringBuilder command = new StringBuilder(RESTRICT_CHAT_MEMBER);
+        command.append("chat_id=").append(channel);
+        command.append("&user_id=").append(userId);
+        command.append("&permissions=").append(urlEncode(GSON.toJson(permissions)));
+        if (untilDate != 0) {
+            command.append("&until_date=").append(untilDate);
+        }
+        return callMethod(command.toString());
+    }
+
+    /**
      * @see <a href="https://core.telegram.org/bots/api#promotechatmember">Official documentation of
      *      promoteChatMember</a>
      */
@@ -1728,6 +1756,32 @@ public class TgBotApi {
      */
     public int setChatDescription(String channel, int description) throws IOException {
         return callMethod(SET_CHAT_DESCRIPTION + "chat_id=" + channel + "&description=" + description);
+    }
+
+    public int setChatDescription(long chatId, String description) throws IOException {
+        return setChatDescription(String.valueOf(chatId), description);
+    }
+
+    public int setChatDescription(String channel, String description) throws IOException {
+        return callMethod(SET_CHAT_DESCRIPTION + "chat_id=" + channel + "&description=" + urlEncode(description));
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#setchatpermissions">Official documentation of
+     *      setChatPermissions</a>
+     */
+    public int setChatPermissions(long chatId, ChatPermissions permissions) throws IOException {
+        return setChatPermissions(String.valueOf(chatId), permissions);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#setchatpermissions">Official documentation of
+     *      setChatPermissions</a>
+     */
+    public int setChatPermissions(String channel, ChatPermissions permissions) throws IOException {
+        String command = SET_CHAT_PERMISSIONS + "chat_id=" + channel + "&permissions="
+                + urlEncode(GSON.toJson(permissions));
+        return callMethod(command);
     }
 
     /**

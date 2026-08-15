@@ -17,6 +17,7 @@ public class Chat {
     public Message pinned_message;
     public String sticker_set_name;
     public boolean can_set_sticker_set;
+    public ChatPermissions permissions;
 
     public enum Type {
         PRIVATE, GROUP, SUPERGROUP, CHANNEL

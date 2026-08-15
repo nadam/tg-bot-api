@@ -13,5 +13,6 @@ public class Sticker {
     public String emoji;
     public String set_name;
     public MaskPosition mask_position;
+    public boolean is_animated;
     public int file_size;
 }

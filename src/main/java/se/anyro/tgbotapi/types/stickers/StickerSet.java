@@ -8,5 +8,7 @@ public class StickerSet {
     public String name;
     public String title;
     public boolean isMasks;
+    public boolean is_masks;
+    public boolean is_animated;
     public Sticker[] stickers;
 }

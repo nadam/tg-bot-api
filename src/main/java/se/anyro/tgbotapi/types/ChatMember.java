@@ -24,6 +24,7 @@ public class ChatMember {
     // Restricted only
     public boolean can_send_messages;
     public boolean can_send_media_messages;
+    public boolean can_send_polls;
     public boolean can_send_other_messages;
     public boolean can_add_web_page_previews;
 
