@@ -13,6 +13,7 @@ import se.anyro.tgbotapi.types.payments.Invoice;
 import se.anyro.tgbotapi.types.payments.SuccessfulPayment;
 import se.anyro.tgbotapi.types.poll.Poll;
 import se.anyro.tgbotapi.types.stickers.Sticker;
+import se.anyro.tgbotapi.types.reply_markup.InlineKeyboardMarkup;
 
 /**
  * @see <a href="https://core.telegram.org/bots/api#message">Message</a>
@@ -63,6 +64,7 @@ public class Message {
     public String connected_website;
     public PassportData passport_data;
     public Poll poll;
+    public InlineKeyboardMarkup reply_markup;
 
     private static final String VIDEO_MP4 = "video/mp4";
 
