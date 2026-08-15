@@ -8,6 +8,7 @@ public class ChatMember {
     public String status;
 
     public int until_date; // Restricted and kicked only
+    public boolean is_member; // Restricted only
 
     // Administrators only
     public boolean can_be_edited;
