@@ -78,6 +78,7 @@ public class TgBotApi {
     private final String UNBAN_CHAT_MEMBER;
     private final String RESTRICT_CHAT_MEMBER;
     private final String PROMOTE_CHAT_MEMBER;
+    private final String SET_CHAT_ADMINISTRATOR_CUSTOM_TITLE;
     private final String EXPORT_CHAT_INVITE_LINK;
     private final String SET_CHAT_PHOTO;
     private final String DELETE_CHAT_PHOTO;
@@ -185,6 +186,7 @@ public class TgBotApi {
         UNBAN_CHAT_MEMBER = BASE_URL + "/unbanChatMember?";
         RESTRICT_CHAT_MEMBER = BASE_URL + "/restrictChatMember?";
         PROMOTE_CHAT_MEMBER = BASE_URL + "/promoteChatMember?";
+        SET_CHAT_ADMINISTRATOR_CUSTOM_TITLE = BASE_URL + "/setChatAdministratorCustomTitle?";
         EXPORT_CHAT_INVITE_LINK = BASE_URL + "/exportChatInviteLink?";
         SET_CHAT_PHOTO = BASE_URL + "/setChatPhoto?";
         DELETE_CHAT_PHOTO = BASE_URL + "/deleteChatPhoto?";
@@ -1679,6 +1681,24 @@ public class TgBotApi {
         }
 
         return callMethod(command.toString());
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#setchatadministratorcustomtitle">Official documentation of
+     *      setChatAdministratorCustomTitle</a>
+     */
+    public int setChatAdministratorCustomTitle(long chatId, long userId, String customTitle) throws IOException {
+        return setChatAdministratorCustomTitle(String.valueOf(chatId), userId, customTitle);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#setchatadministratorcustomtitle">Official documentation of
+     *      setChatAdministratorCustomTitle</a>
+     */
+    public int setChatAdministratorCustomTitle(String channel, long userId, String customTitle) throws IOException {
+        String command = SET_CHAT_ADMINISTRATOR_CUSTOM_TITLE + "chat_id=" + channel + "&user_id=" + userId
+                + "&custom_title=" + urlEncode(customTitle);
+        return callMethod(command);
     }
 
     /**

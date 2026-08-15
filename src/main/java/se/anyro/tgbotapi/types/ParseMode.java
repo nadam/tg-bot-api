@@ -10,6 +10,7 @@ package se.anyro.tgbotapi.types;
 public enum ParseMode {
 
     MARKDOWN("Markdown"),
+    MARKDOWN_V2("MarkdownV2"),
     HTML("HTML");
 
     public final String VALUE;
