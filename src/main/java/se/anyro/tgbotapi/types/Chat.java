@@ -17,6 +17,11 @@ public class Chat {
     public Message pinned_message;
     public String sticker_set_name;
     public boolean can_set_sticker_set;
+    public ChatPermissions permissions;
+    public int slow_mode_delay;
+    public String bio;
+    public long linked_chat_id;
+    public ChatLocation location;
 
     public enum Type {
         PRIVATE, GROUP, SUPERGROUP, CHANNEL

@@ -14,6 +14,7 @@ public class InlineQueryResultMpeg4Gif extends InlineQueryResult {
     public int mpeg4_height;
     public int mpeg4_duration;
     public String thumb_url;
+    public String thumb_mime_type;
     public String title;
     public String caption;
     public String parse_mode;

@@ -15,6 +15,8 @@ public class InlineQueryResultVenue extends InlineQueryResult {
     public String address;
     public String foursquare_id;
     public String foursquare_type;
+    public String google_place_id;
+    public String google_place_type;
     public InlineKeyboardMarkup reply_markup;
     public InputMessageContent input_message_content;
     public String thumb_url;

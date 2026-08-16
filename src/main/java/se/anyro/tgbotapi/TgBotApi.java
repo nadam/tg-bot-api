@@ -13,9 +13,12 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 import se.anyro.tgbotapi.types.Chat;
+import se.anyro.tgbotapi.types.BotCommand;
 import se.anyro.tgbotapi.types.ChatAction;
 import se.anyro.tgbotapi.types.ChatMember;
+import se.anyro.tgbotapi.types.ChatPermissions;
 import se.anyro.tgbotapi.types.Message;
+import se.anyro.tgbotapi.types.MessageId;
 import se.anyro.tgbotapi.types.ParseMode;
 import se.anyro.tgbotapi.types.ResponseParameters;
 import se.anyro.tgbotapi.types.Update;
@@ -51,8 +54,11 @@ public class TgBotApi {
     private final String DELETE_WEBHOOK;
     private final String GET_WEBHOOK_INFO;
     private final String GET_ME;
+    private final String LOG_OUT;
+    private final String CLOSE;
     private final String SEND_MESSAGE;
     private final String FORWARD_MESSAGE;
+    private final String COPY_MESSAGE;
     private final String SEND_PHOTO;
     private final String SEND_AUDIO;
     private final String SEND_DOCUMENT;
@@ -68,6 +74,9 @@ public class TgBotApi {
     private final String SEND_CONTACT;
     private final String SEND_POLL;
     private final String STOP_POLL;
+    private final String SEND_DICE;
+    private final String GET_MY_COMMANDS;
+    private final String SET_MY_COMMANDS;
     private final String SEND_CHAT_ACTION;
     private final String GET_USER_PROFILE_PHOTOS;
     private final String GET_FILE;
@@ -77,13 +86,16 @@ public class TgBotApi {
     private final String UNBAN_CHAT_MEMBER;
     private final String RESTRICT_CHAT_MEMBER;
     private final String PROMOTE_CHAT_MEMBER;
+    private final String SET_CHAT_ADMINISTRATOR_CUSTOM_TITLE;
     private final String EXPORT_CHAT_INVITE_LINK;
     private final String SET_CHAT_PHOTO;
     private final String DELETE_CHAT_PHOTO;
     private final String SET_CHAT_TITLE;
     private final String SET_CHAT_DESCRIPTION;
+    private final String SET_CHAT_PERMISSIONS;
     private final String PIN_CHAT_MESSAGE;
     private final String UNPIN_CHAT_MESSAGE;
+    private final String UNPIN_ALL_CHAT_MESSAGES;
     private final String GET_CHAT;
     private final String GET_CHAT_ADMINISTRATORS;
     private final String GET_CHAT_MEMBERS_COUNT;
@@ -103,6 +115,7 @@ public class TgBotApi {
     private final String ADD_STICKER_TO_SET;
     private final String SET_STICKER_POSITION_IN_SET;
     private final String DELETE_STICKER_FROM_SET;
+    private final String SET_STICKER_SET_THUMB;
 
     private final String ANSWER_INLINE_QUERY;
     private final String SEND_INVOICE;
@@ -158,8 +171,11 @@ public class TgBotApi {
         DELETE_WEBHOOK = BASE_URL + "/deleteWebhook";
         GET_WEBHOOK_INFO = BASE_URL + "/getWebhookInfo";
         GET_ME = BASE_URL + "/getMe";
+        LOG_OUT = BASE_URL + "/logOut";
+        CLOSE = BASE_URL + "/close";
         SEND_MESSAGE = BASE_URL + "/sendMessage?";
         FORWARD_MESSAGE = BASE_URL + "/forwardMessage?";
+        COPY_MESSAGE = BASE_URL + "/copyMessage?";
         SEND_PHOTO = BASE_URL + "/sendPhoto";
         SEND_AUDIO = BASE_URL + "/sendAudio";
         SEND_DOCUMENT = BASE_URL + "/sendDocument";
@@ -175,6 +191,9 @@ public class TgBotApi {
         SEND_CONTACT = BASE_URL + "/sendContact?";
         SEND_POLL = BASE_URL + "/sendPoll?";
         STOP_POLL = BASE_URL + "/stopPoll?";
+        SEND_DICE = BASE_URL + "/sendDice?";
+        GET_MY_COMMANDS = BASE_URL + "/getMyCommands";
+        SET_MY_COMMANDS = BASE_URL + "/setMyCommands?";
         SEND_CHAT_ACTION = BASE_URL + "/sendChatAction?";
         GET_USER_PROFILE_PHOTOS = BASE_URL + "/getUserProfilePhotos?";
         GET_FILE = BASE_URL + "/getFile?";
@@ -183,13 +202,16 @@ public class TgBotApi {
         UNBAN_CHAT_MEMBER = BASE_URL + "/unbanChatMember?";
         RESTRICT_CHAT_MEMBER = BASE_URL + "/restrictChatMember?";
         PROMOTE_CHAT_MEMBER = BASE_URL + "/promoteChatMember?";
+        SET_CHAT_ADMINISTRATOR_CUSTOM_TITLE = BASE_URL + "/setChatAdministratorCustomTitle?";
         EXPORT_CHAT_INVITE_LINK = BASE_URL + "/exportChatInviteLink?";
         SET_CHAT_PHOTO = BASE_URL + "/setChatPhoto?";
         DELETE_CHAT_PHOTO = BASE_URL + "/deleteChatPhoto?";
         SET_CHAT_TITLE = BASE_URL + "/setChatTitle?";
         SET_CHAT_DESCRIPTION = BASE_URL + "/setChatDescription?";
+        SET_CHAT_PERMISSIONS = BASE_URL + "/setChatPermissions?";
         PIN_CHAT_MESSAGE = BASE_URL + "/pinChatMessage?";
         UNPIN_CHAT_MESSAGE = BASE_URL + "/unpinChatMessage?";
+        UNPIN_ALL_CHAT_MESSAGES = BASE_URL + "/unpinAllChatMessages?";
         LEAVE_CHAT = BASE_URL + "/leaveChat?";
         GET_CHAT = BASE_URL + "/getChat?";
         GET_CHAT_ADMINISTRATORS = BASE_URL + "/getChatAdministrators?";
@@ -210,6 +232,7 @@ public class TgBotApi {
         ADD_STICKER_TO_SET = BASE_URL + "/addStickerToSet";
         SET_STICKER_POSITION_IN_SET = BASE_URL + "/setStickerPositionInSet?";
         DELETE_STICKER_FROM_SET = BASE_URL + "/deleteStickerFromSet?";
+        SET_STICKER_SET_THUMB = BASE_URL + "/setStickerSetThumb";
         ANSWER_INLINE_QUERY = BASE_URL + "/answerInlineQuery?";
         SEND_INVOICE = BASE_URL + "/sendInvoice?";
         ANSWER_SHIPPING_QUERY = BASE_URL + "/answerShippingQuery?";
@@ -349,16 +372,27 @@ public class TgBotApi {
      */
     public int setWebhook(String url, InputStream certificate, int maxConnections, String[] allowedUpdates)
             throws IOException {
+        return setWebhook(url, certificate, null, maxConnections, allowedUpdates, false);
+    }
+
+    public int setWebhook(String url, InputStream certificate, String ipAddress, int maxConnections,
+            String[] allowedUpdates, boolean dropPendingUpdates) throws IOException {
         FileSender sender = new FileSender(SET_WEBHOOK);
         sender.addFormField("url", url);
         if (certificate != null) {
             sender.addFilePart("certificate", certificate, "certificate");
+        }
+        if (ipAddress != null) {
+            sender.addFormField("ip_address", ipAddress);
         }
         if (maxConnections > 0) {
             sender.addFormField("max_connections", maxConnections);
         }
         if (allowedUpdates != null) {
             sender.addFormField("allowed_updates", urlEncode(GSON.toJson(allowedUpdates)));
+        }
+        if (dropPendingUpdates) {
+            sender.addFormField("drop_pending_updates", "true");
         }
         return sender.finish();
     }
@@ -370,6 +404,10 @@ public class TgBotApi {
      */
     public int deleteWebhook() throws IOException {
         return callMethod(DELETE_WEBHOOK);
+    }
+
+    public int deleteWebhook(boolean dropPendingUpdates) throws IOException {
+        return callMethod(DELETE_WEBHOOK + "?drop_pending_updates=" + dropPendingUpdates);
     }
 
     /**
@@ -390,6 +428,14 @@ public class TgBotApi {
             botUser = me;
         }
         return botUser;
+    }
+
+    public int logOut() throws IOException {
+        return callMethod(LOG_OUT);
+    }
+
+    public int close() throws IOException {
+        return callMethod(CLOSE);
     }
 
     /**
@@ -571,6 +617,24 @@ public class TgBotApi {
      */
     public int forwardMessage(String channel, Message message) throws IOException {
         return forwardMessage(channel, message.chat.id, message.message_id);
+    }
+
+    public MessageId copyMessage(String channel, String fromChannel, int messageId, String caption,
+            ParseMode parseMode, int replyTo, ReplyMarkup replyMarkup) throws IOException {
+        StringBuilder command = new StringBuilder(COPY_MESSAGE);
+        command.append("chat_id=").append(channel);
+        command.append("&from_chat_id=").append(fromChannel);
+        command.append("&message_id=").append(messageId);
+        if (caption != null) command.append("&caption=").append(urlEncode(caption));
+        if (parseMode != null) command.append("&parse_mode=").append(parseMode.VALUE);
+        if (disableNotification) command.append("&disable_notification=true");
+        if (replyTo > 0) command.append("&reply_to_message_id=").append(replyTo);
+        if (replyMarkup != null) command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
+        return callMethod(command.toString(), MessageId.class);
+    }
+
+    public MessageId copyMessage(long chatId, long fromChatId, int messageId) throws IOException {
+        return copyMessage(String.valueOf(chatId), String.valueOf(fromChatId), messageId, null, null, 0, null);
     }
 
     /**
@@ -1159,7 +1223,13 @@ public class TgBotApi {
      */
     public int sendLocation(long chatId, float latitude, float longitude, int livePeriod, int replyTo,
             ReplyMarkup replyMarkup) throws IOException {
-        return sendLocation(String.valueOf(chatId), latitude, longitude, livePeriod, replyTo, replyMarkup);
+        return sendLocation(String.valueOf(chatId), latitude, longitude, 0, livePeriod, 0, 0, replyTo, replyMarkup);
+    }
+
+    public int sendLocation(long chatId, float latitude, float longitude, float horizontalAccuracy, int livePeriod,
+            int heading, int proximityAlertRadius, int replyTo, ReplyMarkup replyMarkup) throws IOException {
+        return sendLocation(String.valueOf(chatId), latitude, longitude, horizontalAccuracy, livePeriod, heading,
+                proximityAlertRadius, replyTo, replyMarkup);
     }
 
     /**
@@ -1167,12 +1237,26 @@ public class TgBotApi {
      */
     public int sendLocation(String channel, float latitude, float longitude, int livePeriod, int replyTo,
             ReplyMarkup replyMarkup) throws IOException {
+        return sendLocation(channel, latitude, longitude, 0, livePeriod, 0, 0, replyTo, replyMarkup);
+    }
+
+    public int sendLocation(String channel, float latitude, float longitude, float horizontalAccuracy, int livePeriod,
+            int heading, int proximityAlertRadius, int replyTo, ReplyMarkup replyMarkup) throws IOException {
         StringBuilder command = new StringBuilder(SEND_LOCATION);
         command.append("chat_id=").append(channel);
         command.append("&latitude=").append(latitude);
         command.append("&longitude=").append(longitude);
+        if (horizontalAccuracy > 0) {
+            command.append("&horizontal_accuracy=").append(horizontalAccuracy);
+        }
         if (livePeriod > 0) {
             command.append("&live_period=").append(livePeriod);
+        }
+        if (heading > 0) {
+            command.append("&heading=").append(heading);
+        }
+        if (proximityAlertRadius > 0) {
+            command.append("&proximity_alert_radius=").append(proximityAlertRadius);
         }
         if (disableNotification) {
             command.append("&disable_notification=true");
@@ -1192,7 +1276,14 @@ public class TgBotApi {
      */
     public int editMessageLiveLocation(long chatId, int messageId, float latitude, float longitude,
             ReplyMarkup replyMarkup) throws IOException {
-        return editMessageLiveLocation(String.valueOf(chatId), messageId, latitude, longitude, replyMarkup);
+        return editMessageLiveLocation(String.valueOf(chatId), messageId, latitude, longitude, 0, 0, 0, replyMarkup);
+    }
+
+    public int editMessageLiveLocation(long chatId, int messageId, float latitude, float longitude,
+            float horizontalAccuracy, int heading, int proximityAlertRadius, ReplyMarkup replyMarkup)
+            throws IOException {
+        return editMessageLiveLocation(String.valueOf(chatId), messageId, latitude, longitude, horizontalAccuracy,
+                heading, proximityAlertRadius, replyMarkup);
     }
 
     /**
@@ -1201,11 +1292,18 @@ public class TgBotApi {
      */
     public int editMessageLiveLocation(String channel, int messageId, float latitude, float longitude,
             ReplyMarkup replyMarkup) throws IOException {
+        return editMessageLiveLocation(channel, messageId, latitude, longitude, 0, 0, 0, replyMarkup);
+    }
+
+    public int editMessageLiveLocation(String channel, int messageId, float latitude, float longitude,
+            float horizontalAccuracy, int heading, int proximityAlertRadius, ReplyMarkup replyMarkup)
+            throws IOException {
         StringBuilder command = new StringBuilder(EDIT_MESSAGE_LIVE_LOCATION);
         command.append("chat_id=").append(channel);
         command.append("&message_id=").append(messageId);
         command.append("&latitude=").append(latitude);
         command.append("&longitude=").append(longitude);
+        appendLiveLocationParameters(command, horizontalAccuracy, heading, proximityAlertRadius);
         if (replyMarkup != null) {
             command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
         }
@@ -1218,14 +1316,34 @@ public class TgBotApi {
      */
     public int editMessageLiveLocation(String inlineMessageId, float latitude, float longitude, ReplyMarkup replyMarkup)
             throws IOException {
+        return editMessageLiveLocation(inlineMessageId, latitude, longitude, 0, 0, 0, replyMarkup);
+    }
+
+    public int editMessageLiveLocation(String inlineMessageId, float latitude, float longitude,
+            float horizontalAccuracy, int heading, int proximityAlertRadius, ReplyMarkup replyMarkup)
+            throws IOException {
         StringBuilder command = new StringBuilder(EDIT_MESSAGE_LIVE_LOCATION);
         command.append("inline_message_id=").append(inlineMessageId);
         command.append("&latitude=").append(latitude);
         command.append("&longitude=").append(longitude);
+        appendLiveLocationParameters(command, horizontalAccuracy, heading, proximityAlertRadius);
         if (replyMarkup != null) {
             command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
         }
         return callMethod(command.toString());
+    }
+
+    private void appendLiveLocationParameters(StringBuilder command, float horizontalAccuracy, int heading,
+            int proximityAlertRadius) {
+        if (horizontalAccuracy > 0) {
+            command.append("&horizontal_accuracy=").append(horizontalAccuracy);
+        }
+        if (heading > 0) {
+            command.append("&heading=").append(heading);
+        }
+        if (proximityAlertRadius > 0) {
+            command.append("&proximity_alert_radius=").append(proximityAlertRadius);
+        }
     }
 
     /**
@@ -1293,6 +1411,111 @@ public class TgBotApi {
     }
 
     /**
+     * @see <a href="https://core.telegram.org/bots/api#sendpoll">Official documentation of sendPoll</a>
+     */
+    public Message sendPoll(long chatId, String question, String[] options, boolean isAnonymous, String type,
+            boolean allowsMultipleAnswers, Integer correctOptionId, boolean isClosed, int replyTo,
+            ReplyMarkup replyMarkup) throws IOException {
+        return sendPoll(String.valueOf(chatId), question, options, isAnonymous, type, allowsMultipleAnswers,
+                correctOptionId, isClosed, replyTo, replyMarkup);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#sendpoll">Official documentation of sendPoll</a>
+     */
+    public Message sendPoll(String channel, String question, String[] options, boolean isAnonymous, String type,
+            boolean allowsMultipleAnswers, Integer correctOptionId, boolean isClosed, int replyTo,
+            ReplyMarkup replyMarkup) throws IOException {
+        StringBuilder command = new StringBuilder(SEND_POLL);
+        command.append("chat_id=").append(channel);
+        command.append("&question=").append(urlEncode(question));
+        command.append("&options=").append(urlEncode(GSON.toJson(options)));
+        command.append("&is_anonymous=").append(isAnonymous);
+        if (type != null) {
+            command.append("&type=").append(urlEncode(type));
+        }
+        if (allowsMultipleAnswers) {
+            command.append("&allows_multiple_answers=true");
+        }
+        if (correctOptionId != null) {
+            command.append("&correct_option_id=").append(correctOptionId);
+        }
+        if (isClosed) {
+            command.append("&is_closed=true");
+        }
+        if (disableNotification) {
+            command.append("&disable_notification=true");
+        }
+        if (replyTo > 0) {
+            command.append("&reply_to_message_id=").append(replyTo);
+        }
+        if (replyMarkup != null) {
+            command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
+        }
+        return callMethod(command.toString(), Message.class);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#sendpoll">Official documentation of sendPoll</a>
+     */
+    public Message sendPoll(long chatId, String question, String[] options, boolean isAnonymous, String type,
+            boolean allowsMultipleAnswers, Integer correctOptionId, String explanation, ParseMode explanationParseMode,
+            Integer openPeriod, Integer closeDate, boolean isClosed, int replyTo, ReplyMarkup replyMarkup)
+            throws IOException {
+        return sendPoll(String.valueOf(chatId), question, options, isAnonymous, type, allowsMultipleAnswers,
+                correctOptionId, explanation, explanationParseMode, openPeriod, closeDate, isClosed, replyTo,
+                replyMarkup);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#sendpoll">Official documentation of sendPoll</a>
+     */
+    public Message sendPoll(String channel, String question, String[] options, boolean isAnonymous, String type,
+            boolean allowsMultipleAnswers, Integer correctOptionId, String explanation, ParseMode explanationParseMode,
+            Integer openPeriod, Integer closeDate, boolean isClosed, int replyTo, ReplyMarkup replyMarkup)
+            throws IOException {
+        StringBuilder command = new StringBuilder(SEND_POLL);
+        command.append("chat_id=").append(channel);
+        command.append("&question=").append(urlEncode(question));
+        command.append("&options=").append(urlEncode(GSON.toJson(options)));
+        command.append("&is_anonymous=").append(isAnonymous);
+        if (type != null) {
+            command.append("&type=").append(urlEncode(type));
+        }
+        if (allowsMultipleAnswers) {
+            command.append("&allows_multiple_answers=true");
+        }
+        if (correctOptionId != null) {
+            command.append("&correct_option_id=").append(correctOptionId);
+        }
+        if (explanation != null) {
+            command.append("&explanation=").append(urlEncode(explanation));
+        }
+        if (explanationParseMode != null) {
+            command.append("&explanation_parse_mode=").append(explanationParseMode.VALUE);
+        }
+        if (openPeriod != null) {
+            command.append("&open_period=").append(openPeriod);
+        }
+        if (closeDate != null) {
+            command.append("&close_date=").append(closeDate);
+        }
+        if (isClosed) {
+            command.append("&is_closed=true");
+        }
+        if (disableNotification) {
+            command.append("&disable_notification=true");
+        }
+        if (replyTo > 0) {
+            command.append("&reply_to_message_id=").append(replyTo);
+        }
+        if (replyMarkup != null) {
+            command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
+        }
+        return callMethod(command.toString(), Message.class);
+    }
+
+    /**
      * @see <a href="https://core.telegram.org/bots/api#stoppoll">Official documentation of stopPoll</a>
      */
     public Poll stopPoll(long chatId, int messageId, ReplyMarkup replyMarkup) throws IOException {
@@ -1313,6 +1536,42 @@ public class TgBotApi {
     }
 
     /**
+     * @see <a href="https://core.telegram.org/bots/api#senddice">Official documentation of sendDice</a>
+     */
+    public Message sendDice(long chatId, String emoji, int replyTo, ReplyMarkup replyMarkup) throws IOException {
+        return sendDice(String.valueOf(chatId), emoji, replyTo, replyMarkup);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#senddice">Official documentation of sendDice</a>
+     */
+    public Message sendDice(String channel, String emoji, int replyTo, ReplyMarkup replyMarkup) throws IOException {
+        StringBuilder command = new StringBuilder(SEND_DICE);
+        command.append("chat_id=").append(channel);
+        if (emoji != null) {
+            command.append("&emoji=").append(urlEncode(emoji));
+        }
+        if (disableNotification) {
+            command.append("&disable_notification=true");
+        }
+        if (replyTo > 0) {
+            command.append("&reply_to_message_id=").append(replyTo);
+        }
+        if (replyMarkup != null) {
+            command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
+        }
+        return callMethod(command.toString(), Message.class);
+    }
+
+    public BotCommand[] getMyCommands() throws IOException {
+        return callMethod(GET_MY_COMMANDS, BotCommand[].class);
+    }
+
+    public int setMyCommands(BotCommand[] commands) throws IOException {
+        return callMethod(SET_MY_COMMANDS + "commands=" + urlEncode(GSON.toJson(commands)));
+    }
+
+    /**
      * @see <a href="https://core.telegram.org/bots/api#sendvenue">Official documentation of sendVenue</a>
      */
     public int sendVenue(long chatId, float latitude, float longitude, String title, String address,
@@ -1326,6 +1585,13 @@ public class TgBotApi {
      */
     public int sendVenue(String channel, float latitude, float longitude, String title, String address,
             String foursquareId, String foursquareType, int replyTo, ReplyMarkup replyMarkup) throws IOException {
+        return sendVenue(channel, latitude, longitude, title, address, foursquareId, foursquareType, null, null,
+                replyTo, replyMarkup);
+    }
+
+    public int sendVenue(String channel, float latitude, float longitude, String title, String address,
+            String foursquareId, String foursquareType, String googlePlaceId, String googlePlaceType, int replyTo,
+            ReplyMarkup replyMarkup) throws IOException {
         StringBuilder command = new StringBuilder(SEND_VENUE);
         command.append("chat_id=").append(channel);
         command.append("&latitude=").append(latitude);
@@ -1337,6 +1603,12 @@ public class TgBotApi {
         }
         if (foursquareType != null) {
             command.append("&foursquare_type=").append(foursquareType);
+        }
+        if (googlePlaceId != null) {
+            command.append("&google_place_id=").append(googlePlaceId);
+        }
+        if (googlePlaceType != null) {
+            command.append("&google_place_type=").append(googlePlaceType);
         }
         if (disableNotification) {
             command.append("&disable_notification=true");
@@ -1562,7 +1834,12 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#unbanchatmember">Official documentation of unbanChatMember</a>
      */
     public int unbanChatMember(String channel, long userId) throws IOException {
-        return callMethod(UNBAN_CHAT_MEMBER + "chat_id=" + channel + "&user_id=" + userId);
+        return unbanChatMember(channel, userId, false);
+    }
+
+    public int unbanChatMember(String channel, long userId, boolean onlyIfBanned) throws IOException {
+        return callMethod(UNBAN_CHAT_MEMBER + "chat_id=" + channel + "&user_id=" + userId
+                + "&only_if_banned=" + onlyIfBanned);
     }
 
     /**
@@ -1605,6 +1882,31 @@ public class TgBotApi {
     }
 
     /**
+     * @see <a href="https://core.telegram.org/bots/api#restrictchatmember">Official documentation of
+     *      restrictChatMember</a>
+     */
+    public int restrictChatMember(long chatId, long userId, ChatPermissions permissions, int untilDate)
+            throws IOException {
+        return restrictChatMember(String.valueOf(chatId), userId, permissions, untilDate);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#restrictchatmember">Official documentation of
+     *      restrictChatMember</a>
+     */
+    public int restrictChatMember(String channel, long userId, ChatPermissions permissions, int untilDate)
+            throws IOException {
+        StringBuilder command = new StringBuilder(RESTRICT_CHAT_MEMBER);
+        command.append("chat_id=").append(channel);
+        command.append("&user_id=").append(userId);
+        command.append("&permissions=").append(urlEncode(GSON.toJson(permissions)));
+        if (untilDate != 0) {
+            command.append("&until_date=").append(untilDate);
+        }
+        return callMethod(command.toString());
+    }
+
+    /**
      * @see <a href="https://core.telegram.org/bots/api#promotechatmember">Official documentation of
      *      promoteChatMember</a>
      */
@@ -1622,9 +1924,19 @@ public class TgBotApi {
     public int promoteChatMember(String channel, long userId, boolean canChangeInfo, boolean canPostMessages,
             boolean canEditMessages, boolean canDeleteMessages, boolean canInviteUsers, boolean canRestrictMembers,
             boolean canPinMessages, boolean canPromoteMembers) throws IOException {
+        return promoteChatMember(channel, userId, false, canChangeInfo, canPostMessages, canEditMessages,
+                canDeleteMessages, canInviteUsers, canRestrictMembers, canPinMessages, canPromoteMembers);
+    }
+
+    public int promoteChatMember(String channel, long userId, boolean isAnonymous, boolean canChangeInfo,
+            boolean canPostMessages, boolean canEditMessages, boolean canDeleteMessages, boolean canInviteUsers,
+            boolean canRestrictMembers, boolean canPinMessages, boolean canPromoteMembers) throws IOException {
         StringBuilder command = new StringBuilder(PROMOTE_CHAT_MEMBER);
         command.append("chat_id=").append(channel);
         command.append("&user_id=").append(userId);
+        if (isAnonymous) {
+            command.append("&is_anonymous=True");
+        }
         if (canChangeInfo) {
             command.append("&can_change_info=True");
         }
@@ -1651,6 +1963,24 @@ public class TgBotApi {
         }
 
         return callMethod(command.toString());
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#setchatadministratorcustomtitle">Official documentation of
+     *      setChatAdministratorCustomTitle</a>
+     */
+    public int setChatAdministratorCustomTitle(long chatId, long userId, String customTitle) throws IOException {
+        return setChatAdministratorCustomTitle(String.valueOf(chatId), userId, customTitle);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#setchatadministratorcustomtitle">Official documentation of
+     *      setChatAdministratorCustomTitle</a>
+     */
+    public int setChatAdministratorCustomTitle(String channel, long userId, String customTitle) throws IOException {
+        String command = SET_CHAT_ADMINISTRATOR_CUSTOM_TITLE + "chat_id=" + channel + "&user_id=" + userId
+                + "&custom_title=" + urlEncode(customTitle);
+        return callMethod(command);
     }
 
     /**
@@ -1730,6 +2060,32 @@ public class TgBotApi {
         return callMethod(SET_CHAT_DESCRIPTION + "chat_id=" + channel + "&description=" + description);
     }
 
+    public int setChatDescription(long chatId, String description) throws IOException {
+        return setChatDescription(String.valueOf(chatId), description);
+    }
+
+    public int setChatDescription(String channel, String description) throws IOException {
+        return callMethod(SET_CHAT_DESCRIPTION + "chat_id=" + channel + "&description=" + urlEncode(description));
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#setchatpermissions">Official documentation of
+     *      setChatPermissions</a>
+     */
+    public int setChatPermissions(long chatId, ChatPermissions permissions) throws IOException {
+        return setChatPermissions(String.valueOf(chatId), permissions);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#setchatpermissions">Official documentation of
+     *      setChatPermissions</a>
+     */
+    public int setChatPermissions(String channel, ChatPermissions permissions) throws IOException {
+        String command = SET_CHAT_PERMISSIONS + "chat_id=" + channel + "&permissions="
+                + urlEncode(GSON.toJson(permissions));
+        return callMethod(command);
+    }
+
     /**
      * @see <a href="https://core.telegram.org/bots/api#pinchatmessage">Official documentation of pinChatMessage</a>
      */
@@ -1762,6 +2118,18 @@ public class TgBotApi {
      */
     public int unpinChatMessage(String channel) throws IOException {
         return callMethod(UNPIN_CHAT_MESSAGE + "chat_id=" + channel);
+    }
+
+    public int unpinChatMessage(String channel, int messageId) throws IOException {
+        return callMethod(UNPIN_CHAT_MESSAGE + "chat_id=" + channel + "&message_id=" + messageId);
+    }
+
+    public int unpinAllChatMessages(String channel) throws IOException {
+        return callMethod(UNPIN_ALL_CHAT_MESSAGES + "chat_id=" + channel);
+    }
+
+    public int unpinAllChatMessages(long chatId) throws IOException {
+        return unpinAllChatMessages(String.valueOf(chatId));
     }
 
     /**
@@ -2224,6 +2592,68 @@ public class TgBotApi {
         command.append("&emojis=").append(emojis);
         if (maskPosition != null) {
             command.append("&mask_position=").append(urlEncode(GSON.toJson(maskPosition)));
+        }
+        return callMethod(command.toString());
+    }
+
+    public int createNewAnimatedStickerSet(long userId, String name, String title, InputStream tgsSticker,
+            String emojis) throws IOException {
+        FileSender sender = new FileSender(CREATE_NEW_STICKER_SET);
+        sender.addFormField("user_id", userId);
+        sender.addFormField("name", name);
+        sender.addFormField("title", title);
+        sender.addFilePart("tgs_sticker", tgsSticker, "sticker.tgs");
+        sender.addFormField("emojis", emojis);
+        return sender.finish();
+    }
+
+    public int createNewAnimatedStickerSet(long userId, String name, String title, String tgsSticker,
+            String emojis) throws IOException {
+        StringBuilder command = new StringBuilder(CREATE_NEW_STICKER_SET).append('?');
+        command.append("user_id=").append(userId);
+        command.append("&name=").append(name);
+        command.append("&title=").append(urlEncode(title));
+        command.append("&tgs_sticker=").append(urlEncode(tgsSticker));
+        command.append("&emojis=").append(urlEncode(emojis));
+        return callMethod(command.toString());
+    }
+
+    public int addAnimatedStickerToSet(long userId, String name, InputStream tgsSticker, String emojis)
+            throws IOException {
+        FileSender sender = new FileSender(ADD_STICKER_TO_SET);
+        sender.addFormField("user_id", userId);
+        sender.addFormField("name", name);
+        sender.addFilePart("tgs_sticker", tgsSticker, "sticker.tgs");
+        sender.addFormField("emojis", emojis);
+        return sender.finish();
+    }
+
+    public int addAnimatedStickerToSet(long userId, String name, String tgsSticker, String emojis)
+            throws IOException {
+        StringBuilder command = new StringBuilder(ADD_STICKER_TO_SET).append('?');
+        command.append("user_id=").append(userId);
+        command.append("&name=").append(name);
+        command.append("&tgs_sticker=").append(urlEncode(tgsSticker));
+        command.append("&emojis=").append(urlEncode(emojis));
+        return callMethod(command.toString());
+    }
+
+    public int setStickerSetThumb(String name, long userId, InputStream thumb) throws IOException {
+        FileSender sender = new FileSender(SET_STICKER_SET_THUMB);
+        sender.addFormField("name", name);
+        sender.addFormField("user_id", userId);
+        if (thumb != null) {
+            sender.addFilePart("thumb", thumb, "thumb.png");
+        }
+        return sender.finish();
+    }
+
+    public int setStickerSetThumb(String name, long userId, String thumb) throws IOException {
+        StringBuilder command = new StringBuilder(SET_STICKER_SET_THUMB).append('?');
+        command.append("name=").append(name);
+        command.append("&user_id=").append(userId);
+        if (thumb != null) {
+            command.append("&thumb=").append(urlEncode(thumb));
         }
         return callMethod(command.toString());
     }

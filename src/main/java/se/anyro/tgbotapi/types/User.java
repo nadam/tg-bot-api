@@ -10,6 +10,9 @@ public class User {
     public String last_name;
     public String username;
     public String language_code;
+    public boolean can_join_groups;
+    public boolean can_read_all_group_messages;
+    public boolean supports_inline_queries;
 
     public String getUrl() {
         return "tg://user?id=" + id;

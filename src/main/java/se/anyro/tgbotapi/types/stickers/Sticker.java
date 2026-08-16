@@ -7,11 +7,13 @@ import se.anyro.tgbotapi.types.file.PhotoSize;
  */
 public class Sticker {
     public String file_id;
+    public String file_unique_id;
     public int width;
     public int height;
     public PhotoSize thumb;
     public String emoji;
     public String set_name;
     public MaskPosition mask_position;
+    public boolean is_animated;
     public int file_size;
 }
