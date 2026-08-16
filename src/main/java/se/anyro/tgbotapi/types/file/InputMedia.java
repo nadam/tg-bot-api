@@ -3,6 +3,7 @@ package se.anyro.tgbotapi.types.file;
 import java.io.InputStream;
 
 import se.anyro.tgbotapi.types.ParseMode;
+import se.anyro.tgbotapi.types.MessageEntity;
 
 /**
  * Base class of the InputMedia classes.
@@ -15,6 +16,7 @@ public abstract class InputMedia {
     public String thumb;
     public String caption;
     public String parse_mode;
+    public MessageEntity[] caption_entities;
 
     // Not part of JSON serialization
     public transient String filename;

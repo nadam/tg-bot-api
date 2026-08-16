@@ -7,6 +7,7 @@ public class ChatMember {
     public User user;
     public String status;
     public String custom_title;
+    public boolean is_anonymous;
 
     public int until_date; // Restricted and kicked only
     public boolean is_member; // Restricted only

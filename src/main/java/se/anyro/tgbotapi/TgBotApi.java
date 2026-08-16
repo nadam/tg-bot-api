@@ -18,6 +18,7 @@ import se.anyro.tgbotapi.types.ChatAction;
 import se.anyro.tgbotapi.types.ChatMember;
 import se.anyro.tgbotapi.types.ChatPermissions;
 import se.anyro.tgbotapi.types.Message;
+import se.anyro.tgbotapi.types.MessageId;
 import se.anyro.tgbotapi.types.ParseMode;
 import se.anyro.tgbotapi.types.ResponseParameters;
 import se.anyro.tgbotapi.types.Update;
@@ -53,8 +54,11 @@ public class TgBotApi {
     private final String DELETE_WEBHOOK;
     private final String GET_WEBHOOK_INFO;
     private final String GET_ME;
+    private final String LOG_OUT;
+    private final String CLOSE;
     private final String SEND_MESSAGE;
     private final String FORWARD_MESSAGE;
+    private final String COPY_MESSAGE;
     private final String SEND_PHOTO;
     private final String SEND_AUDIO;
     private final String SEND_DOCUMENT;
@@ -91,6 +95,7 @@ public class TgBotApi {
     private final String SET_CHAT_PERMISSIONS;
     private final String PIN_CHAT_MESSAGE;
     private final String UNPIN_CHAT_MESSAGE;
+    private final String UNPIN_ALL_CHAT_MESSAGES;
     private final String GET_CHAT;
     private final String GET_CHAT_ADMINISTRATORS;
     private final String GET_CHAT_MEMBERS_COUNT;
@@ -166,8 +171,11 @@ public class TgBotApi {
         DELETE_WEBHOOK = BASE_URL + "/deleteWebhook";
         GET_WEBHOOK_INFO = BASE_URL + "/getWebhookInfo";
         GET_ME = BASE_URL + "/getMe";
+        LOG_OUT = BASE_URL + "/logOut";
+        CLOSE = BASE_URL + "/close";
         SEND_MESSAGE = BASE_URL + "/sendMessage?";
         FORWARD_MESSAGE = BASE_URL + "/forwardMessage?";
+        COPY_MESSAGE = BASE_URL + "/copyMessage?";
         SEND_PHOTO = BASE_URL + "/sendPhoto";
         SEND_AUDIO = BASE_URL + "/sendAudio";
         SEND_DOCUMENT = BASE_URL + "/sendDocument";
@@ -203,6 +211,7 @@ public class TgBotApi {
         SET_CHAT_PERMISSIONS = BASE_URL + "/setChatPermissions?";
         PIN_CHAT_MESSAGE = BASE_URL + "/pinChatMessage?";
         UNPIN_CHAT_MESSAGE = BASE_URL + "/unpinChatMessage?";
+        UNPIN_ALL_CHAT_MESSAGES = BASE_URL + "/unpinAllChatMessages?";
         LEAVE_CHAT = BASE_URL + "/leaveChat?";
         GET_CHAT = BASE_URL + "/getChat?";
         GET_CHAT_ADMINISTRATORS = BASE_URL + "/getChatAdministrators?";
@@ -363,16 +372,27 @@ public class TgBotApi {
      */
     public int setWebhook(String url, InputStream certificate, int maxConnections, String[] allowedUpdates)
             throws IOException {
+        return setWebhook(url, certificate, null, maxConnections, allowedUpdates, false);
+    }
+
+    public int setWebhook(String url, InputStream certificate, String ipAddress, int maxConnections,
+            String[] allowedUpdates, boolean dropPendingUpdates) throws IOException {
         FileSender sender = new FileSender(SET_WEBHOOK);
         sender.addFormField("url", url);
         if (certificate != null) {
             sender.addFilePart("certificate", certificate, "certificate");
+        }
+        if (ipAddress != null) {
+            sender.addFormField("ip_address", ipAddress);
         }
         if (maxConnections > 0) {
             sender.addFormField("max_connections", maxConnections);
         }
         if (allowedUpdates != null) {
             sender.addFormField("allowed_updates", urlEncode(GSON.toJson(allowedUpdates)));
+        }
+        if (dropPendingUpdates) {
+            sender.addFormField("drop_pending_updates", "true");
         }
         return sender.finish();
     }
@@ -384,6 +404,10 @@ public class TgBotApi {
      */
     public int deleteWebhook() throws IOException {
         return callMethod(DELETE_WEBHOOK);
+    }
+
+    public int deleteWebhook(boolean dropPendingUpdates) throws IOException {
+        return callMethod(DELETE_WEBHOOK + "?drop_pending_updates=" + dropPendingUpdates);
     }
 
     /**
@@ -404,6 +428,14 @@ public class TgBotApi {
             botUser = me;
         }
         return botUser;
+    }
+
+    public int logOut() throws IOException {
+        return callMethod(LOG_OUT);
+    }
+
+    public int close() throws IOException {
+        return callMethod(CLOSE);
     }
 
     /**
@@ -585,6 +617,24 @@ public class TgBotApi {
      */
     public int forwardMessage(String channel, Message message) throws IOException {
         return forwardMessage(channel, message.chat.id, message.message_id);
+    }
+
+    public MessageId copyMessage(String channel, String fromChannel, int messageId, String caption,
+            ParseMode parseMode, int replyTo, ReplyMarkup replyMarkup) throws IOException {
+        StringBuilder command = new StringBuilder(COPY_MESSAGE);
+        command.append("chat_id=").append(channel);
+        command.append("&from_chat_id=").append(fromChannel);
+        command.append("&message_id=").append(messageId);
+        if (caption != null) command.append("&caption=").append(urlEncode(caption));
+        if (parseMode != null) command.append("&parse_mode=").append(parseMode.VALUE);
+        if (disableNotification) command.append("&disable_notification=true");
+        if (replyTo > 0) command.append("&reply_to_message_id=").append(replyTo);
+        if (replyMarkup != null) command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
+        return callMethod(command.toString(), MessageId.class);
+    }
+
+    public MessageId copyMessage(long chatId, long fromChatId, int messageId) throws IOException {
+        return copyMessage(String.valueOf(chatId), String.valueOf(fromChatId), messageId, null, null, 0, null);
     }
 
     /**
@@ -1173,7 +1223,13 @@ public class TgBotApi {
      */
     public int sendLocation(long chatId, float latitude, float longitude, int livePeriod, int replyTo,
             ReplyMarkup replyMarkup) throws IOException {
-        return sendLocation(String.valueOf(chatId), latitude, longitude, livePeriod, replyTo, replyMarkup);
+        return sendLocation(String.valueOf(chatId), latitude, longitude, 0, livePeriod, 0, 0, replyTo, replyMarkup);
+    }
+
+    public int sendLocation(long chatId, float latitude, float longitude, float horizontalAccuracy, int livePeriod,
+            int heading, int proximityAlertRadius, int replyTo, ReplyMarkup replyMarkup) throws IOException {
+        return sendLocation(String.valueOf(chatId), latitude, longitude, horizontalAccuracy, livePeriod, heading,
+                proximityAlertRadius, replyTo, replyMarkup);
     }
 
     /**
@@ -1181,12 +1237,26 @@ public class TgBotApi {
      */
     public int sendLocation(String channel, float latitude, float longitude, int livePeriod, int replyTo,
             ReplyMarkup replyMarkup) throws IOException {
+        return sendLocation(channel, latitude, longitude, 0, livePeriod, 0, 0, replyTo, replyMarkup);
+    }
+
+    public int sendLocation(String channel, float latitude, float longitude, float horizontalAccuracy, int livePeriod,
+            int heading, int proximityAlertRadius, int replyTo, ReplyMarkup replyMarkup) throws IOException {
         StringBuilder command = new StringBuilder(SEND_LOCATION);
         command.append("chat_id=").append(channel);
         command.append("&latitude=").append(latitude);
         command.append("&longitude=").append(longitude);
+        if (horizontalAccuracy > 0) {
+            command.append("&horizontal_accuracy=").append(horizontalAccuracy);
+        }
         if (livePeriod > 0) {
             command.append("&live_period=").append(livePeriod);
+        }
+        if (heading > 0) {
+            command.append("&heading=").append(heading);
+        }
+        if (proximityAlertRadius > 0) {
+            command.append("&proximity_alert_radius=").append(proximityAlertRadius);
         }
         if (disableNotification) {
             command.append("&disable_notification=true");
@@ -1206,7 +1276,14 @@ public class TgBotApi {
      */
     public int editMessageLiveLocation(long chatId, int messageId, float latitude, float longitude,
             ReplyMarkup replyMarkup) throws IOException {
-        return editMessageLiveLocation(String.valueOf(chatId), messageId, latitude, longitude, replyMarkup);
+        return editMessageLiveLocation(String.valueOf(chatId), messageId, latitude, longitude, 0, 0, 0, replyMarkup);
+    }
+
+    public int editMessageLiveLocation(long chatId, int messageId, float latitude, float longitude,
+            float horizontalAccuracy, int heading, int proximityAlertRadius, ReplyMarkup replyMarkup)
+            throws IOException {
+        return editMessageLiveLocation(String.valueOf(chatId), messageId, latitude, longitude, horizontalAccuracy,
+                heading, proximityAlertRadius, replyMarkup);
     }
 
     /**
@@ -1215,11 +1292,18 @@ public class TgBotApi {
      */
     public int editMessageLiveLocation(String channel, int messageId, float latitude, float longitude,
             ReplyMarkup replyMarkup) throws IOException {
+        return editMessageLiveLocation(channel, messageId, latitude, longitude, 0, 0, 0, replyMarkup);
+    }
+
+    public int editMessageLiveLocation(String channel, int messageId, float latitude, float longitude,
+            float horizontalAccuracy, int heading, int proximityAlertRadius, ReplyMarkup replyMarkup)
+            throws IOException {
         StringBuilder command = new StringBuilder(EDIT_MESSAGE_LIVE_LOCATION);
         command.append("chat_id=").append(channel);
         command.append("&message_id=").append(messageId);
         command.append("&latitude=").append(latitude);
         command.append("&longitude=").append(longitude);
+        appendLiveLocationParameters(command, horizontalAccuracy, heading, proximityAlertRadius);
         if (replyMarkup != null) {
             command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
         }
@@ -1232,14 +1316,34 @@ public class TgBotApi {
      */
     public int editMessageLiveLocation(String inlineMessageId, float latitude, float longitude, ReplyMarkup replyMarkup)
             throws IOException {
+        return editMessageLiveLocation(inlineMessageId, latitude, longitude, 0, 0, 0, replyMarkup);
+    }
+
+    public int editMessageLiveLocation(String inlineMessageId, float latitude, float longitude,
+            float horizontalAccuracy, int heading, int proximityAlertRadius, ReplyMarkup replyMarkup)
+            throws IOException {
         StringBuilder command = new StringBuilder(EDIT_MESSAGE_LIVE_LOCATION);
         command.append("inline_message_id=").append(inlineMessageId);
         command.append("&latitude=").append(latitude);
         command.append("&longitude=").append(longitude);
+        appendLiveLocationParameters(command, horizontalAccuracy, heading, proximityAlertRadius);
         if (replyMarkup != null) {
             command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
         }
         return callMethod(command.toString());
+    }
+
+    private void appendLiveLocationParameters(StringBuilder command, float horizontalAccuracy, int heading,
+            int proximityAlertRadius) {
+        if (horizontalAccuracy > 0) {
+            command.append("&horizontal_accuracy=").append(horizontalAccuracy);
+        }
+        if (heading > 0) {
+            command.append("&heading=").append(heading);
+        }
+        if (proximityAlertRadius > 0) {
+            command.append("&proximity_alert_radius=").append(proximityAlertRadius);
+        }
     }
 
     /**
@@ -1481,6 +1585,13 @@ public class TgBotApi {
      */
     public int sendVenue(String channel, float latitude, float longitude, String title, String address,
             String foursquareId, String foursquareType, int replyTo, ReplyMarkup replyMarkup) throws IOException {
+        return sendVenue(channel, latitude, longitude, title, address, foursquareId, foursquareType, null, null,
+                replyTo, replyMarkup);
+    }
+
+    public int sendVenue(String channel, float latitude, float longitude, String title, String address,
+            String foursquareId, String foursquareType, String googlePlaceId, String googlePlaceType, int replyTo,
+            ReplyMarkup replyMarkup) throws IOException {
         StringBuilder command = new StringBuilder(SEND_VENUE);
         command.append("chat_id=").append(channel);
         command.append("&latitude=").append(latitude);
@@ -1492,6 +1603,12 @@ public class TgBotApi {
         }
         if (foursquareType != null) {
             command.append("&foursquare_type=").append(foursquareType);
+        }
+        if (googlePlaceId != null) {
+            command.append("&google_place_id=").append(googlePlaceId);
+        }
+        if (googlePlaceType != null) {
+            command.append("&google_place_type=").append(googlePlaceType);
         }
         if (disableNotification) {
             command.append("&disable_notification=true");
@@ -1717,7 +1834,12 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#unbanchatmember">Official documentation of unbanChatMember</a>
      */
     public int unbanChatMember(String channel, long userId) throws IOException {
-        return callMethod(UNBAN_CHAT_MEMBER + "chat_id=" + channel + "&user_id=" + userId);
+        return unbanChatMember(channel, userId, false);
+    }
+
+    public int unbanChatMember(String channel, long userId, boolean onlyIfBanned) throws IOException {
+        return callMethod(UNBAN_CHAT_MEMBER + "chat_id=" + channel + "&user_id=" + userId
+                + "&only_if_banned=" + onlyIfBanned);
     }
 
     /**
@@ -1802,9 +1924,19 @@ public class TgBotApi {
     public int promoteChatMember(String channel, long userId, boolean canChangeInfo, boolean canPostMessages,
             boolean canEditMessages, boolean canDeleteMessages, boolean canInviteUsers, boolean canRestrictMembers,
             boolean canPinMessages, boolean canPromoteMembers) throws IOException {
+        return promoteChatMember(channel, userId, false, canChangeInfo, canPostMessages, canEditMessages,
+                canDeleteMessages, canInviteUsers, canRestrictMembers, canPinMessages, canPromoteMembers);
+    }
+
+    public int promoteChatMember(String channel, long userId, boolean isAnonymous, boolean canChangeInfo,
+            boolean canPostMessages, boolean canEditMessages, boolean canDeleteMessages, boolean canInviteUsers,
+            boolean canRestrictMembers, boolean canPinMessages, boolean canPromoteMembers) throws IOException {
         StringBuilder command = new StringBuilder(PROMOTE_CHAT_MEMBER);
         command.append("chat_id=").append(channel);
         command.append("&user_id=").append(userId);
+        if (isAnonymous) {
+            command.append("&is_anonymous=True");
+        }
         if (canChangeInfo) {
             command.append("&can_change_info=True");
         }
@@ -1986,6 +2118,18 @@ public class TgBotApi {
      */
     public int unpinChatMessage(String channel) throws IOException {
         return callMethod(UNPIN_CHAT_MESSAGE + "chat_id=" + channel);
+    }
+
+    public int unpinChatMessage(String channel, int messageId) throws IOException {
+        return callMethod(UNPIN_CHAT_MESSAGE + "chat_id=" + channel + "&message_id=" + messageId);
+    }
+
+    public int unpinAllChatMessages(String channel) throws IOException {
+        return callMethod(UNPIN_ALL_CHAT_MESSAGES + "chat_id=" + channel);
+    }
+
+    public int unpinAllChatMessages(long chatId) throws IOException {
+        return unpinAllChatMessages(String.valueOf(chatId));
     }
 
     /**

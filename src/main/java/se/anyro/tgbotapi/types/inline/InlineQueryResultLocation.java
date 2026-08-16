@@ -12,6 +12,10 @@ public class InlineQueryResultLocation extends InlineQueryResult {
     public float latitude;
     public float longitude;
     public String title;
+    public float horizontal_accuracy;
+    public int live_period;
+    public int heading;
+    public int proximity_alert_radius;
     public InlineKeyboardMarkup reply_markup;
     public InputMessageContent input_message_content;
     public String thumb_url;

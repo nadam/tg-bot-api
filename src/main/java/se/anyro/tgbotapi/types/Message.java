@@ -21,6 +21,7 @@ import se.anyro.tgbotapi.types.reply_markup.InlineKeyboardMarkup;
 public class Message {
     public int message_id;
     public User from;
+    public Chat sender_chat;
     public User via_bot;
     public int date;
     public Chat chat;
@@ -67,6 +68,7 @@ public class Message {
     public Poll poll;
     public InlineKeyboardMarkup reply_markup;
     public Dice dice;
+    public ProximityAlertTriggered proximity_alert_triggered;
 
     private static final String VIDEO_MP4 = "video/mp4";
 

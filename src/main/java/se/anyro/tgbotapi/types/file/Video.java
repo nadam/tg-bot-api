@@ -11,5 +11,6 @@ public class Video {
     public int duration;
     public PhotoSize thumb;
     public String mime_type;
+    public String file_name;
     public long file_size;
 }
