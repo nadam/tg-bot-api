@@ -65,6 +65,7 @@ public class Message {
     public PassportData passport_data;
     public Poll poll;
     public InlineKeyboardMarkup reply_markup;
+    public Dice dice;
 
     private static final String VIDEO_MP4 = "video/mp4";
 

@@ -13,6 +13,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 import se.anyro.tgbotapi.types.Chat;
+import se.anyro.tgbotapi.types.BotCommand;
 import se.anyro.tgbotapi.types.ChatAction;
 import se.anyro.tgbotapi.types.ChatMember;
 import se.anyro.tgbotapi.types.ChatPermissions;
@@ -69,6 +70,9 @@ public class TgBotApi {
     private final String SEND_CONTACT;
     private final String SEND_POLL;
     private final String STOP_POLL;
+    private final String SEND_DICE;
+    private final String GET_MY_COMMANDS;
+    private final String SET_MY_COMMANDS;
     private final String SEND_CHAT_ACTION;
     private final String GET_USER_PROFILE_PHOTOS;
     private final String GET_FILE;
@@ -106,6 +110,7 @@ public class TgBotApi {
     private final String ADD_STICKER_TO_SET;
     private final String SET_STICKER_POSITION_IN_SET;
     private final String DELETE_STICKER_FROM_SET;
+    private final String SET_STICKER_SET_THUMB;
 
     private final String ANSWER_INLINE_QUERY;
     private final String SEND_INVOICE;
@@ -178,6 +183,9 @@ public class TgBotApi {
         SEND_CONTACT = BASE_URL + "/sendContact?";
         SEND_POLL = BASE_URL + "/sendPoll?";
         STOP_POLL = BASE_URL + "/stopPoll?";
+        SEND_DICE = BASE_URL + "/sendDice?";
+        GET_MY_COMMANDS = BASE_URL + "/getMyCommands";
+        SET_MY_COMMANDS = BASE_URL + "/setMyCommands?";
         SEND_CHAT_ACTION = BASE_URL + "/sendChatAction?";
         GET_USER_PROFILE_PHOTOS = BASE_URL + "/getUserProfilePhotos?";
         GET_FILE = BASE_URL + "/getFile?";
@@ -215,6 +223,7 @@ public class TgBotApi {
         ADD_STICKER_TO_SET = BASE_URL + "/addStickerToSet";
         SET_STICKER_POSITION_IN_SET = BASE_URL + "/setStickerPositionInSet?";
         DELETE_STICKER_FROM_SET = BASE_URL + "/deleteStickerFromSet?";
+        SET_STICKER_SET_THUMB = BASE_URL + "/setStickerSetThumb";
         ANSWER_INLINE_QUERY = BASE_URL + "/answerInlineQuery?";
         SEND_INVOICE = BASE_URL + "/sendInvoice?";
         ANSWER_SHIPPING_QUERY = BASE_URL + "/answerShippingQuery?";
@@ -1363,6 +1372,42 @@ public class TgBotApi {
     }
 
     /**
+     * @see <a href="https://core.telegram.org/bots/api#senddice">Official documentation of sendDice</a>
+     */
+    public Message sendDice(long chatId, String emoji, int replyTo, ReplyMarkup replyMarkup) throws IOException {
+        return sendDice(String.valueOf(chatId), emoji, replyTo, replyMarkup);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#senddice">Official documentation of sendDice</a>
+     */
+    public Message sendDice(String channel, String emoji, int replyTo, ReplyMarkup replyMarkup) throws IOException {
+        StringBuilder command = new StringBuilder(SEND_DICE);
+        command.append("chat_id=").append(channel);
+        if (emoji != null) {
+            command.append("&emoji=").append(urlEncode(emoji));
+        }
+        if (disableNotification) {
+            command.append("&disable_notification=true");
+        }
+        if (replyTo > 0) {
+            command.append("&reply_to_message_id=").append(replyTo);
+        }
+        if (replyMarkup != null) {
+            command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
+        }
+        return callMethod(command.toString(), Message.class);
+    }
+
+    public BotCommand[] getMyCommands() throws IOException {
+        return callMethod(GET_MY_COMMANDS, BotCommand[].class);
+    }
+
+    public int setMyCommands(BotCommand[] commands) throws IOException {
+        return callMethod(SET_MY_COMMANDS + "commands=" + urlEncode(GSON.toJson(commands)));
+    }
+
+    /**
      * @see <a href="https://core.telegram.org/bots/api#sendvenue">Official documentation of sendVenue</a>
      */
     public int sendVenue(long chatId, float latitude, float longitude, String title, String address,
@@ -2343,6 +2388,68 @@ public class TgBotApi {
         command.append("&emojis=").append(emojis);
         if (maskPosition != null) {
             command.append("&mask_position=").append(urlEncode(GSON.toJson(maskPosition)));
+        }
+        return callMethod(command.toString());
+    }
+
+    public int createNewAnimatedStickerSet(long userId, String name, String title, InputStream tgsSticker,
+            String emojis) throws IOException {
+        FileSender sender = new FileSender(CREATE_NEW_STICKER_SET);
+        sender.addFormField("user_id", userId);
+        sender.addFormField("name", name);
+        sender.addFormField("title", title);
+        sender.addFilePart("tgs_sticker", tgsSticker, "sticker.tgs");
+        sender.addFormField("emojis", emojis);
+        return sender.finish();
+    }
+
+    public int createNewAnimatedStickerSet(long userId, String name, String title, String tgsSticker,
+            String emojis) throws IOException {
+        StringBuilder command = new StringBuilder(CREATE_NEW_STICKER_SET).append('?');
+        command.append("user_id=").append(userId);
+        command.append("&name=").append(name);
+        command.append("&title=").append(urlEncode(title));
+        command.append("&tgs_sticker=").append(urlEncode(tgsSticker));
+        command.append("&emojis=").append(urlEncode(emojis));
+        return callMethod(command.toString());
+    }
+
+    public int addAnimatedStickerToSet(long userId, String name, InputStream tgsSticker, String emojis)
+            throws IOException {
+        FileSender sender = new FileSender(ADD_STICKER_TO_SET);
+        sender.addFormField("user_id", userId);
+        sender.addFormField("name", name);
+        sender.addFilePart("tgs_sticker", tgsSticker, "sticker.tgs");
+        sender.addFormField("emojis", emojis);
+        return sender.finish();
+    }
+
+    public int addAnimatedStickerToSet(long userId, String name, String tgsSticker, String emojis)
+            throws IOException {
+        StringBuilder command = new StringBuilder(ADD_STICKER_TO_SET).append('?');
+        command.append("user_id=").append(userId);
+        command.append("&name=").append(name);
+        command.append("&tgs_sticker=").append(urlEncode(tgsSticker));
+        command.append("&emojis=").append(urlEncode(emojis));
+        return callMethod(command.toString());
+    }
+
+    public int setStickerSetThumb(String name, long userId, InputStream thumb) throws IOException {
+        FileSender sender = new FileSender(SET_STICKER_SET_THUMB);
+        sender.addFormField("name", name);
+        sender.addFormField("user_id", userId);
+        if (thumb != null) {
+            sender.addFilePart("thumb", thumb, "thumb.png");
+        }
+        return sender.finish();
+    }
+
+    public int setStickerSetThumb(String name, long userId, String thumb) throws IOException {
+        StringBuilder command = new StringBuilder(SET_STICKER_SET_THUMB).append('?');
+        command.append("name=").append(name);
+        command.append("&user_id=").append(userId);
+        if (thumb != null) {
+            command.append("&thumb=").append(urlEncode(thumb));
         }
         return callMethod(command.toString());
     }
