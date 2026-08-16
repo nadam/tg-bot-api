@@ -2,6 +2,7 @@ package se.anyro.tgbotapi;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.io.IOException;
 import java.net.URLDecoder;
@@ -109,5 +110,19 @@ public class BotApiSixTest {
         String decoded = URLDecoder.decode(api.request, "UTF-8");
         assertTrue(decoded.contains("\"type\":\"web_app\""));
         assertTrue(decoded.contains("\"url\":\"https://example.com/app\""));
+    }
+
+    @Test
+    public void sendsTextChatTitle() throws Exception {
+        RecordingApi api = new RecordingApi();
+        api.setChatTitle("@my chat", "Årets vinnare & gäster");
+        String decoded = URLDecoder.decode(api.request, "UTF-8");
+        assertTrue(decoded.contains("chat_id=@my chat"));
+        assertTrue(decoded.contains("title=Årets vinnare & gäster"));
+    }
+
+    @Test
+    public void handlesChatWithoutType() {
+        assertFalse(new Chat().isPrivate());
     }
 }

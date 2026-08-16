@@ -2316,6 +2316,7 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#setchattitle">Official documentation of setChatTitle</a>
      */
+    @Deprecated
     public int setChatTitle(long chatId, int title) throws IOException {
         return setChatTitle(String.valueOf(chatId), title);
     }
@@ -2323,14 +2324,24 @@ public class TgBotApi {
     /**
      * @see <a href="https://core.telegram.org/bots/api#setchattitle">Official documentation of setChatTitle</a>
      */
+    @Deprecated
     public int setChatTitle(String channel, int title) throws IOException {
-        return callMethod(SET_CHAT_TITLE + "chat_id=" + channel + "&title=" + title);
+        return setChatTitle(channel, String.valueOf(title));
+    }
+
+    public int setChatTitle(long chatId, String title) throws IOException {
+        return setChatTitle(String.valueOf(chatId), title);
+    }
+
+    public int setChatTitle(String channel, String title) throws IOException {
+        return callMethod(SET_CHAT_TITLE + "chat_id=" + urlEncode(channel) + "&title=" + urlEncode(title));
     }
 
     /**
      * @see <a href="https://core.telegram.org/bots/api#setchatdescription">Official documentation of
      *      setChatDescription</a>
      */
+    @Deprecated
     public int setChatDescription(long chatId, int description) throws IOException {
         return setChatDescription(String.valueOf(chatId), description);
     }
@@ -2339,8 +2350,9 @@ public class TgBotApi {
      * @see <a href="https://core.telegram.org/bots/api#setchatdescription">Official documentation of
      *      setChatDescription</a>
      */
+    @Deprecated
     public int setChatDescription(String channel, int description) throws IOException {
-        return callMethod(SET_CHAT_DESCRIPTION + "chat_id=" + channel + "&description=" + description);
+        return setChatDescription(channel, String.valueOf(description));
     }
 
     public int setChatDescription(long chatId, String description) throws IOException {
@@ -2348,7 +2360,8 @@ public class TgBotApi {
     }
 
     public int setChatDescription(String channel, String description) throws IOException {
-        return callMethod(SET_CHAT_DESCRIPTION + "chat_id=" + channel + "&description=" + urlEncode(description));
+        return callMethod(SET_CHAT_DESCRIPTION + "chat_id=" + urlEncode(channel) + "&description="
+                + urlEncode(description));
     }
 
     /**
