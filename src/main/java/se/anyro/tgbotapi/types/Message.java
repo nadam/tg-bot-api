@@ -69,6 +69,17 @@ public class Message {
     public InlineKeyboardMarkup reply_markup;
     public Dice dice;
     public ProximityAlertTriggered proximity_alert_triggered;
+    public MessageAutoDeleteTimerChanged message_auto_delete_timer_changed;
+    public VoiceChatScheduled voice_chat_scheduled;
+    public VoiceChatStarted voice_chat_started;
+    public VoiceChatEnded voice_chat_ended;
+    public VoiceChatParticipantsInvited voice_chat_participants_invited;
+    public boolean has_protected_content;
+    public VideoChatScheduled video_chat_scheduled;
+    public VideoChatStarted video_chat_started;
+    public VideoChatEnded video_chat_ended;
+    public VideoChatParticipantsInvited video_chat_participants_invited;
+    public WebAppData web_app_data;
 
     private static final String VIDEO_MP4 = "video/mp4";
 

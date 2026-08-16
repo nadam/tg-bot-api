@@ -24,9 +24,12 @@ public class Update {
     public PreCheckoutQuery pre_checkout_query;
     public Poll poll;
     public PollAnswer poll_answer;
+    public ChatMemberUpdated my_chat_member;
+    public ChatMemberUpdated chat_member;
+    public ChatJoinRequest chat_join_request;
 
     public enum Type {
-        MESSAGE, EDITED_MESSAGE, CHANNEL_POST, EDITED_CHANNEL_POST, INLINE_QUERY, CHOSEN_INLINE_RESULT, CALLBACK_QUERY, SHIPPING_QUERY, PRE_CHECKOUT_QUERY, POLL, POLL_ANSWER, UNKNOWN
+        MESSAGE, EDITED_MESSAGE, CHANNEL_POST, EDITED_CHANNEL_POST, INLINE_QUERY, CHOSEN_INLINE_RESULT, CALLBACK_QUERY, SHIPPING_QUERY, PRE_CHECKOUT_QUERY, POLL, POLL_ANSWER, MY_CHAT_MEMBER, CHAT_MEMBER, UNKNOWN
     }
 
     public boolean isMessage() {
@@ -96,6 +99,10 @@ public class Update {
             return Type.POLL;
         } else if (isPollAnswer()) {
             return Type.POLL_ANSWER;
+        } else if (my_chat_member != null) {
+            return Type.MY_CHAT_MEMBER;
+        } else if (chat_member != null) {
+            return Type.CHAT_MEMBER;
         }
         return Type.UNKNOWN;
     }

@@ -10,6 +10,7 @@ public class StickerSet {
     public boolean isMasks;
     public boolean is_masks;
     public boolean is_animated;
+    public boolean is_video;
     public se.anyro.tgbotapi.types.file.PhotoSize thumb;
     public Sticker[] stickers;
 }

@@ -15,5 +15,6 @@ public class Sticker {
     public String set_name;
     public MaskPosition mask_position;
     public boolean is_animated;
+    public boolean is_video;
     public int file_size;
 }

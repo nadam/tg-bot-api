@@ -14,6 +14,9 @@ import java.net.URLEncoder;
 
 import se.anyro.tgbotapi.types.Chat;
 import se.anyro.tgbotapi.types.BotCommand;
+import se.anyro.tgbotapi.types.BotCommandScope;
+import se.anyro.tgbotapi.types.SentWebAppMessage;
+import se.anyro.tgbotapi.types.MenuButton;
 import se.anyro.tgbotapi.types.ChatAction;
 import se.anyro.tgbotapi.types.ChatMember;
 import se.anyro.tgbotapi.types.ChatPermissions;
@@ -436,6 +439,40 @@ public class TgBotApi {
 
     public int close() throws IOException {
         return callMethod(CLOSE);
+    }
+
+    public SentWebAppMessage answerWebAppQuery(String webAppQueryId, String resultJson) throws IOException {
+        String command = BASE_URL + "/answerWebAppQuery?web_app_query_id=" + urlEncode(webAppQueryId)
+                + "&result=" + urlEncode(resultJson);
+        return callMethod(command, SentWebAppMessage.class);
+    }
+
+    public int setChatMenuButton(Long chatId, MenuButton menuButton) throws IOException {
+        String command = BASE_URL + "/setChatMenuButton?";
+        if (chatId != null) command += "chat_id=" + chatId + "&";
+        if (menuButton != null) command += "menu_button=" + urlEncode(GSON.toJson(menuButton));
+        return callMethod(command);
+    }
+
+    public MenuButton getChatMenuButton(Long chatId) throws IOException {
+        String command = BASE_URL + "/getChatMenuButton" + (chatId == null ? "" : "?chat_id=" + chatId);
+        return callMethod(command, MenuButton.class);
+    }
+
+    public int approveChatJoinRequest(long chatId, long userId) throws IOException {
+        return callMethod(BASE_URL + "/approveChatJoinRequest?chat_id=" + chatId + "&user_id=" + userId);
+    }
+
+    public int declineChatJoinRequest(long chatId, long userId) throws IOException {
+        return callMethod(BASE_URL + "/declineChatJoinRequest?chat_id=" + chatId + "&user_id=" + userId);
+    }
+
+    public int banChatSenderChat(long chatId, long senderChatId) throws IOException {
+        return callMethod(BASE_URL + "/banChatSenderChat?chat_id=" + chatId + "&sender_chat_id=" + senderChatId);
+    }
+
+    public int unbanChatSenderChat(long chatId, long senderChatId) throws IOException {
+        return callMethod(BASE_URL + "/unbanChatSenderChat?chat_id=" + chatId + "&sender_chat_id=" + senderChatId);
     }
 
     /**
@@ -1571,6 +1608,13 @@ public class TgBotApi {
         return callMethod(SET_MY_COMMANDS + "commands=" + urlEncode(GSON.toJson(commands)));
     }
 
+    public int setMyCommands(BotCommand[] commands, BotCommandScope scope, String languageCode) throws IOException {
+        String command = SET_MY_COMMANDS + "commands=" + urlEncode(GSON.toJson(commands));
+        if (scope != null) command += "&scope=" + urlEncode(GSON.toJson(scope));
+        if (languageCode != null) command += "&language_code=" + urlEncode(languageCode);
+        return callMethod(command);
+    }
+
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendvenue">Official documentation of sendVenue</a>
      */
@@ -1787,6 +1831,11 @@ public class TgBotApi {
      */
     public int kickChatMember(long chatId, long userId) throws IOException {
         return kickChatMember(String.valueOf(chatId), userId, 0);
+    }
+
+    /** Bot API 5.2 name for kickChatMember. */
+    public int banChatMember(long chatId, long userId) throws IOException {
+        return kickChatMember(chatId, userId);
     }
 
     /**
@@ -2172,6 +2221,11 @@ public class TgBotApi {
         return getChatMembersCount(String.valueOf(chatId));
     }
 
+    /** Bot API 5.2 name for getChatMembersCount. */
+    public int getChatMemberCount(long chatId) throws IOException {
+        return getChatMembersCount(chatId);
+    }
+
     /**
      * Returns the number of members or 0 if an error occurs.
      * 
@@ -2518,6 +2572,14 @@ public class TgBotApi {
         FileSender sender = new FileSender(UPLOAD_STICKER_FILE);
         sender.addFormField("user_id", userId);
         sender.addFilePart("png_sticker", pngSticker, "sticker");
+        return sender.finish();
+    }
+
+    /** Uploads a WEBM video sticker introduced in Bot API 5.7. */
+    public int uploadVideoStickerFile(long userId, InputStream webmSticker) throws IOException {
+        FileSender sender = new FileSender(UPLOAD_STICKER_FILE);
+        sender.addFormField("user_id", userId);
+        sender.addFilePart("webm_sticker", webmSticker, "sticker.webm");
         return sender.finish();
     }
 
