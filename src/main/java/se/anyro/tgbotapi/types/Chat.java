@@ -19,9 +19,13 @@ public class Chat {
     public boolean can_set_sticker_set;
     public ChatPermissions permissions;
     public int slow_mode_delay;
-    public String bio;
     public long linked_chat_id;
     public ChatLocation location;
+    public boolean has_private_forwards;
+    public boolean join_to_send_messages;
+    public boolean join_by_request;
+    public boolean has_restricted_voice_and_video_messages;
+    public String bio;
 
     public enum Type {
         PRIVATE, GROUP, SUPERGROUP, CHANNEL

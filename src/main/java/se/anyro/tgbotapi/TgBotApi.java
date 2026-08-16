@@ -13,7 +13,11 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 import se.anyro.tgbotapi.types.Chat;
+import se.anyro.tgbotapi.types.ChatInviteLink;
 import se.anyro.tgbotapi.types.BotCommand;
+import se.anyro.tgbotapi.types.BotCommandScope;
+import se.anyro.tgbotapi.types.SentWebAppMessage;
+import se.anyro.tgbotapi.types.MenuButton;
 import se.anyro.tgbotapi.types.ChatAction;
 import se.anyro.tgbotapi.types.ChatMember;
 import se.anyro.tgbotapi.types.ChatPermissions;
@@ -135,6 +139,7 @@ public class TgBotApi {
     private static final int READ_TIMEOUT = 8000;
 
     private boolean disableNotification = false;
+    private boolean protectContent = false;
 
     private ErrorListener errorListener;
 
@@ -438,6 +443,113 @@ public class TgBotApi {
         return callMethod(CLOSE);
     }
 
+    public ChatInviteLink createChatInviteLink(long chatId, Integer expireDate, Integer memberLimit)
+            throws IOException {
+        return createChatInviteLink(String.valueOf(chatId), null, expireDate, memberLimit, null);
+    }
+
+    public ChatInviteLink createChatInviteLink(String chatId, String name, Integer expireDate, Integer memberLimit,
+            Boolean createsJoinRequest) throws IOException {
+        String command = BASE_URL + "/createChatInviteLink?chat_id=" + urlEncode(chatId);
+        if (name != null) command += "&name=" + urlEncode(name);
+        if (expireDate != null) command += "&expire_date=" + expireDate;
+        if (memberLimit != null) command += "&member_limit=" + memberLimit;
+        if (createsJoinRequest != null) command += "&creates_join_request=" + createsJoinRequest;
+        return callMethod(command, ChatInviteLink.class);
+    }
+
+    public ChatInviteLink createChatInviteLink(long chatId, String name, Integer expireDate, Integer memberLimit,
+            Boolean createsJoinRequest) throws IOException {
+        return createChatInviteLink(String.valueOf(chatId), name, expireDate, memberLimit, createsJoinRequest);
+    }
+
+    public ChatInviteLink editChatInviteLink(long chatId, String inviteLink, Integer expireDate, Integer memberLimit)
+            throws IOException {
+        return editChatInviteLink(String.valueOf(chatId), inviteLink, null, expireDate, memberLimit, null);
+    }
+
+    public ChatInviteLink editChatInviteLink(String chatId, String inviteLink, String name, Integer expireDate,
+            Integer memberLimit, Boolean createsJoinRequest) throws IOException {
+        String command = BASE_URL + "/editChatInviteLink?chat_id=" + urlEncode(chatId)
+                + "&invite_link=" + urlEncode(inviteLink);
+        if (name != null) command += "&name=" + urlEncode(name);
+        if (expireDate != null) command += "&expire_date=" + expireDate;
+        if (memberLimit != null) command += "&member_limit=" + memberLimit;
+        if (createsJoinRequest != null) command += "&creates_join_request=" + createsJoinRequest;
+        return callMethod(command, ChatInviteLink.class);
+    }
+
+    public ChatInviteLink editChatInviteLink(long chatId, String inviteLink, String name, Integer expireDate,
+            Integer memberLimit, Boolean createsJoinRequest) throws IOException {
+        return editChatInviteLink(String.valueOf(chatId), inviteLink, name, expireDate, memberLimit,
+                createsJoinRequest);
+    }
+
+    public ChatInviteLink revokeChatInviteLink(long chatId, String inviteLink) throws IOException {
+        return revokeChatInviteLink(String.valueOf(chatId), inviteLink);
+    }
+
+    public ChatInviteLink revokeChatInviteLink(String chatId, String inviteLink) throws IOException {
+        return callMethod(BASE_URL + "/revokeChatInviteLink?chat_id=" + urlEncode(chatId)
+                + "&invite_link=" + urlEncode(inviteLink), ChatInviteLink.class);
+    }
+
+    public SentWebAppMessage answerWebAppQuery(String webAppQueryId, String resultJson) throws IOException {
+        String command = BASE_URL + "/answerWebAppQuery?web_app_query_id=" + urlEncode(webAppQueryId)
+                + "&result=" + urlEncode(resultJson);
+        return callMethod(command, SentWebAppMessage.class);
+    }
+
+    public SentWebAppMessage answerWebAppQuery(String webAppQueryId, InlineQueryResult result) throws IOException {
+        return answerWebAppQuery(webAppQueryId, GSON.toJson(result));
+    }
+
+    public int setChatMenuButton(Long chatId, MenuButton menuButton) throws IOException {
+        String command = BASE_URL + "/setChatMenuButton?";
+        if (chatId != null) command += "chat_id=" + chatId + "&";
+        if (menuButton != null) command += "menu_button=" + urlEncode(GSON.toJson(menuButton));
+        return callMethod(command);
+    }
+
+    public MenuButton getChatMenuButton(Long chatId) throws IOException {
+        String command = BASE_URL + "/getChatMenuButton" + (chatId == null ? "" : "?chat_id=" + chatId);
+        return callMethod(command, MenuButton.class);
+    }
+
+    public int approveChatJoinRequest(long chatId, long userId) throws IOException {
+        return approveChatJoinRequest(String.valueOf(chatId), userId);
+    }
+
+    public int approveChatJoinRequest(String chatId, long userId) throws IOException {
+        return callMethod(BASE_URL + "/approveChatJoinRequest?chat_id=" + urlEncode(chatId) + "&user_id=" + userId);
+    }
+
+    public int declineChatJoinRequest(long chatId, long userId) throws IOException {
+        return declineChatJoinRequest(String.valueOf(chatId), userId);
+    }
+
+    public int declineChatJoinRequest(String chatId, long userId) throws IOException {
+        return callMethod(BASE_URL + "/declineChatJoinRequest?chat_id=" + urlEncode(chatId) + "&user_id=" + userId);
+    }
+
+    public int banChatSenderChat(long chatId, long senderChatId) throws IOException {
+        return banChatSenderChat(String.valueOf(chatId), senderChatId);
+    }
+
+    public int banChatSenderChat(String chatId, long senderChatId) throws IOException {
+        return callMethod(BASE_URL + "/banChatSenderChat?chat_id=" + urlEncode(chatId)
+                + "&sender_chat_id=" + senderChatId);
+    }
+
+    public int unbanChatSenderChat(long chatId, long senderChatId) throws IOException {
+        return unbanChatSenderChat(String.valueOf(chatId), senderChatId);
+    }
+
+    public int unbanChatSenderChat(String chatId, long senderChatId) throws IOException {
+        return callMethod(BASE_URL + "/unbanChatSenderChat?chat_id=" + urlEncode(chatId)
+                + "&sender_chat_id=" + senderChatId);
+    }
+
     /**
      * Setting the API to silent will add the disable_notification parameter to all methods supporting that. I thought
      * this would be more convenient than having to set it in every method call. If you don't like it please let me
@@ -445,6 +557,11 @@ public class TgBotApi {
      */
     public void setSilent(boolean value) {
         disableNotification = value;
+    }
+
+    /** Adds protect_content to all supported outgoing message methods. */
+    public void setProtectContent(boolean value) {
+        protectContent = value;
     }
 
     /**
@@ -456,6 +573,9 @@ public class TgBotApi {
         command.append("&text=").append(urlEncode(text));
         if (disableNotification) {
             command.append("&disable_notification=true");
+        }
+        if (protectContent) {
+            command.append("&protect_content=true");
         }
         return callMethod(command.toString());
     }
@@ -469,6 +589,9 @@ public class TgBotApi {
         command.append("&text=").append(urlEncode(text));
         if (disableNotification) {
             command.append("&disable_notification=true");
+        }
+        if (protectContent) {
+            command.append("&protect_content=true");
         }
         return callMethod(command.toString());
     }
@@ -489,6 +612,9 @@ public class TgBotApi {
         }
         if (disableNotification) {
             command.append("&disable_notification=true");
+        }
+        if (protectContent) {
+            command.append("&protect_content=true");
         }
         if (replyTo > 0) {
             command.append("&reply_to_message_id=").append(replyTo);
@@ -515,6 +641,9 @@ public class TgBotApi {
         }
         if (disableNotification) {
             command.append("&disable_notification=true");
+        }
+        if (protectContent) {
+            command.append("&protect_content=true");
         }
         if (replyTo > 0) {
             command.append("&reply_to_message_id=").append(replyTo);
@@ -559,6 +688,9 @@ public class TgBotApi {
         if (disableNotification) {
             command.append("&disable_notification=true");
         }
+        if (protectContent) {
+            command.append("&protect_content=true");
+        }
         command.append("&message_id=").append(messageId);
         return callMethod(command.toString(), Message.class);
     }
@@ -572,6 +704,9 @@ public class TgBotApi {
         command.append("&from_chat_id=").append(fromChannel);
         if (disableNotification) {
             command.append("&disable_notification=true");
+        }
+        if (protectContent) {
+            command.append("&protect_content=true");
         }
         command.append("&message_id=").append(messageId);
         return callMethod(command.toString());
@@ -587,6 +722,9 @@ public class TgBotApi {
         if (disableNotification) {
             command.append("&disable_notification=true");
         }
+        if (protectContent) {
+            command.append("&protect_content=true");
+        }
         command.append("&message_id=").append(messageId);
         return callMethod(command.toString());
     }
@@ -600,6 +738,9 @@ public class TgBotApi {
         command.append("&from_chat_id=").append(fromChannel);
         if (disableNotification) {
             command.append("&disable_notification=true");
+        }
+        if (protectContent) {
+            command.append("&protect_content=true");
         }
         command.append("&message_id=").append(messageId);
         return callMethod(command.toString());
@@ -628,6 +769,7 @@ public class TgBotApi {
         if (caption != null) command.append("&caption=").append(urlEncode(caption));
         if (parseMode != null) command.append("&parse_mode=").append(parseMode.VALUE);
         if (disableNotification) command.append("&disable_notification=true");
+        if (protectContent) command.append("&protect_content=true");
         if (replyTo > 0) command.append("&reply_to_message_id=").append(replyTo);
         if (replyMarkup != null) command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
         return callMethod(command.toString(), MessageId.class);
@@ -661,6 +803,9 @@ public class TgBotApi {
         }
         if (disableNotification) {
             command.append("&disable_notification=true");
+        }
+        if (protectContent) {
+            command.append("&protect_content=true");
         }
         if (replyTo > 0) {
             command.append("&reply_to_message_id=").append(replyTo);
@@ -696,6 +841,9 @@ public class TgBotApi {
         if (disableNotification) {
             sender.addFormField("disable_notification", "true");
         }
+        if (protectContent) {
+            sender.addFormField("protect_content", "true");
+        }
         if (replyTo > 0) {
             sender.addFormField("reply_to_message_id", replyTo);
         }
@@ -729,6 +877,9 @@ public class TgBotApi {
         }
         if (disableNotification) {
             command.append("&disable_notification=true");
+        }
+        if (protectContent) {
+            command.append("&protect_content=true");
         }
         if (replyTo > 0) {
             command.append("&reply_to_message_id=").append(replyTo);
@@ -780,6 +931,9 @@ public class TgBotApi {
         if (disableNotification) {
             sender.addFormField("disable_notification", "true");
         }
+        if (protectContent) {
+            sender.addFormField("protect_content", "true");
+        }
         if (replyTo > 0) {
             sender.addFormField("reply_to_message_id", replyTo);
         }
@@ -813,6 +967,9 @@ public class TgBotApi {
         }
         if (disableNotification) {
             command.append("&disable_notification=true");
+        }
+        if (protectContent) {
+            command.append("&protect_content=true");
         }
         if (replyTo > 0) {
             command.append("&reply_to_message_id=").append(replyTo);
@@ -852,6 +1009,9 @@ public class TgBotApi {
         }
         if (disableNotification) {
             sender.addFormField("disable_notification", "true");
+        }
+        if (protectContent) {
+            sender.addFormField("protect_content", "true");
         }
         if (replyTo > 0) {
             sender.addFormField("reply_to_message_id", replyTo);
@@ -893,6 +1053,9 @@ public class TgBotApi {
         }
         if (disableNotification) {
             command.append("&disable_notification=true");
+        }
+        if (protectContent) {
+            command.append("&protect_content=true");
         }
         if (replyTo > 0) {
             command.append("&reply_to_message_id=").append(replyTo);
@@ -956,6 +1119,9 @@ public class TgBotApi {
         if (disableNotification) {
             sender.addFormField("disable_notification", "true");
         }
+        if (protectContent) {
+            sender.addFormField("protect_content", "true");
+        }
         if (replyTo > 0) {
             sender.addFormField("reply_to_message_id", replyTo);
         }
@@ -989,6 +1155,9 @@ public class TgBotApi {
         }
         if (disableNotification) {
             command.append("&disable_notification=true");
+        }
+        if (protectContent) {
+            command.append("&protect_content=true");
         }
         if (replyTo > 0) {
             command.append("&reply_to_message_id=").append(replyTo);
@@ -1040,6 +1209,9 @@ public class TgBotApi {
         if (disableNotification) {
             sender.addFormField("disable_notification", "true");
         }
+        if (protectContent) {
+            sender.addFormField("protect_content", "true");
+        }
         if (replyTo > 0) {
             sender.addFormField("reply_to_message_id", replyTo);
         }
@@ -1073,6 +1245,9 @@ public class TgBotApi {
         }
         if (disableNotification) {
             command.append("&disable_notification=true");
+        }
+        if (protectContent) {
+            command.append("&protect_content=true");
         }
         if (replyTo > 0) {
             command.append("&reply_to_message_id=").append(replyTo);
@@ -1111,6 +1286,9 @@ public class TgBotApi {
         if (disableNotification) {
             sender.addFormField("disable_notification", "true");
         }
+        if (protectContent) {
+            sender.addFormField("protect_content", "true");
+        }
         if (replyTo > 0) {
             sender.addFormField("reply_to_message_id", replyTo);
         }
@@ -1137,6 +1315,9 @@ public class TgBotApi {
         command.append("&video_note=").append(videoNote);
         if (disableNotification) {
             command.append("&disable_notification=true");
+        }
+        if (protectContent) {
+            command.append("&protect_content=true");
         }
         if (replyTo > 0) {
             command.append("&reply_to_message_id=").append(replyTo);
@@ -1176,6 +1357,9 @@ public class TgBotApi {
         if (disableNotification) {
             sender.addFormField("disable_notification", "true");
         }
+        if (protectContent) {
+            sender.addFormField("protect_content", "true");
+        }
         if (replyTo > 0) {
             sender.addFormField("reply_to_message_id", replyTo);
         }
@@ -1211,6 +1395,9 @@ public class TgBotApi {
         }
         if (disableNotification) {
             sender.addFormField("disable_notification", "true");
+        }
+        if (protectContent) {
+            sender.addFormField("protect_content", "true");
         }
         if (replyTo > 0) {
             sender.addFormField("reply_to_message_id", replyTo);
@@ -1260,6 +1447,9 @@ public class TgBotApi {
         }
         if (disableNotification) {
             command.append("&disable_notification=true");
+        }
+        if (protectContent) {
+            command.append("&protect_content=true");
         }
         if (replyTo > 0) {
             command.append("&reply_to_message_id=").append(replyTo);
@@ -1401,6 +1591,9 @@ public class TgBotApi {
         if (disableNotification) {
             command.append("&disable_notification=true");
         }
+        if (protectContent) {
+            command.append("&protect_content=true");
+        }
         if (replyTo > 0) {
             command.append("&reply_to_message_id=").append(replyTo);
         }
@@ -1445,6 +1638,9 @@ public class TgBotApi {
         }
         if (disableNotification) {
             command.append("&disable_notification=true");
+        }
+        if (protectContent) {
+            command.append("&protect_content=true");
         }
         if (replyTo > 0) {
             command.append("&reply_to_message_id=").append(replyTo);
@@ -1506,6 +1702,9 @@ public class TgBotApi {
         if (disableNotification) {
             command.append("&disable_notification=true");
         }
+        if (protectContent) {
+            command.append("&protect_content=true");
+        }
         if (replyTo > 0) {
             command.append("&reply_to_message_id=").append(replyTo);
         }
@@ -1554,6 +1753,9 @@ public class TgBotApi {
         if (disableNotification) {
             command.append("&disable_notification=true");
         }
+        if (protectContent) {
+            command.append("&protect_content=true");
+        }
         if (replyTo > 0) {
             command.append("&reply_to_message_id=").append(replyTo);
         }
@@ -1569,6 +1771,31 @@ public class TgBotApi {
 
     public int setMyCommands(BotCommand[] commands) throws IOException {
         return callMethod(SET_MY_COMMANDS + "commands=" + urlEncode(GSON.toJson(commands)));
+    }
+
+    public int setMyCommands(BotCommand[] commands, BotCommandScope scope, String languageCode) throws IOException {
+        String command = SET_MY_COMMANDS + "commands=" + urlEncode(GSON.toJson(commands));
+        if (scope != null) command += "&scope=" + urlEncode(GSON.toJson(scope));
+        if (languageCode != null) command += "&language_code=" + urlEncode(languageCode);
+        return callMethod(command);
+    }
+
+    public BotCommand[] getMyCommands(BotCommandScope scope, String languageCode) throws IOException {
+        String command = GET_MY_COMMANDS + "?";
+        if (scope != null) command += "scope=" + urlEncode(GSON.toJson(scope)) + "&";
+        if (languageCode != null) command += "language_code=" + urlEncode(languageCode);
+        return callMethod(command, BotCommand[].class);
+    }
+
+    public int deleteMyCommands() throws IOException {
+        return deleteMyCommands(null, null);
+    }
+
+    public int deleteMyCommands(BotCommandScope scope, String languageCode) throws IOException {
+        String command = BASE_URL + "/deleteMyCommands?";
+        if (scope != null) command += "scope=" + urlEncode(GSON.toJson(scope)) + "&";
+        if (languageCode != null) command += "language_code=" + urlEncode(languageCode);
+        return callMethod(command);
     }
 
     /**
@@ -1613,6 +1840,9 @@ public class TgBotApi {
         if (disableNotification) {
             command.append("&disable_notification=true");
         }
+        if (protectContent) {
+            command.append("&protect_content=true");
+        }
         if (replyTo > 0) {
             command.append("&reply_to_message_id=").append(replyTo);
         }
@@ -1647,6 +1877,9 @@ public class TgBotApi {
         }
         if (disableNotification) {
             command.append("&disable_notification=true");
+        }
+        if (protectContent) {
+            command.append("&protect_content=true");
         }
         if (replyTo > 0) {
             command.append("&reply_to_message_id=").append(replyTo);
@@ -1787,6 +2020,28 @@ public class TgBotApi {
      */
     public int kickChatMember(long chatId, long userId) throws IOException {
         return kickChatMember(String.valueOf(chatId), userId, 0);
+    }
+
+    /** Bot API 5.2 name for kickChatMember. */
+    public int banChatMember(long chatId, long userId) throws IOException {
+        return kickChatMember(chatId, userId);
+    }
+
+    public int banChatMember(String chatId, long userId) throws IOException {
+        return banChatMember(chatId, userId, 0, null);
+    }
+
+    public int banChatMember(long chatId, long userId, int untilDate, Boolean revokeMessages) throws IOException {
+        return banChatMember(String.valueOf(chatId), userId, untilDate, revokeMessages);
+    }
+
+    public int banChatMember(String chatId, long userId, int untilDate, Boolean revokeMessages) throws IOException {
+        StringBuilder command = new StringBuilder(BASE_URL + "/banChatMember?");
+        command.append("chat_id=").append(urlEncode(chatId));
+        command.append("&user_id=").append(userId);
+        if (untilDate > 0) command.append("&until_date=").append(untilDate);
+        if (revokeMessages != null) command.append("&revoke_messages=").append(revokeMessages);
+        return callMethod(command.toString());
     }
 
     /**
@@ -1962,6 +2217,34 @@ public class TgBotApi {
             command.append("&can_promote_members=True");
         }
 
+        return callMethod(command.toString());
+    }
+
+    public int promoteChatMember(long chatId, long userId, boolean isAnonymous, boolean canManageVideoChats,
+            boolean canChangeInfo, boolean canPostMessages, boolean canEditMessages, boolean canDeleteMessages,
+            boolean canInviteUsers, boolean canRestrictMembers, boolean canPinMessages, boolean canPromoteMembers)
+            throws IOException {
+        return promoteChatMember(String.valueOf(chatId), userId, isAnonymous, canManageVideoChats, canChangeInfo,
+                canPostMessages, canEditMessages, canDeleteMessages, canInviteUsers, canRestrictMembers,
+                canPinMessages, canPromoteMembers);
+    }
+
+    public int promoteChatMember(String channel, long userId, boolean isAnonymous, boolean canManageVideoChats,
+            boolean canChangeInfo, boolean canPostMessages, boolean canEditMessages, boolean canDeleteMessages,
+            boolean canInviteUsers, boolean canRestrictMembers, boolean canPinMessages, boolean canPromoteMembers)
+            throws IOException {
+        StringBuilder command = new StringBuilder(PROMOTE_CHAT_MEMBER);
+        command.append("chat_id=").append(urlEncode(channel)).append("&user_id=").append(userId);
+        if (isAnonymous) command.append("&is_anonymous=true");
+        if (canManageVideoChats) command.append("&can_manage_video_chats=true");
+        if (canChangeInfo) command.append("&can_change_info=true");
+        if (canPostMessages) command.append("&can_post_messages=true");
+        if (canEditMessages) command.append("&can_edit_messages=true");
+        if (canDeleteMessages) command.append("&can_delete_messages=true");
+        if (canInviteUsers) command.append("&can_invite_users=true");
+        if (canRestrictMembers) command.append("&can_restrict_members=true");
+        if (canPinMessages) command.append("&can_pin_messages=true");
+        if (canPromoteMembers) command.append("&can_promote_members=true");
         return callMethod(command.toString());
     }
 
@@ -2170,6 +2453,15 @@ public class TgBotApi {
      */
     public int getChatMembersCount(long chatId) throws IOException {
         return getChatMembersCount(String.valueOf(chatId));
+    }
+
+    /** Bot API 5.2 name for getChatMembersCount. */
+    public int getChatMemberCount(long chatId) throws IOException {
+        return getChatMembersCount(chatId);
+    }
+
+    public int getChatMemberCount(String chatId) throws IOException {
+        return getChatMembersCount(chatId);
     }
 
     /**
@@ -2465,6 +2757,9 @@ public class TgBotApi {
         if (disableNotification) {
             command.append("&disable_notification=true");
         }
+        if (protectContent) {
+            command.append("&protect_content=true");
+        }
         if (replyTo > 0) {
             command.append("&reply_to_message_id=").append(replyTo);
         }
@@ -2492,6 +2787,9 @@ public class TgBotApi {
         sender.addFilePart("sticker", sticker, filename);
         if (disableNotification) {
             sender.addFormField("disable_notification", "true");
+        }
+        if (protectContent) {
+            sender.addFormField("protect_content", "true");
         }
         if (replyTo > 0) {
             sender.addFormField("reply_to_message_id", replyTo);
@@ -2607,6 +2905,28 @@ public class TgBotApi {
         return sender.finish();
     }
 
+    public int createNewVideoStickerSet(long userId, String name, String title, InputStream webmSticker,
+            String emojis) throws IOException {
+        FileSender sender = new FileSender(CREATE_NEW_STICKER_SET);
+        sender.addFormField("user_id", userId);
+        sender.addFormField("name", name);
+        sender.addFormField("title", title);
+        sender.addFilePart("webm_sticker", webmSticker, "sticker.webm");
+        sender.addFormField("emojis", emojis);
+        return sender.finish();
+    }
+
+    public int createNewVideoStickerSet(long userId, String name, String title, String webmSticker,
+            String emojis) throws IOException {
+        StringBuilder command = new StringBuilder(CREATE_NEW_STICKER_SET).append('?');
+        command.append("user_id=").append(userId);
+        command.append("&name=").append(urlEncode(name));
+        command.append("&title=").append(urlEncode(title));
+        command.append("&webm_sticker=").append(urlEncode(webmSticker));
+        command.append("&emojis=").append(urlEncode(emojis));
+        return callMethod(command.toString());
+    }
+
     public int createNewAnimatedStickerSet(long userId, String name, String title, String tgsSticker,
             String emojis) throws IOException {
         StringBuilder command = new StringBuilder(CREATE_NEW_STICKER_SET).append('?');
@@ -2626,6 +2946,26 @@ public class TgBotApi {
         sender.addFilePart("tgs_sticker", tgsSticker, "sticker.tgs");
         sender.addFormField("emojis", emojis);
         return sender.finish();
+    }
+
+    public int addVideoStickerToSet(long userId, String name, InputStream webmSticker, String emojis)
+            throws IOException {
+        FileSender sender = new FileSender(ADD_STICKER_TO_SET);
+        sender.addFormField("user_id", userId);
+        sender.addFormField("name", name);
+        sender.addFilePart("webm_sticker", webmSticker, "sticker.webm");
+        sender.addFormField("emojis", emojis);
+        return sender.finish();
+    }
+
+    public int addVideoStickerToSet(long userId, String name, String webmSticker, String emojis)
+            throws IOException {
+        StringBuilder command = new StringBuilder(ADD_STICKER_TO_SET).append('?');
+        command.append("user_id=").append(userId);
+        command.append("&name=").append(urlEncode(name));
+        command.append("&webm_sticker=").append(urlEncode(webmSticker));
+        command.append("&emojis=").append(urlEncode(emojis));
+        return callMethod(command.toString());
     }
 
     public int addAnimatedStickerToSet(long userId, String name, String tgsSticker, String emojis)
@@ -2733,6 +3073,25 @@ public class TgBotApi {
                 0, null);
     }
 
+    public int sendInvoice(String chatId, String title, String description, String payload, String providerToken,
+            String startParameter, String currency, LabeledPrice[] prices, String providerData, String photoUrl,
+            int photoSize, int photoWidth, int photoHeight, boolean needName, boolean needPhoneNumber,
+            boolean needEmail, boolean needShippingAddress, boolean isFlexible, int replyTo, ReplyMarkup replyMarkup)
+            throws IOException {
+        return sendInvoice(chatId, title, description, payload, providerToken, startParameter, currency, prices,
+                0, null, providerData, photoUrl, photoSize, photoWidth, photoHeight, needName, needPhoneNumber,
+                needEmail, needShippingAddress, isFlexible, replyTo, replyMarkup);
+    }
+
+    public int sendInvoice(String chatId, String title, String description, String payload, String providerToken,
+            String startParameter, String currency, LabeledPrice[] prices, String providerData, String photoUrl,
+            boolean needName, boolean needPhoneNumber, boolean needEmail, boolean needShippingAddress,
+            boolean isFlexible) throws IOException {
+        return sendInvoice(chatId, title, description, payload, providerToken, startParameter, currency, prices,
+                0, null, providerData, photoUrl, 0, 0, 0, needName, needPhoneNumber, needEmail, needShippingAddress,
+                isFlexible, 0, null);
+    }
+
     /**
      * @see <a href="https://core.telegram.org/bots/api#sendinvoice">Official documentation of sendInvoice</a>
      */
@@ -2741,15 +3100,44 @@ public class TgBotApi {
             int photoSize, int photoWidth, int photoHeight, boolean needName, boolean needPhoneNumber,
             boolean needEmail, boolean needShippingAddress, boolean isFlexible, int replyTo, ReplyMarkup replyMarkup)
             throws IOException {
+        return sendInvoice(chatId, title, description, payload, providerToken, startParameter, currency, prices,
+                0, null, providerData, photoUrl, photoSize, photoWidth, photoHeight, needName, needPhoneNumber,
+                needEmail, needShippingAddress, isFlexible, replyTo, replyMarkup);
+    }
+
+    public int sendInvoice(long chatId, String title, String description, String payload, String providerToken,
+            String startParameter, String currency, LabeledPrice[] prices, int maxTipAmount,
+            int[] suggestedTipAmounts, String providerData, String photoUrl, int photoSize, int photoWidth,
+            int photoHeight, boolean needName, boolean needPhoneNumber, boolean needEmail,
+            boolean needShippingAddress, boolean isFlexible, int replyTo, ReplyMarkup replyMarkup)
+            throws IOException {
+        return sendInvoice(String.valueOf(chatId), title, description, payload, providerToken, startParameter,
+                currency, prices, maxTipAmount, suggestedTipAmounts, providerData, photoUrl, photoSize, photoWidth,
+                photoHeight, needName, needPhoneNumber, needEmail, needShippingAddress, isFlexible, replyTo,
+                replyMarkup);
+    }
+
+    public int sendInvoice(String chatId, String title, String description, String payload, String providerToken,
+            String startParameter, String currency, LabeledPrice[] prices, int maxTipAmount,
+            int[] suggestedTipAmounts, String providerData, String photoUrl, int photoSize, int photoWidth,
+            int photoHeight, boolean needName, boolean needPhoneNumber, boolean needEmail,
+            boolean needShippingAddress, boolean isFlexible, int replyTo, ReplyMarkup replyMarkup)
+            throws IOException {
         StringBuilder command = new StringBuilder(SEND_INVOICE);
-        command.append("chat_id=").append(chatId);
-        command.append("&title=").append(title);
-        command.append("&description=").append(description);
-        command.append("&payload=").append(payload);
-        command.append("&provider_token=").append(providerToken);
-        command.append("&start_parameter=").append(startParameter);
-        command.append("&currency=").append(currency);
+        command.append("chat_id=").append(urlEncode(chatId));
+        command.append("&title=").append(urlEncode(title));
+        command.append("&description=").append(urlEncode(description));
+        command.append("&payload=").append(urlEncode(payload));
+        command.append("&provider_token=").append(urlEncode(providerToken));
+        command.append("&start_parameter=").append(urlEncode(startParameter));
+        command.append("&currency=").append(urlEncode(currency));
         command.append("&prices=").append(urlEncode(GSON.toJson(prices)));
+        if (maxTipAmount > 0) {
+            command.append("&max_tip_amount=").append(maxTipAmount);
+        }
+        if (suggestedTipAmounts != null) {
+            command.append("&suggested_tip_amounts=").append(urlEncode(GSON.toJson(suggestedTipAmounts)));
+        }
         if (providerData != null) {
             command.append("&provider_data=").append(providerData);
         }
@@ -2782,6 +3170,9 @@ public class TgBotApi {
         }
         if (disableNotification) {
             command.append("&disable_notification=true");
+        }
+        if (protectContent) {
+            command.append("&protect_content=true");
         }
         if (replyTo > 0) {
             command.append("&reply_to_message_id=").append(replyTo);
@@ -2840,6 +3231,9 @@ public class TgBotApi {
         command.append("&game_short_name=").append(gameShortName);
         if (disableNotification) {
             command.append("&disable_notification=true");
+        }
+        if (protectContent) {
+            command.append("&protect_content=true");
         }
         if (replyTo > 0) {
             command.append("&reply_to_message_id=").append(replyTo);

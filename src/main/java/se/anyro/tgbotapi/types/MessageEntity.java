@@ -13,7 +13,7 @@ public class MessageEntity {
 
     public enum Type {
         MENTION, HASHTAG, CASHTAG, BOT_COMMAND, URL, EMAIL, PHONE_NUMBER, BOLD, ITALIC, UNDERLINE, STRIKETHROUGH,
-        CODE, PRE, TEXT_LINK, TEXT_MENTION
+        SPOILER, CODE, PRE, TEXT_LINK, TEXT_MENTION
     }
 
     /**

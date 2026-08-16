@@ -1,4 +1,5 @@
 package se.anyro.tgbotapi.types.reply_markup;
+import se.anyro.tgbotapi.types.WebAppInfo;
 
 /**
  * Button for reply keyboard.
@@ -11,6 +12,7 @@ public class KeyboardButton {
     public Boolean request_contact;
     public Boolean request_location;
     public KeyboardButtonPollType request_poll;
+    public WebAppInfo web_app;
 
     public KeyboardButton(String text) {
         this.text = text;
@@ -35,6 +37,12 @@ public class KeyboardButton {
     public static KeyboardButton pollButton(String text, KeyboardButtonPollType pollType) {
         KeyboardButton button = new KeyboardButton(text);
         button.request_poll = pollType;
+        return button;
+    }
+
+    public static KeyboardButton webAppButton(String text, String url) {
+        KeyboardButton button = new KeyboardButton(text);
+        button.web_app = new WebAppInfo(url);
         return button;
     }
 }

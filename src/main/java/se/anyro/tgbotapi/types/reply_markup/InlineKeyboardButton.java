@@ -2,6 +2,7 @@ package se.anyro.tgbotapi.types.reply_markup;
 
 import se.anyro.tgbotapi.types.games.CallbackGame;
 import se.anyro.tgbotapi.types.LoginUrl;
+import se.anyro.tgbotapi.types.WebAppInfo;
 
 
 /**
@@ -20,6 +21,7 @@ public class InlineKeyboardButton {
     public LoginUrl login_url;
     public CallbackGame callback_game;
     public Boolean pay;
+    public WebAppInfo web_app;
 
     public InlineKeyboardButton(String text) {
         this.text = text;
@@ -68,6 +70,12 @@ public class InlineKeyboardButton {
     public static InlineKeyboardButton pay(String text) {
         InlineKeyboardButton button = new InlineKeyboardButton(text);
         button.pay = true;
+        return button;
+    }
+
+    public static InlineKeyboardButton webApp(String text, String url) {
+        InlineKeyboardButton button = new InlineKeyboardButton(text);
+        button.web_app = new WebAppInfo(url);
         return button;
     }
 }

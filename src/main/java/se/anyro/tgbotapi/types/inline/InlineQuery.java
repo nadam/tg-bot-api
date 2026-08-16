@@ -10,4 +10,5 @@ public class InlineQuery {
     public User from;
     public String query;
     public String offset;
+    public String chat_type;
 }
