@@ -21,6 +21,7 @@ import se.anyro.tgbotapi.types.reply_markup.InlineKeyboardMarkup;
 public class Message {
     public int message_id;
     public User from;
+    public User via_bot;
     public int date;
     public Chat chat;
     public User forward_from;
