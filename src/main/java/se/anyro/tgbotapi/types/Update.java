@@ -29,7 +29,8 @@ public class Update {
     public ChatJoinRequest chat_join_request;
 
     public enum Type {
-        MESSAGE, EDITED_MESSAGE, CHANNEL_POST, EDITED_CHANNEL_POST, INLINE_QUERY, CHOSEN_INLINE_RESULT, CALLBACK_QUERY, SHIPPING_QUERY, PRE_CHECKOUT_QUERY, POLL, POLL_ANSWER, MY_CHAT_MEMBER, CHAT_MEMBER, UNKNOWN
+        MESSAGE, EDITED_MESSAGE, CHANNEL_POST, EDITED_CHANNEL_POST, INLINE_QUERY, CHOSEN_INLINE_RESULT, CALLBACK_QUERY,
+        SHIPPING_QUERY, PRE_CHECKOUT_QUERY, POLL, POLL_ANSWER, MY_CHAT_MEMBER, CHAT_MEMBER, CHAT_JOIN_REQUEST, UNKNOWN
     }
 
     public boolean isMessage() {
@@ -103,6 +104,8 @@ public class Update {
             return Type.MY_CHAT_MEMBER;
         } else if (chat_member != null) {
             return Type.CHAT_MEMBER;
+        } else if (chat_join_request != null) {
+            return Type.CHAT_JOIN_REQUEST;
         }
         return Type.UNKNOWN;
     }
@@ -138,6 +141,12 @@ public class Update {
             return null;
         case POLL_ANSWER:
             return poll_answer.user;
+        case MY_CHAT_MEMBER:
+            return my_chat_member.from;
+        case CHAT_MEMBER:
+            return chat_member.from;
+        case CHAT_JOIN_REQUEST:
+            return chat_join_request.from;
         default:
             return null;
         }
@@ -172,6 +181,13 @@ public class Update {
             if (callback_query.message != null) {
                 return callback_query.message.chat;
             }
+            return null;
+        case MY_CHAT_MEMBER:
+            return my_chat_member.chat;
+        case CHAT_MEMBER:
+            return chat_member.chat;
+        case CHAT_JOIN_REQUEST:
+            return chat_join_request.chat;
         case INLINE_QUERY:
         case CHOSEN_INLINE_RESULT:
         case SHIPPING_QUERY:

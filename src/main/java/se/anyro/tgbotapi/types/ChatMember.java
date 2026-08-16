@@ -14,6 +14,7 @@ public class ChatMember {
 
     // Administrators only
     public boolean can_be_edited;
+    public boolean can_manage_chat;
     public boolean can_change_info;
     public boolean can_post_messages;
     public boolean can_edit_messages;

@@ -24,6 +24,7 @@ public class Chat {
     public boolean has_private_forwards;
     public boolean join_to_send_messages;
     public boolean join_by_request;
+    public boolean has_restricted_voice_and_video_messages;
     public String bio;
 
     public enum Type {

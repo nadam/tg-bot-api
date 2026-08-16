@@ -75,6 +75,7 @@ public class Message {
     public VoiceChatEnded voice_chat_ended;
     public VoiceChatParticipantsInvited voice_chat_participants_invited;
     public boolean has_protected_content;
+    public boolean is_automatic_forward;
     public VideoChatScheduled video_chat_scheduled;
     public VideoChatStarted video_chat_started;
     public VideoChatEnded video_chat_ended;
