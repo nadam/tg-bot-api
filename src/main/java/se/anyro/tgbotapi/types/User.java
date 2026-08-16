@@ -13,8 +13,6 @@ public class User {
     public boolean can_join_groups;
     public boolean can_read_all_group_messages;
     public boolean supports_inline_queries;
-    public boolean is_premium;
-    public boolean added_to_attachment_menu;
 
     public String getUrl() {
         return "tg://user?id=" + id;
