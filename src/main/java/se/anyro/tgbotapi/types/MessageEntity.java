@@ -9,9 +9,11 @@ public class MessageEntity {
     public int length;
     public String url;
     public User user;
+    public String language;
 
     public enum Type {
-        MENTION, HASHTAG, CASHTAG, BOT_COMMAND, URL, EMAIL, PHONE_NUMBER, BOLD, ITALIC, CODE, PRE, TEXT_LINK, TEXT_MENTION
+        MENTION, HASHTAG, CASHTAG, BOT_COMMAND, URL, EMAIL, PHONE_NUMBER, BOLD, ITALIC, UNDERLINE, STRIKETHROUGH,
+        CODE, PRE, TEXT_LINK, TEXT_MENTION
     }
 
     /**

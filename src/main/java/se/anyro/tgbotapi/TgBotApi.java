@@ -1298,6 +1298,51 @@ public class TgBotApi {
     }
 
     /**
+     * @see <a href="https://core.telegram.org/bots/api#sendpoll">Official documentation of sendPoll</a>
+     */
+    public Message sendPoll(long chatId, String question, String[] options, boolean isAnonymous, String type,
+            boolean allowsMultipleAnswers, Integer correctOptionId, boolean isClosed, int replyTo,
+            ReplyMarkup replyMarkup) throws IOException {
+        return sendPoll(String.valueOf(chatId), question, options, isAnonymous, type, allowsMultipleAnswers,
+                correctOptionId, isClosed, replyTo, replyMarkup);
+    }
+
+    /**
+     * @see <a href="https://core.telegram.org/bots/api#sendpoll">Official documentation of sendPoll</a>
+     */
+    public Message sendPoll(String channel, String question, String[] options, boolean isAnonymous, String type,
+            boolean allowsMultipleAnswers, Integer correctOptionId, boolean isClosed, int replyTo,
+            ReplyMarkup replyMarkup) throws IOException {
+        StringBuilder command = new StringBuilder(SEND_POLL);
+        command.append("chat_id=").append(channel);
+        command.append("&question=").append(urlEncode(question));
+        command.append("&options=").append(urlEncode(GSON.toJson(options)));
+        command.append("&is_anonymous=").append(isAnonymous);
+        if (type != null) {
+            command.append("&type=").append(urlEncode(type));
+        }
+        if (allowsMultipleAnswers) {
+            command.append("&allows_multiple_answers=true");
+        }
+        if (correctOptionId != null) {
+            command.append("&correct_option_id=").append(correctOptionId);
+        }
+        if (isClosed) {
+            command.append("&is_closed=true");
+        }
+        if (disableNotification) {
+            command.append("&disable_notification=true");
+        }
+        if (replyTo > 0) {
+            command.append("&reply_to_message_id=").append(replyTo);
+        }
+        if (replyMarkup != null) {
+            command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
+        }
+        return callMethod(command.toString(), Message.class);
+    }
+
+    /**
      * @see <a href="https://core.telegram.org/bots/api#stoppoll">Official documentation of stopPoll</a>
      */
     public Poll stopPoll(long chatId, int messageId, ReplyMarkup replyMarkup) throws IOException {
