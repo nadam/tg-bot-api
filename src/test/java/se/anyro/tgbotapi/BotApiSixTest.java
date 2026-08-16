@@ -116,9 +116,8 @@ public class BotApiSixTest {
     public void sendsTextChatTitle() throws Exception {
         RecordingApi api = new RecordingApi();
         api.setChatTitle("@my chat", "Årets vinnare & gäster");
-        String decoded = URLDecoder.decode(api.request, "UTF-8");
-        assertTrue(decoded.contains("chat_id=@my chat"));
-        assertTrue(decoded.contains("title=Årets vinnare & gäster"));
+        assertTrue(api.request.contains("chat_id=%40my+chat"));
+        assertTrue(api.request.contains("title=%C3%85rets+vinnare+%26+g%C3%A4ster"));
     }
 
     @Test
