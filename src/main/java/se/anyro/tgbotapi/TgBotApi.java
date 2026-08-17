@@ -18,6 +18,7 @@ import se.anyro.tgbotapi.types.BotCommand;
 import se.anyro.tgbotapi.types.BotCommandScope;
 import se.anyro.tgbotapi.types.BotDescription;
 import se.anyro.tgbotapi.types.BotShortDescription;
+import se.anyro.tgbotapi.types.BotName;
 import se.anyro.tgbotapi.types.SentWebAppMessage;
 import se.anyro.tgbotapi.types.MenuButton;
 import se.anyro.tgbotapi.types.ChatAction;
@@ -38,6 +39,7 @@ import se.anyro.tgbotapi.types.file.UserProfilePhotos;
 import se.anyro.tgbotapi.types.games.GameHighScore;
 import se.anyro.tgbotapi.types.inline.CallbackQuery;
 import se.anyro.tgbotapi.types.inline.InlineQueryResult;
+import se.anyro.tgbotapi.types.inline.InlineQueryResultsButton;
 import se.anyro.tgbotapi.types.payments.LabeledPrice;
 import se.anyro.tgbotapi.types.payments.ShippingOption;
 import se.anyro.tgbotapi.types.poll.Poll;
@@ -3481,6 +3483,18 @@ public class TgBotApi {
         return callMethod(command);
     }
 
+    public int setMyName(String name, String languageCode) throws IOException {
+        String command = BASE_URL + "/setMyName?name=" + urlEncode(name == null ? "" : name);
+        if (languageCode != null) command += "&language_code=" + urlEncode(languageCode);
+        return callMethod(command);
+    }
+
+    public BotName getMyName(String languageCode) throws IOException {
+        String command = BASE_URL + "/getMyName?";
+        if (languageCode != null) command += "language_code=" + urlEncode(languageCode);
+        return callMethod(command, BotName.class);
+    }
+
     public BotDescription getMyDescription(String languageCode) throws IOException {
         String command = BASE_URL + "/getMyDescription?";
         if (languageCode != null) command += "language_code=" + urlEncode(languageCode);
@@ -3574,6 +3588,18 @@ public class TgBotApi {
                 command.append("&switch_pm_parameter=").append(switchPmParameter);
             }
         }
+        return callMethod(command.toString());
+    }
+
+    public int answerInlineQuery(String inlineQueryId, InlineQueryResult[] results, int cacheTime, boolean isPersonal,
+            String nextOffset, InlineQueryResultsButton button) throws IOException {
+        StringBuilder command = new StringBuilder(ANSWER_INLINE_QUERY);
+        command.append("inline_query_id=").append(urlEncode(inlineQueryId));
+        command.append("&results=").append(urlEncode(GSON.toJson(results)));
+        if (cacheTime >= 0) command.append("&cache_time=").append(cacheTime);
+        if (isPersonal) command.append("&is_personal=true");
+        if (nextOffset != null) command.append("&next_offset=").append(urlEncode(nextOffset));
+        if (button != null) command.append("&button=").append(urlEncode(GSON.toJson(button)));
         return callMethod(command.toString());
     }
 

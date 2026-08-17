@@ -7,4 +7,5 @@ public class ChatMemberUpdated {
     public ChatMember old_chat_member;
     public ChatMember new_chat_member;
     public ChatInviteLink invite_link;
+    public boolean via_chat_folder_invite_link;
 }
