@@ -12,6 +12,8 @@ public class InputMediaVideo extends InputMedia {
     public Integer height;
     public Integer duration;
     public Boolean supports_streaming;
+    public Boolean has_spoiler;
+    public String thumbnail;
 
     public InputMediaVideo() {
     }

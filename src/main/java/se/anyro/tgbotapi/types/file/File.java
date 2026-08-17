@@ -8,6 +8,6 @@ package se.anyro.tgbotapi.types.file;
 public class File {
     public String file_id;
     public String file_unique_id;
-    public int file_size;
+    public long file_size;
     public String file_path;
 }

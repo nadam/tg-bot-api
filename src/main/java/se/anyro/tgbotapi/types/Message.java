@@ -20,6 +20,8 @@ import se.anyro.tgbotapi.types.reply_markup.InlineKeyboardMarkup;
  */
 public class Message {
     public int message_id;
+    public int message_thread_id;
+    public boolean is_topic_message;
     public User from;
     public Chat sender_chat;
     public User via_bot;
@@ -75,12 +77,32 @@ public class Message {
     public VoiceChatEnded voice_chat_ended;
     public VoiceChatParticipantsInvited voice_chat_participants_invited;
     public boolean has_protected_content;
+    public boolean has_media_spoiler;
     public boolean is_automatic_forward;
     public VideoChatScheduled video_chat_scheduled;
     public VideoChatStarted video_chat_started;
     public VideoChatEnded video_chat_ended;
     public VideoChatParticipantsInvited video_chat_participants_invited;
     public WebAppData web_app_data;
+    public ForumTopicCreated forum_topic_created;
+    public ForumTopicClosed forum_topic_closed;
+    public ForumTopicReopened forum_topic_reopened;
+    public ForumTopicEdited forum_topic_edited;
+    public GeneralForumTopicHidden general_forum_topic_hidden;
+    public GeneralForumTopicUnhidden general_forum_topic_unhidden;
+    public WriteAccessAllowed write_access_allowed;
+    public UserShared user_shared;
+    public ChatShared chat_shared;
+    public Story story;
+    public ExternalReplyInfo external_reply;
+    public TextQuote quote;
+    public LinkPreviewOptions link_preview_options;
+    public MessageOrigin forward_origin;
+    public UsersShared users_shared;
+    public Giveaway giveaway;
+    public GiveawayCreated giveaway_created;
+    public GiveawayWinners giveaway_winners;
+    public GiveawayCompleted giveaway_completed;
 
     private static final String VIDEO_MP4 = "video/mp4";
 

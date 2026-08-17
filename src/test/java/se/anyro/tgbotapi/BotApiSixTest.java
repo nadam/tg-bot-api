@@ -9,14 +9,23 @@ import java.net.URLDecoder;
 
 import org.junit.Test;
 
+import com.google.gson.Gson;
+
 import se.anyro.tgbotapi.types.BotCommand;
 import se.anyro.tgbotapi.types.BotCommandScopeChatMember;
 import se.anyro.tgbotapi.types.ChatJoinRequest;
 import se.anyro.tgbotapi.types.Chat;
+import se.anyro.tgbotapi.types.ChatAdministratorRights;
+import se.anyro.tgbotapi.types.Message;
 import se.anyro.tgbotapi.types.User;
 import se.anyro.tgbotapi.types.MenuButtonWebApp;
 import se.anyro.tgbotapi.types.Update;
 import se.anyro.tgbotapi.types.payments.LabeledPrice;
+import se.anyro.tgbotapi.types.MessageEntity;
+import se.anyro.tgbotapi.types.stickers.Sticker;
+import se.anyro.tgbotapi.types.stickers.StickerSet;
+import se.anyro.tgbotapi.types.file.InputMediaPhoto;
+import se.anyro.tgbotapi.types.reply_markup.ReplyKeyboardMarkup;
 
 public class BotApiSixTest {
     private static class RecordingApi extends TgBotApi {
@@ -116,13 +125,119 @@ public class BotApiSixTest {
     public void sendsTextChatTitle() throws Exception {
         RecordingApi api = new RecordingApi();
         api.setChatTitle("@my chat", "Årets vinnare & gäster");
-        String decoded = URLDecoder.decode(api.request, "UTF-8");
-        assertTrue(decoded.contains("chat_id=@my chat"));
-        assertTrue(decoded.contains("title=Årets vinnare & gäster"));
+        assertTrue(api.request.contains("chat_id=%40my+chat"));
+        assertTrue(api.request.contains("title=%C3%85rets+vinnare+%26+g%C3%A4ster"));
+    }
+
+    @Test
+    public void createsInvoiceLink() throws Exception {
+        RecordingApi api = new RecordingApi();
+        api.createInvoiceLink("Title", "Description", "payload", "provider", "SEK",
+                new se.anyro.tgbotapi.types.payments.LabeledPrice[0], 0, null, null, null,
+                0, 0, 0, false, false, false, false, true, true, false);
+        assertTrue(api.request.contains("/createInvoiceLink?"));
+        assertTrue(api.request.contains("currency=SEK"));
+        assertTrue(api.request.contains("send_phone_number_to_provider=true"));
+        assertTrue(api.request.contains("send_email_to_provider=true"));
     }
 
     @Test
     public void handlesChatWithoutType() {
         assertFalse(new Chat().isPrivate());
+    }
+
+    @Test
+    public void supportsCustomEmojiTypes() throws Exception {
+        Gson gson = new Gson();
+        MessageEntity entity = gson.fromJson(
+                "{\"type\":\"custom_emoji\",\"offset\":0,\"length\":2,\"custom_emoji_id\":\"emoji-1\"}",
+                MessageEntity.class);
+        assertEquals(MessageEntity.Type.CUSTOM_EMOJI, entity.getType());
+        assertEquals("emoji-1", entity.custom_emoji_id);
+
+        Sticker sticker = gson.fromJson(
+                "{\"type\":\"custom_emoji\",\"custom_emoji_id\":\"emoji-1\"}", Sticker.class);
+        assertEquals("custom_emoji", sticker.type);
+        assertEquals("emoji-1", sticker.custom_emoji_id);
+
+        StickerSet stickerSet = gson.fromJson("{\"sticker_type\":\"custom_emoji\"}", StickerSet.class);
+        assertEquals("custom_emoji", stickerSet.sticker_type);
+    }
+
+    @Test
+    public void sendsBotApiSixTwoStickerParameters() throws Exception {
+        RecordingApi api = new RecordingApi();
+        api.getCustomEmojiStickers(new String[] { "emoji-1", "emoji-2" });
+        assertTrue(URLDecoder.decode(api.request, "UTF-8")
+                .contains("custom_emoji_ids=[\"emoji-1\",\"emoji-2\"]"));
+
+        api.createNewStickerSet(1L, "set", "Title", "file-id", "🙂", "custom_emoji", null);
+        assertTrue(api.request.contains("sticker_type=custom_emoji"));
+    }
+
+    @Test
+    public void managesDefaultAdministratorRights() throws Exception {
+        RecordingApi api = new RecordingApi();
+        ChatAdministratorRights rights = new ChatAdministratorRights();
+        rights.can_delete_messages = true;
+        api.setMyDefaultAdministratorRights(rights, true);
+        String decoded = URLDecoder.decode(api.request, "UTF-8");
+        assertTrue(decoded.contains("rights={"));
+        assertTrue(decoded.contains("\"can_delete_messages\":true"));
+        assertTrue(decoded.contains("for_channels=true"));
+
+        api.getMyDefaultAdministratorRights(true);
+        assertTrue(api.request.contains("for_channels=true"));
+    }
+
+    @Test
+    public void supportsForumTopics() throws Exception {
+        RecordingApi api = new RecordingApi();
+        api.sendMessage(-100L, "Topic message", null, false, 0, null, 42);
+        assertTrue(api.request.contains("message_thread_id=42"));
+
+        api.createForumTopic(-100L, "Announcements", 0x6FB9F0, "emoji-1");
+        assertTrue(api.request.contains("/createForumTopic?"));
+        assertTrue(api.request.contains("name=Announcements"));
+        assertTrue(api.request.contains("icon_custom_emoji_id=emoji-1"));
+
+        Message message = new Gson().fromJson(
+                "{\"message_id\":1,\"message_thread_id\":42,\"is_topic_message\":true,"
+                        + "\"forum_topic_created\":{\"name\":\"Announcements\",\"icon_color\":7322096}}",
+                Message.class);
+        assertEquals(42, message.message_thread_id);
+        assertTrue(message.is_topic_message);
+        assertEquals("Announcements", message.forum_topic_created.name);
+    }
+
+    @Test
+    public void sendsMediaAndInvoicesToForumTopics() throws Exception {
+        RecordingApi api = new RecordingApi();
+        api.sendPhoto("@chat", "photo", null, null, 0, null, false, 42);
+        assertTrue(api.request.contains("message_thread_id=42"));
+
+        LabeledPrice price = new LabeledPrice();
+        api.sendInvoice("@chat", "Title", "Description", "payload", "provider", "start", "SEK",
+                new LabeledPrice[] { price }, 0, null, null, null, 0, 0, 0, false, false, false, false,
+                false, 0, null, 42);
+        assertTrue(api.request.contains("message_thread_id=42"));
+    }
+
+    @Test
+    public void supportsBotApiSixFourMediaSpoilersAndPersistentKeyboards() throws Exception {
+        RecordingApi api = new RecordingApi();
+        api.sendPhoto(1L, "photo-id", null, null, 0, null, true);
+        assertTrue(api.request.contains("has_spoiler=true"));
+
+        InputMediaPhoto photo = new InputMediaPhoto("photo-id");
+        photo.has_spoiler = true;
+        assertTrue(new Gson().toJson(photo).contains("\"has_spoiler\":true"));
+
+        ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup(new String[] { "Open" });
+        keyboard.is_persistent = true;
+        assertTrue(new Gson().toJson(keyboard).contains("\"is_persistent\":true"));
+
+        api.editGeneralForumTopic(-100L + "", "General");
+        assertTrue(api.request.contains("/editGeneralForumTopic?"));
     }
 }

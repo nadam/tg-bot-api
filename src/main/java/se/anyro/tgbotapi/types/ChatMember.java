@@ -25,10 +25,20 @@ public class ChatMember {
     public boolean can_promote_members;
     public boolean can_manage_voice_chats;
     public boolean can_manage_video_chats;
+    public boolean can_manage_topics;
+    public boolean can_post_stories;
+    public boolean can_edit_stories;
+    public boolean can_delete_stories;
 
     // Restricted only
     public boolean can_send_messages;
     public boolean can_send_media_messages;
+    public boolean can_send_audios;
+    public boolean can_send_documents;
+    public boolean can_send_photos;
+    public boolean can_send_videos;
+    public boolean can_send_video_notes;
+    public boolean can_send_voice_notes;
     public boolean can_send_polls;
     public boolean can_send_other_messages;
     public boolean can_add_web_page_previews;

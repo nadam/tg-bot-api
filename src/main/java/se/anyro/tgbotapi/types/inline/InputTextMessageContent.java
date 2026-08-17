@@ -1,6 +1,7 @@
 package se.anyro.tgbotapi.types.inline;
 
 import se.anyro.tgbotapi.types.ParseMode;
+import se.anyro.tgbotapi.types.LinkPreviewOptions;
 
 /**
  * @see <a href="https://core.telegram.org/bots/api#inputtextmessagecontent">Official documentation of
@@ -10,6 +11,7 @@ public class InputTextMessageContent extends InputMessageContent {
     public String message_text;
     public String parse_mode;
     public boolean disable_web_page_preview;
+    public LinkPreviewOptions link_preview_options;
 
     public InputTextMessageContent(String messageText) {
         this.message_text = messageText;

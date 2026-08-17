@@ -10,4 +10,5 @@ public class WebhookInfo {
     public String ip_address;
     public int last_error_date;
     public String last_error_message;
+    public int last_synchronization_error_date;
 }

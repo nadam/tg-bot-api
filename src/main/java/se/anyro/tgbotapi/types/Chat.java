@@ -25,6 +25,18 @@ public class Chat {
     public boolean join_to_send_messages;
     public boolean join_by_request;
     public boolean has_restricted_voice_and_video_messages;
+    public boolean is_forum;
+    public String[] active_usernames;
+    public String emoji_status_custom_emoji_id;
+    public int emoji_status_expiration_date;
+    public ReactionType[] available_reactions;
+    public int accent_color_id;
+    public String background_custom_emoji_id;
+    public int profile_accent_color_id;
+    public String profile_background_custom_emoji_id;
+    public boolean has_visible_history;
+    public boolean has_hidden_members;
+    public boolean has_aggressive_anti_spam_enabled;
     public String bio;
 
     public enum Type {

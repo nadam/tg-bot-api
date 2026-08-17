@@ -10,10 +10,11 @@ public class MessageEntity {
     public String url;
     public User user;
     public String language;
+    public String custom_emoji_id;
 
     public enum Type {
         MENTION, HASHTAG, CASHTAG, BOT_COMMAND, URL, EMAIL, PHONE_NUMBER, BOLD, ITALIC, UNDERLINE, STRIKETHROUGH,
-        SPOILER, CODE, PRE, TEXT_LINK, TEXT_MENTION
+        SPOILER, CODE, PRE, TEXT_LINK, TEXT_MENTION, CUSTOM_EMOJI
     }
 
     /**

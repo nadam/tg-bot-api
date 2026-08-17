@@ -10,6 +10,7 @@ public class Video {
     public int height;
     public int duration;
     public PhotoSize thumb;
+    public PhotoSize thumbnail;
     public String mime_type;
     public String file_name;
     public long file_size;

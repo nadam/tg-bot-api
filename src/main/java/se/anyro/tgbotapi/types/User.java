@@ -4,6 +4,7 @@ package se.anyro.tgbotapi.types;
  * @see <a href="https://core.telegram.org/bots/api#user">User</a>
  */
 public class User {
+    public boolean allows_write_to_pm;
     public long id;
     public boolean is_bot;
     public String first_name;
