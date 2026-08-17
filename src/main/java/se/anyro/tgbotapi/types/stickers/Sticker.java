@@ -17,5 +17,7 @@ public class Sticker {
     public boolean is_animated;
     public boolean is_video;
     public se.anyro.tgbotapi.types.file.File premium_animation;
+    public String type;
+    public String custom_emoji_id;
     public int file_size;
 }

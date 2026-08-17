@@ -9,6 +9,8 @@ import java.net.URLDecoder;
 
 import org.junit.Test;
 
+import com.google.gson.Gson;
+
 import se.anyro.tgbotapi.types.BotCommand;
 import se.anyro.tgbotapi.types.BotCommandScopeChatMember;
 import se.anyro.tgbotapi.types.ChatJoinRequest;
@@ -17,6 +19,9 @@ import se.anyro.tgbotapi.types.User;
 import se.anyro.tgbotapi.types.MenuButtonWebApp;
 import se.anyro.tgbotapi.types.Update;
 import se.anyro.tgbotapi.types.payments.LabeledPrice;
+import se.anyro.tgbotapi.types.MessageEntity;
+import se.anyro.tgbotapi.types.stickers.Sticker;
+import se.anyro.tgbotapi.types.stickers.StickerSet;
 
 public class BotApiSixTest {
     private static class RecordingApi extends TgBotApi {
@@ -135,5 +140,34 @@ public class BotApiSixTest {
     @Test
     public void handlesChatWithoutType() {
         assertFalse(new Chat().isPrivate());
+    }
+
+    @Test
+    public void supportsCustomEmojiTypes() throws Exception {
+        Gson gson = new Gson();
+        MessageEntity entity = gson.fromJson(
+                "{\"type\":\"custom_emoji\",\"offset\":0,\"length\":2,\"custom_emoji_id\":\"emoji-1\"}",
+                MessageEntity.class);
+        assertEquals(MessageEntity.Type.CUSTOM_EMOJI, entity.getType());
+        assertEquals("emoji-1", entity.custom_emoji_id);
+
+        Sticker sticker = gson.fromJson(
+                "{\"type\":\"custom_emoji\",\"custom_emoji_id\":\"emoji-1\"}", Sticker.class);
+        assertEquals("custom_emoji", sticker.type);
+        assertEquals("emoji-1", sticker.custom_emoji_id);
+
+        StickerSet stickerSet = gson.fromJson("{\"sticker_type\":\"custom_emoji\"}", StickerSet.class);
+        assertEquals("custom_emoji", stickerSet.sticker_type);
+    }
+
+    @Test
+    public void sendsBotApiSixTwoStickerParameters() throws Exception {
+        RecordingApi api = new RecordingApi();
+        api.getCustomEmojiStickers(new String[] { "emoji-1", "emoji-2" });
+        assertTrue(URLDecoder.decode(api.request, "UTF-8")
+                .contains("custom_emoji_ids=[\"emoji-1\",\"emoji-2\"]"));
+
+        api.createNewStickerSet(1L, "set", "Title", "file-id", "🙂", "custom_emoji", null);
+        assertTrue(api.request.contains("sticker_type=custom_emoji"));
     }
 }

@@ -40,6 +40,7 @@ import se.anyro.tgbotapi.types.poll.Poll;
 import se.anyro.tgbotapi.types.reply_markup.InlineKeyboardMarkup;
 import se.anyro.tgbotapi.types.reply_markup.ReplyMarkup;
 import se.anyro.tgbotapi.types.stickers.MaskPosition;
+import se.anyro.tgbotapi.types.stickers.Sticker;
 import se.anyro.tgbotapi.utils.FileSender;
 
 import com.google.gson.Gson;
@@ -114,6 +115,7 @@ public class TgBotApi {
     private final String DELETE_MESSAGE;
     private final String SEND_STICKER;
     private final String GET_STICKER_SET;
+    private final String GET_CUSTOM_EMOJI_STICKERS;
     private final String UPLOAD_STICKER_FILE;
     private final String CREATE_NEW_STICKER_SET;
     private final String ADD_STICKER_TO_SET;
@@ -232,6 +234,7 @@ public class TgBotApi {
         DELETE_MESSAGE = BASE_URL + "/deleteMessage?";
         SEND_STICKER = BASE_URL + "/sendSticker";
         GET_STICKER_SET = BASE_URL + "/getStickerSet?";
+        GET_CUSTOM_EMOJI_STICKERS = BASE_URL + "/getCustomEmojiStickers?";
         UPLOAD_STICKER_FILE = BASE_URL + "/uploadStickerFile";
         CREATE_NEW_STICKER_SET = BASE_URL + "/createNewStickerSet";
         ADD_STICKER_TO_SET = BASE_URL + "/addStickerToSet";
@@ -2829,6 +2832,12 @@ public class TgBotApi {
         return callMethod(command.toString());
     }
 
+    public Sticker[] getCustomEmojiStickers(String[] customEmojiIds) throws IOException {
+        String command = GET_CUSTOM_EMOJI_STICKERS + "custom_emoji_ids="
+                + urlEncode(GSON.toJson(customEmojiIds));
+        return callMethod(command, Sticker[].class);
+    }
+
     /**
      * @see <a href="https://core.telegram.org/bots/api#uploadstickerfile">Official documentation of
      *      uploadStickerFile</a>
@@ -2846,15 +2855,19 @@ public class TgBotApi {
      */
     public int createNewStickerSet(long userId, String name, String title, InputStream pngSticker, String emojis,
             boolean isMasks, MaskPosition maskPosition) throws IOException {
+        return createNewStickerSet(userId, name, title, pngSticker, emojis, isMasks ? "mask" : "regular",
+                maskPosition);
+    }
+
+    public int createNewStickerSet(long userId, String name, String title, InputStream pngSticker, String emojis,
+            String stickerType, MaskPosition maskPosition) throws IOException {
         FileSender sender = new FileSender(CREATE_NEW_STICKER_SET);
         sender.addFormField("user_id", userId);
         sender.addFormField("name", name);
         sender.addFormField("title", title);
         sender.addFilePart("png_sticker", pngSticker, "sticker");
         sender.addFormField("emojis", emojis);
-        if (isMasks) {
-            sender.addFormField("is_masks", "true");
-        }
+        sender.addFormField("sticker_type", stickerType);
         if (maskPosition != null) {
             sender.addFormField("mask_position", GSON.toJson(maskPosition));
         }
@@ -2867,15 +2880,19 @@ public class TgBotApi {
      */
     public int createNewStickerSet(long userId, String name, String title, String pngSticker, String emojis,
             boolean isMasks, MaskPosition maskPosition) throws IOException {
+        return createNewStickerSet(userId, name, title, pngSticker, emojis, isMasks ? "mask" : "regular",
+                maskPosition);
+    }
+
+    public int createNewStickerSet(long userId, String name, String title, String pngSticker, String emojis,
+            String stickerType, MaskPosition maskPosition) throws IOException {
         StringBuilder command = new StringBuilder(CREATE_NEW_STICKER_SET).append('?');
         command.append("user_id=").append(userId);
         command.append("&name=").append(name);
         command.append("&title=").append(title);
         command.append("&png_sticker=").append(pngSticker);
         command.append("&emojis=").append(emojis);
-        if (isMasks) {
-            command.append("&is_masks=true");
-        }
+        command.append("&sticker_type=").append(stickerType);
         if (maskPosition != null) {
             command.append("&mask_position=").append(urlEncode(GSON.toJson(maskPosition)));
         }
