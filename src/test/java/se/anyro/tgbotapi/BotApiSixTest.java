@@ -125,9 +125,11 @@ public class BotApiSixTest {
         RecordingApi api = new RecordingApi();
         api.createInvoiceLink("Title", "Description", "payload", "provider", "SEK",
                 new se.anyro.tgbotapi.types.payments.LabeledPrice[0], 0, null, null, null,
-                0, 0, 0, false, false, false, false, false);
+                0, 0, 0, false, false, false, false, true, true, false);
         assertTrue(api.request.contains("/createInvoiceLink?"));
         assertTrue(api.request.contains("currency=SEK"));
+        assertTrue(api.request.contains("send_phone_number_to_provider=true"));
+        assertTrue(api.request.contains("send_email_to_provider=true"));
     }
 
     @Test

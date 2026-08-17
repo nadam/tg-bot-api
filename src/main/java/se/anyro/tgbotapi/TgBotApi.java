@@ -3086,7 +3086,7 @@ public class TgBotApi {
             String currency, LabeledPrice[] prices, int maxTipAmount, int[] suggestedTipAmounts,
             String providerData, String photoUrl, int photoSize, int photoWidth, int photoHeight,
             boolean needName, boolean needPhoneNumber, boolean needEmail, boolean needShippingAddress,
-            boolean isFlexible) throws IOException {
+            boolean sendPhoneNumberToProvider, boolean sendEmailToProvider, boolean isFlexible) throws IOException {
         StringBuilder command = new StringBuilder(BASE_URL + "/createInvoiceLink?");
         command.append("title=").append(urlEncode(title));
         command.append("&description=").append(urlEncode(description));
@@ -3107,6 +3107,8 @@ public class TgBotApi {
         if (needPhoneNumber) command.append("&need_phone_number=true");
         if (needEmail) command.append("&need_email=true");
         if (needShippingAddress) command.append("&need_shipping_address=true");
+        if (sendPhoneNumberToProvider) command.append("&send_phone_number_to_provider=true");
+        if (sendEmailToProvider) command.append("&send_email_to_provider=true");
         if (isFlexible) command.append("&is_flexible=true");
         return callMethod(command.toString(), String.class);
     }
