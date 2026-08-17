@@ -28,6 +28,8 @@ public class Chat {
     public boolean is_forum;
     public String[] active_usernames;
     public String emoji_status_custom_emoji_id;
+    public boolean has_hidden_members;
+    public boolean has_aggressive_anti_spam_enabled;
     public String bio;
 
     public enum Type {

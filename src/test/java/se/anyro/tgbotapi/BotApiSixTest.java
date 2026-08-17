@@ -23,6 +23,8 @@ import se.anyro.tgbotapi.types.payments.LabeledPrice;
 import se.anyro.tgbotapi.types.MessageEntity;
 import se.anyro.tgbotapi.types.stickers.Sticker;
 import se.anyro.tgbotapi.types.stickers.StickerSet;
+import se.anyro.tgbotapi.types.file.InputMediaPhoto;
+import se.anyro.tgbotapi.types.reply_markup.ReplyKeyboardMarkup;
 
 public class BotApiSixTest {
     private static class RecordingApi extends TgBotApi {
@@ -190,5 +192,23 @@ public class BotApiSixTest {
         assertEquals(42, message.message_thread_id);
         assertTrue(message.is_topic_message);
         assertEquals("Announcements", message.forum_topic_created.name);
+    }
+
+    @Test
+    public void supportsBotApiSixFourMediaSpoilersAndPersistentKeyboards() throws Exception {
+        RecordingApi api = new RecordingApi();
+        api.sendPhoto(1L, "photo-id", null, null, 0, null, true);
+        assertTrue(api.request.contains("has_spoiler=true"));
+
+        InputMediaPhoto photo = new InputMediaPhoto("photo-id");
+        photo.has_spoiler = true;
+        assertTrue(new Gson().toJson(photo).contains("\"has_spoiler\":true"));
+
+        ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup(new String[] { "Open" });
+        keyboard.is_persistent = true;
+        assertTrue(new Gson().toJson(keyboard).contains("\"is_persistent\":true"));
+
+        api.editGeneralForumTopic(-100L + "", "General");
+        assertTrue(api.request.contains("/editGeneralForumTopic?"));
     }
 }

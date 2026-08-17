@@ -138,6 +138,11 @@ public class TgBotApi {
     private final String DELETE_FORUM_TOPIC;
     private final String UNPIN_ALL_FORUM_TOPIC_MESSAGES;
     private final String GET_FORUM_TOPIC_ICON_STICKERS;
+    private final String EDIT_GENERAL_FORUM_TOPIC;
+    private final String CLOSE_GENERAL_FORUM_TOPIC;
+    private final String REOPEN_GENERAL_FORUM_TOPIC;
+    private final String HIDE_GENERAL_FORUM_TOPIC;
+    private final String UNHIDE_GENERAL_FORUM_TOPIC;
 
     private final String THUMB_FILENAME = "thumb_filename";
 
@@ -263,6 +268,11 @@ public class TgBotApi {
         DELETE_FORUM_TOPIC = BASE_URL + "/deleteForumTopic?";
         UNPIN_ALL_FORUM_TOPIC_MESSAGES = BASE_URL + "/unpinAllForumTopicMessages?";
         GET_FORUM_TOPIC_ICON_STICKERS = BASE_URL + "/getForumTopicIconStickers";
+        EDIT_GENERAL_FORUM_TOPIC = BASE_URL + "/editGeneralForumTopic?";
+        CLOSE_GENERAL_FORUM_TOPIC = BASE_URL + "/closeGeneralForumTopic?";
+        REOPEN_GENERAL_FORUM_TOPIC = BASE_URL + "/reopenGeneralForumTopic?";
+        HIDE_GENERAL_FORUM_TOPIC = BASE_URL + "/hideGeneralForumTopic?";
+        UNHIDE_GENERAL_FORUM_TOPIC = BASE_URL + "/unhideGeneralForumTopic?";
 
         OWNER = owner;
         this.errorListener = errorListener;
@@ -822,7 +832,12 @@ public class TgBotApi {
      */
     public Message sendPhoto(long chatId, String photo, String caption, ParseMode parseMode, int replyTo,
             ReplyMarkup replyMarkup) throws IOException {
-        return sendPhoto(String.valueOf(chatId), photo, caption, parseMode, replyTo, replyMarkup);
+        return sendPhoto(String.valueOf(chatId), photo, caption, parseMode, replyTo, replyMarkup, false);
+    }
+
+    public Message sendPhoto(long chatId, String photo, String caption, ParseMode parseMode, int replyTo,
+            ReplyMarkup replyMarkup, boolean hasSpoiler) throws IOException {
+        return sendPhoto(String.valueOf(chatId), photo, caption, parseMode, replyTo, replyMarkup, hasSpoiler);
     }
 
     /**
@@ -830,9 +845,15 @@ public class TgBotApi {
      */
     public Message sendPhoto(String channel, String photo, String caption, ParseMode parseMode, int replyTo,
             ReplyMarkup replyMarkup) throws IOException {
+        return sendPhoto(channel, photo, caption, parseMode, replyTo, replyMarkup, false);
+    }
+
+    public Message sendPhoto(String channel, String photo, String caption, ParseMode parseMode, int replyTo,
+            ReplyMarkup replyMarkup, boolean hasSpoiler) throws IOException {
         StringBuilder command = new StringBuilder(SEND_PHOTO).append('?');
         command.append("chat_id=").append(channel);
         command.append("&photo=").append(photo);
+        if (hasSpoiler) command.append("&has_spoiler=true");
         if (caption != null) {
             command.append("&caption=").append(urlEncode(caption));
         }
@@ -1072,7 +1093,12 @@ public class TgBotApi {
      */
     public Message sendVideo(long chatId, String video, String caption, ParseMode parseMode, int replyTo,
             ReplyMarkup replyMarkup) throws IOException {
-        return sendVideo(String.valueOf(chatId), video, caption, parseMode, replyTo, replyMarkup);
+        return sendVideo(String.valueOf(chatId), video, caption, parseMode, replyTo, replyMarkup, false);
+    }
+
+    public Message sendVideo(long chatId, String video, String caption, ParseMode parseMode, int replyTo,
+            ReplyMarkup replyMarkup, boolean hasSpoiler) throws IOException {
+        return sendVideo(String.valueOf(chatId), video, caption, parseMode, replyTo, replyMarkup, hasSpoiler);
     }
 
     /**
@@ -1080,9 +1106,15 @@ public class TgBotApi {
      */
     public Message sendVideo(String channel, String video, String caption, ParseMode parseMode, int replyTo,
             ReplyMarkup replyMarkup) throws IOException {
+        return sendVideo(channel, video, caption, parseMode, replyTo, replyMarkup, false);
+    }
+
+    public Message sendVideo(String channel, String video, String caption, ParseMode parseMode, int replyTo,
+            ReplyMarkup replyMarkup, boolean hasSpoiler) throws IOException {
         StringBuilder command = new StringBuilder(SEND_VIDEO).append('?');
         command.append("chat_id=").append(channel);
         command.append("&video=").append(video);
+        if (hasSpoiler) command.append("&has_spoiler=true");
         if (caption != null) {
             command.append("&caption=").append(urlEncode(caption));
         }
@@ -1174,7 +1206,12 @@ public class TgBotApi {
      */
     public Message sendAnimation(long chatId, String animation, String caption, ParseMode parseMode, int replyTo,
             ReplyMarkup replyMarkup) throws IOException {
-        return sendAnimation(String.valueOf(chatId), animation, caption, parseMode, replyTo, replyMarkup);
+        return sendAnimation(String.valueOf(chatId), animation, caption, parseMode, replyTo, replyMarkup, false);
+    }
+
+    public Message sendAnimation(long chatId, String animation, String caption, ParseMode parseMode, int replyTo,
+            ReplyMarkup replyMarkup, boolean hasSpoiler) throws IOException {
+        return sendAnimation(String.valueOf(chatId), animation, caption, parseMode, replyTo, replyMarkup, hasSpoiler);
     }
 
     /**
@@ -1182,9 +1219,15 @@ public class TgBotApi {
      */
     public Message sendAnimation(String channel, String animation, String caption, ParseMode parseMode, int replyTo,
             ReplyMarkup replyMarkup) throws IOException {
+        return sendAnimation(channel, animation, caption, parseMode, replyTo, replyMarkup, false);
+    }
+
+    public Message sendAnimation(String channel, String animation, String caption, ParseMode parseMode, int replyTo,
+            ReplyMarkup replyMarkup, boolean hasSpoiler) throws IOException {
         StringBuilder command = new StringBuilder(SEND_ANIMATION).append('?');
         command.append("chat_id=").append(channel);
         command.append("&animation=").append(animation);
+        if (hasSpoiler) command.append("&has_spoiler=true");
         if (caption != null) {
             command.append("&caption=").append(urlEncode(caption));
         }
@@ -1937,14 +1980,23 @@ public class TgBotApi {
         return sendChatAction(String.valueOf(chatId), action);
     }
 
+    public int sendChatAction(long chatId, ChatAction action, int messageThreadId) throws IOException {
+        return sendChatAction(String.valueOf(chatId), action, messageThreadId);
+    }
+
     /**
      * Tell channel users that something is happening on the bot's side.
      * 
      * @see <a href="https://core.telegram.org/bots/api#sendchataction">Official documentation of sendChatAction</a>
      */
     public int sendChatAction(String channel, ChatAction action) throws IOException {
+        return sendChatAction(channel, action, 0);
+    }
+
+    public int sendChatAction(String channel, ChatAction action, int messageThreadId) throws IOException {
         StringBuilder command = new StringBuilder(SEND_CHAT_ACTION);
         command.append("chat_id=").append(channel);
+        if (messageThreadId > 0) command.append("&message_thread_id=").append(messageThreadId);
         command.append("&action=").append(action.VALUE);
         return callMethod(command.toString());
     }
@@ -2315,7 +2367,8 @@ public class TgBotApi {
     public int editForumTopic(String chatId, int messageThreadId, String name, String iconCustomEmojiId)
             throws IOException {
         StringBuilder command = new StringBuilder(EDIT_FORUM_TOPIC).append("chat_id=").append(urlEncode(chatId))
-                .append("&message_thread_id=").append(messageThreadId).append("&name=").append(urlEncode(name));
+                .append("&message_thread_id=").append(messageThreadId);
+        if (name != null) command.append("&name=").append(urlEncode(name));
         if (iconCustomEmojiId != null) {
             command.append("&icon_custom_emoji_id=").append(urlEncode(iconCustomEmojiId));
         }
@@ -2349,6 +2402,30 @@ public class TgBotApi {
 
     public Sticker[] getForumTopicIconStickers() throws IOException {
         return callMethod(GET_FORUM_TOPIC_ICON_STICKERS, Sticker[].class);
+    }
+
+    public int editGeneralForumTopic(String chatId, String name) throws IOException {
+        return callMethod(EDIT_GENERAL_FORUM_TOPIC + "chat_id=" + urlEncode(chatId) + "&name=" + urlEncode(name));
+    }
+
+    private int callGeneralForumTopicMethod(String method, String chatId) throws IOException {
+        return callMethod(method + "chat_id=" + urlEncode(chatId));
+    }
+
+    public int closeGeneralForumTopic(String chatId) throws IOException {
+        return callGeneralForumTopicMethod(CLOSE_GENERAL_FORUM_TOPIC, chatId);
+    }
+
+    public int reopenGeneralForumTopic(String chatId) throws IOException {
+        return callGeneralForumTopicMethod(REOPEN_GENERAL_FORUM_TOPIC, chatId);
+    }
+
+    public int hideGeneralForumTopic(String chatId) throws IOException {
+        return callGeneralForumTopicMethod(HIDE_GENERAL_FORUM_TOPIC, chatId);
+    }
+
+    public int unhideGeneralForumTopic(String chatId) throws IOException {
+        return callGeneralForumTopicMethod(UNHIDE_GENERAL_FORUM_TOPIC, chatId);
     }
 
     /**

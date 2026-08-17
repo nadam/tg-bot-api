@@ -8,6 +8,7 @@ import java.io.InputStream;
 public class InputMediaPhoto extends InputMedia {
 
     public String type = "photo";
+    public Boolean has_spoiler;
 
     public InputMediaPhoto() {
     }
