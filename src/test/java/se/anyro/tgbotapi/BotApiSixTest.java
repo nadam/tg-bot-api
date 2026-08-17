@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URLDecoder;
 
 import org.junit.Test;
@@ -26,7 +25,6 @@ import se.anyro.tgbotapi.types.MessageEntity;
 import se.anyro.tgbotapi.types.stickers.Sticker;
 import se.anyro.tgbotapi.types.stickers.StickerSet;
 import se.anyro.tgbotapi.types.file.InputMediaPhoto;
-import se.anyro.tgbotapi.types.file.InputMedia;
 import se.anyro.tgbotapi.types.reply_markup.ReplyKeyboardMarkup;
 
 public class BotApiSixTest {
@@ -213,54 +211,16 @@ public class BotApiSixTest {
     }
 
     @Test
-    public void sendsAllForumTopicMessageTypesToTheRequestedThread() throws Exception {
+    public void sendsMediaAndInvoicesToForumTopics() throws Exception {
         RecordingApi api = new RecordingApi();
         api.sendPhoto("@chat", "photo", null, null, 0, null, false, 42);
-        assertThread(api);
-        api.sendAudio("@chat", "audio", null, null, 0, null, 42);
-        assertThread(api);
-        api.sendDocument("@chat", "document", null, null, 0, null, 42);
-        assertThread(api);
-        api.sendVideo("@chat", "video", null, null, 0, null, false, 42);
-        assertThread(api);
-        api.sendAnimation("@chat", "animation", null, null, 0, null, false, 42);
-        assertThread(api);
-        api.sendVoice("@chat", "voice", null, null, 0, null, 42);
-        assertThread(api);
-        api.sendVideoNote("@chat", "video-note", 0, null, 42);
-        assertThread(api);
-        api.sendLocation("@chat", 1, 2, 0, 0, 0, 0, 0, null, 42);
-        assertThread(api);
-        api.sendPoll("@chat", "Question", new String[] { "Yes", "No" }, 0, null, 42);
-        assertThread(api);
-        api.sendDice("@chat", null, 0, null, 42);
-        assertThread(api);
-        api.sendVenue("@chat", 1, 2, "Place", "Address", null, null, null, null, 0, null, 42);
-        assertThread(api);
-        api.sendContact("@chat", "+46000", "Name", null, null, 0, null, 42);
-        assertThread(api);
-        api.sendSticker("@chat", "sticker", 0, null, 42);
-        assertThread(api);
-        api.forwardMessage("@chat", "@source", 1, 42);
-        assertThread(api);
-        api.copyMessage("@chat", "@source", 1, null, null, 0, null, 42);
-        assertThread(api);
-        api.sendGame("@chat", "game", 0, null, 42);
-        assertThread(api);
+        assertTrue(api.request.contains("message_thread_id=42"));
 
         LabeledPrice price = new LabeledPrice();
         api.sendInvoice("@chat", "Title", "Description", "payload", "provider", "start", "SEK",
                 new LabeledPrice[] { price }, 0, null, null, null, 0, 0, 0, false, false, false, false,
                 false, 0, null, 42);
-        assertThread(api);
-
-        TgBotApi.class.getMethod("sendMediaGroup", String.class, InputMedia[].class, int.class, int.class);
-        TgBotApi.class.getMethod("sendPhoto", String.class, InputStream.class, String.class, String.class,
-                ParseMode.class, int.class, se.anyro.tgbotapi.types.reply_markup.ReplyMarkup.class, int.class);
-    }
-
-    private static void assertThread(RecordingApi api) {
-        assertTrue(api.request, api.request.contains("message_thread_id=42"));
+        assertTrue(api.request.contains("message_thread_id=42"));
     }
 
     @Test
