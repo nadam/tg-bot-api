@@ -27,10 +27,15 @@ public class Update {
     public ChatMemberUpdated my_chat_member;
     public ChatMemberUpdated chat_member;
     public ChatJoinRequest chat_join_request;
+    public MessageReactionUpdated message_reaction;
+    public MessageReactionCountUpdated message_reaction_count;
+    public ChatBoostUpdated chat_boost;
+    public ChatBoostRemoved removed_chat_boost;
 
     public enum Type {
         MESSAGE, EDITED_MESSAGE, CHANNEL_POST, EDITED_CHANNEL_POST, INLINE_QUERY, CHOSEN_INLINE_RESULT, CALLBACK_QUERY,
-        SHIPPING_QUERY, PRE_CHECKOUT_QUERY, POLL, POLL_ANSWER, MY_CHAT_MEMBER, CHAT_MEMBER, CHAT_JOIN_REQUEST, UNKNOWN
+        SHIPPING_QUERY, PRE_CHECKOUT_QUERY, POLL, POLL_ANSWER, MY_CHAT_MEMBER, CHAT_MEMBER, CHAT_JOIN_REQUEST,
+        MESSAGE_REACTION, MESSAGE_REACTION_COUNT, CHAT_BOOST, REMOVED_CHAT_BOOST, UNKNOWN
     }
 
     public boolean isMessage() {
@@ -106,6 +111,14 @@ public class Update {
             return Type.CHAT_MEMBER;
         } else if (chat_join_request != null) {
             return Type.CHAT_JOIN_REQUEST;
+        } else if (message_reaction != null) {
+            return Type.MESSAGE_REACTION;
+        } else if (message_reaction_count != null) {
+            return Type.MESSAGE_REACTION_COUNT;
+        } else if (chat_boost != null) {
+            return Type.CHAT_BOOST;
+        } else if (removed_chat_boost != null) {
+            return Type.REMOVED_CHAT_BOOST;
         }
         return Type.UNKNOWN;
     }

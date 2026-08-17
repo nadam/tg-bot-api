@@ -94,6 +94,15 @@ public class Message {
     public UserShared user_shared;
     public ChatShared chat_shared;
     public Story story;
+    public ExternalReplyInfo external_reply;
+    public TextQuote quote;
+    public LinkPreviewOptions link_preview_options;
+    public MessageOrigin forward_origin;
+    public UsersShared users_shared;
+    public Giveaway giveaway;
+    public GiveawayCreated giveaway_created;
+    public GiveawayWinners giveaway_winners;
+    public GiveawayCompleted giveaway_completed;
 
     private static final String VIDEO_MP4 = "video/mp4";
 

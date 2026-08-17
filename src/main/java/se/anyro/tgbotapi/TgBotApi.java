@@ -27,6 +27,10 @@ import se.anyro.tgbotapi.types.ChatPermissions;
 import se.anyro.tgbotapi.types.ChatAdministratorRights;
 import se.anyro.tgbotapi.types.Message;
 import se.anyro.tgbotapi.types.MessageId;
+import se.anyro.tgbotapi.types.ReactionType;
+import se.anyro.tgbotapi.types.ReplyParameters;
+import se.anyro.tgbotapi.types.LinkPreviewOptions;
+import se.anyro.tgbotapi.types.UserChatBoosts;
 import se.anyro.tgbotapi.types.ForumTopic;
 import se.anyro.tgbotapi.types.ParseMode;
 import se.anyro.tgbotapi.types.ResponseParameters;
@@ -648,6 +652,61 @@ public class TgBotApi {
     public Message sendMessage(long chatId, String text, ParseMode parseMode, boolean disablePreview, int replyTo,
             ReplyMarkup replyMarkup) throws IOException {
         return sendMessage(chatId, text, parseMode, disablePreview, replyTo, replyMarkup, 0);
+    }
+
+    public Message sendMessage(long chatId, String text, ParseMode parseMode, LinkPreviewOptions linkPreviewOptions,
+            ReplyParameters replyParameters, ReplyMarkup replyMarkup, int messageThreadId) throws IOException {
+        StringBuilder command = new StringBuilder(SEND_MESSAGE).append("chat_id=").append(chatId);
+        if (messageThreadId > 0) command.append("&message_thread_id=").append(messageThreadId);
+        command.append("&text=").append(urlEncode(text));
+        if (parseMode != null) command.append("&parse_mode=").append(parseMode.VALUE);
+        if (linkPreviewOptions != null) command.append("&link_preview_options=")
+                .append(urlEncode(GSON.toJson(linkPreviewOptions)));
+        if (disableNotification) command.append("&disable_notification=true");
+        if (protectContent) command.append("&protect_content=true");
+        if (replyParameters != null) command.append("&reply_parameters=")
+                .append(urlEncode(GSON.toJson(replyParameters)));
+        if (replyMarkup != null) command.append("&reply_markup=").append(urlEncode(GSON.toJson(replyMarkup)));
+        return callMethod(command.toString(), Message.class);
+    }
+
+    public int setMessageReaction(String chatId, int messageId, ReactionType[] reaction, boolean isBig)
+            throws IOException {
+        String command = BASE_URL + "/setMessageReaction?chat_id=" + urlEncode(chatId) + "&message_id=" + messageId;
+        if (reaction != null) command += "&reaction=" + urlEncode(GSON.toJson(reaction));
+        if (isBig) command += "&is_big=true";
+        return callMethod(command);
+    }
+
+    public int deleteMessages(String chatId, int[] messageIds) throws IOException {
+        return callMethod(BASE_URL + "/deleteMessages?chat_id=" + urlEncode(chatId) + "&message_ids="
+                + urlEncode(GSON.toJson(messageIds)));
+    }
+
+    public int forwardMessages(String chatId, String fromChatId, int[] messageIds, int messageThreadId,
+            boolean disableNotification, boolean protectContent) throws IOException {
+        String command = BASE_URL + "/forwardMessages?chat_id=" + urlEncode(chatId) + "&from_chat_id="
+                + urlEncode(fromChatId) + "&message_ids=" + urlEncode(GSON.toJson(messageIds));
+        if (messageThreadId > 0) command += "&message_thread_id=" + messageThreadId;
+        if (disableNotification) command += "&disable_notification=true";
+        if (protectContent) command += "&protect_content=true";
+        return callMethod(command);
+    }
+
+    public int copyMessages(String chatId, String fromChatId, int[] messageIds, int messageThreadId,
+            boolean disableNotification, boolean protectContent, boolean removeCaption) throws IOException {
+        String command = BASE_URL + "/copyMessages?chat_id=" + urlEncode(chatId) + "&from_chat_id="
+                + urlEncode(fromChatId) + "&message_ids=" + urlEncode(GSON.toJson(messageIds));
+        if (messageThreadId > 0) command += "&message_thread_id=" + messageThreadId;
+        if (disableNotification) command += "&disable_notification=true";
+        if (protectContent) command += "&protect_content=true";
+        if (removeCaption) command += "&remove_caption=true";
+        return callMethod(command);
+    }
+
+    public UserChatBoosts getUserChatBoosts(String chatId, long userId) throws IOException {
+        return callMethod(BASE_URL + "/getUserChatBoosts?chat_id=" + urlEncode(chatId) + "&user_id=" + userId,
+                UserChatBoosts.class);
     }
 
     public Message sendMessage(long chatId, String text, ParseMode parseMode, boolean disablePreview, int replyTo,
