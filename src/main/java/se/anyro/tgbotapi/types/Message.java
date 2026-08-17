@@ -91,6 +91,8 @@ public class Message {
     public GeneralForumTopicHidden general_forum_topic_hidden;
     public GeneralForumTopicUnhidden general_forum_topic_unhidden;
     public WriteAccessAllowed write_access_allowed;
+    public UserShared user_shared;
+    public ChatShared chat_shared;
 
     private static final String VIDEO_MP4 = "video/mp4";
 

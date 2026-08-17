@@ -13,6 +13,8 @@ public class KeyboardButton {
     public Boolean request_location;
     public KeyboardButtonPollType request_poll;
     public WebAppInfo web_app;
+    public KeyboardButtonRequestUser request_user;
+    public KeyboardButtonRequestChat request_chat;
 
     public KeyboardButton(String text) {
         this.text = text;

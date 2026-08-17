@@ -2444,12 +2444,20 @@ public class TgBotApi {
      */
     public int restrictChatMember(String channel, long userId, ChatPermissions permissions, int untilDate)
             throws IOException {
+        return restrictChatMember(channel, userId, permissions, untilDate, false);
+    }
+
+    public int restrictChatMember(String channel, long userId, ChatPermissions permissions, int untilDate,
+            boolean useIndependentChatPermissions) throws IOException {
         StringBuilder command = new StringBuilder(RESTRICT_CHAT_MEMBER);
         command.append("chat_id=").append(channel);
         command.append("&user_id=").append(userId);
         command.append("&permissions=").append(urlEncode(GSON.toJson(permissions)));
         if (untilDate != 0) {
             command.append("&until_date=").append(untilDate);
+        }
+        if (useIndependentChatPermissions) {
+            command.append("&use_independent_chat_permissions=true");
         }
         return callMethod(command.toString());
     }
@@ -2760,8 +2768,16 @@ public class TgBotApi {
      *      setChatPermissions</a>
      */
     public int setChatPermissions(String channel, ChatPermissions permissions) throws IOException {
+        return setChatPermissions(channel, permissions, false);
+    }
+
+    public int setChatPermissions(String channel, ChatPermissions permissions, boolean useIndependentChatPermissions)
+            throws IOException {
         String command = SET_CHAT_PERMISSIONS + "chat_id=" + channel + "&permissions="
                 + urlEncode(GSON.toJson(permissions));
+        if (useIndependentChatPermissions) {
+            command += "&use_independent_chat_permissions=true";
+        }
         return callMethod(command);
     }
 
