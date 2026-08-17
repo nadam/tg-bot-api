@@ -21,6 +21,7 @@ import se.anyro.tgbotapi.types.MenuButton;
 import se.anyro.tgbotapi.types.ChatAction;
 import se.anyro.tgbotapi.types.ChatMember;
 import se.anyro.tgbotapi.types.ChatPermissions;
+import se.anyro.tgbotapi.types.ChatAdministratorRights;
 import se.anyro.tgbotapi.types.Message;
 import se.anyro.tgbotapi.types.MessageId;
 import se.anyro.tgbotapi.types.ForumTopic;
@@ -83,6 +84,8 @@ public class TgBotApi {
     private final String SEND_DICE;
     private final String GET_MY_COMMANDS;
     private final String SET_MY_COMMANDS;
+    private final String SET_MY_DEFAULT_ADMINISTRATOR_RIGHTS;
+    private final String GET_MY_DEFAULT_ADMINISTRATOR_RIGHTS;
     private final String SEND_CHAT_ACTION;
     private final String GET_USER_PROFILE_PHOTOS;
     private final String GET_FILE;
@@ -214,6 +217,8 @@ public class TgBotApi {
         SEND_DICE = BASE_URL + "/sendDice?";
         GET_MY_COMMANDS = BASE_URL + "/getMyCommands";
         SET_MY_COMMANDS = BASE_URL + "/setMyCommands?";
+        SET_MY_DEFAULT_ADMINISTRATOR_RIGHTS = BASE_URL + "/setMyDefaultAdministratorRights?";
+        GET_MY_DEFAULT_ADMINISTRATOR_RIGHTS = BASE_URL + "/getMyDefaultAdministratorRights?";
         SEND_CHAT_ACTION = BASE_URL + "/sendChatAction?";
         GET_USER_PROFILE_PHOTOS = BASE_URL + "/getUserProfilePhotos?";
         GET_FILE = BASE_URL + "/getFile?";
@@ -1866,6 +1871,27 @@ public class TgBotApi {
         if (scope != null) command += "scope=" + urlEncode(GSON.toJson(scope)) + "&";
         if (languageCode != null) command += "language_code=" + urlEncode(languageCode);
         return callMethod(command, BotCommand[].class);
+    }
+
+    public int setMyDefaultAdministratorRights(ChatAdministratorRights rights) throws IOException {
+        return setMyDefaultAdministratorRights(rights, false);
+    }
+
+    public int setMyDefaultAdministratorRights(ChatAdministratorRights rights, boolean forChannels)
+            throws IOException {
+        StringBuilder command = new StringBuilder(SET_MY_DEFAULT_ADMINISTRATOR_RIGHTS);
+        if (rights != null) command.append("rights=").append(urlEncode(GSON.toJson(rights)));
+        if (forChannels) command.append(rights == null ? "for_channels=true" : "&for_channels=true");
+        return callMethod(command.toString());
+    }
+
+    public ChatAdministratorRights getMyDefaultAdministratorRights() throws IOException {
+        return getMyDefaultAdministratorRights(false);
+    }
+
+    public ChatAdministratorRights getMyDefaultAdministratorRights(boolean forChannels) throws IOException {
+        String command = GET_MY_DEFAULT_ADMINISTRATOR_RIGHTS + (forChannels ? "for_channels=true" : "");
+        return callMethod(command, ChatAdministratorRights.class);
     }
 
     public int deleteMyCommands() throws IOException {

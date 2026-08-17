@@ -15,6 +15,7 @@ import se.anyro.tgbotapi.types.BotCommand;
 import se.anyro.tgbotapi.types.BotCommandScopeChatMember;
 import se.anyro.tgbotapi.types.ChatJoinRequest;
 import se.anyro.tgbotapi.types.Chat;
+import se.anyro.tgbotapi.types.ChatAdministratorRights;
 import se.anyro.tgbotapi.types.Message;
 import se.anyro.tgbotapi.types.User;
 import se.anyro.tgbotapi.types.MenuButtonWebApp;
@@ -172,6 +173,21 @@ public class BotApiSixTest {
 
         api.createNewStickerSet(1L, "set", "Title", "file-id", "🙂", "custom_emoji", null);
         assertTrue(api.request.contains("sticker_type=custom_emoji"));
+    }
+
+    @Test
+    public void managesDefaultAdministratorRights() throws Exception {
+        RecordingApi api = new RecordingApi();
+        ChatAdministratorRights rights = new ChatAdministratorRights();
+        rights.can_delete_messages = true;
+        api.setMyDefaultAdministratorRights(rights, true);
+        String decoded = URLDecoder.decode(api.request, "UTF-8");
+        assertTrue(decoded.contains("rights={"));
+        assertTrue(decoded.contains("\"can_delete_messages\":true"));
+        assertTrue(decoded.contains("for_channels=true"));
+
+        api.getMyDefaultAdministratorRights(true);
+        assertTrue(api.request.contains("for_channels=true"));
     }
 
     @Test
