@@ -11,6 +11,7 @@ public class Sticker {
     public int width;
     public int height;
     public PhotoSize thumb;
+    public PhotoSize thumbnail;
     public String emoji;
     public String set_name;
     public MaskPosition mask_position;
@@ -19,5 +20,6 @@ public class Sticker {
     public se.anyro.tgbotapi.types.file.File premium_animation;
     public String type;
     public String custom_emoji_id;
+    public boolean needs_repainting;
     public int file_size;
 }

@@ -9,5 +9,6 @@ public class VideoNote {
     public int length;
     public int duration;
     public PhotoSize thumb;
+    public PhotoSize thumbnail;
     public int file_size;
 }

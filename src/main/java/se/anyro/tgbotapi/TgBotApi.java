@@ -16,6 +16,8 @@ import se.anyro.tgbotapi.types.Chat;
 import se.anyro.tgbotapi.types.ChatInviteLink;
 import se.anyro.tgbotapi.types.BotCommand;
 import se.anyro.tgbotapi.types.BotCommandScope;
+import se.anyro.tgbotapi.types.BotDescription;
+import se.anyro.tgbotapi.types.BotShortDescription;
 import se.anyro.tgbotapi.types.SentWebAppMessage;
 import se.anyro.tgbotapi.types.MenuButton;
 import se.anyro.tgbotapi.types.ChatAction;
@@ -43,6 +45,7 @@ import se.anyro.tgbotapi.types.reply_markup.InlineKeyboardMarkup;
 import se.anyro.tgbotapi.types.reply_markup.ReplyMarkup;
 import se.anyro.tgbotapi.types.stickers.MaskPosition;
 import se.anyro.tgbotapi.types.stickers.Sticker;
+import se.anyro.tgbotapi.types.stickers.InputSticker;
 import se.anyro.tgbotapi.utils.FileSender;
 
 import com.google.gson.Gson;
@@ -3470,6 +3473,81 @@ public class TgBotApi {
             command.append("&is_personal=True");
         }
         return callMethod(command.toString());
+    }
+
+    public int setMyDescription(String description, String languageCode) throws IOException {
+        String command = BASE_URL + "/setMyDescription?description=" + urlEncode(description == null ? "" : description);
+        if (languageCode != null) command += "&language_code=" + urlEncode(languageCode);
+        return callMethod(command);
+    }
+
+    public BotDescription getMyDescription(String languageCode) throws IOException {
+        String command = BASE_URL + "/getMyDescription?";
+        if (languageCode != null) command += "language_code=" + urlEncode(languageCode);
+        return callMethod(command, BotDescription.class);
+    }
+
+    public int setMyShortDescription(String shortDescription, String languageCode) throws IOException {
+        String command = BASE_URL + "/setMyShortDescription?short_description="
+                + urlEncode(shortDescription == null ? "" : shortDescription);
+        if (languageCode != null) command += "&language_code=" + urlEncode(languageCode);
+        return callMethod(command);
+    }
+
+    public BotShortDescription getMyShortDescription(String languageCode) throws IOException {
+        String command = BASE_URL + "/getMyShortDescription?";
+        if (languageCode != null) command += "language_code=" + urlEncode(languageCode);
+        return callMethod(command, BotShortDescription.class);
+    }
+
+    public int addStickerToSet(long userId, String name, InputSticker sticker) throws IOException {
+        return callMethod(BASE_URL + "/addStickerToSet?user_id=" + userId + "&name=" + urlEncode(name)
+                + "&sticker=" + urlEncode(GSON.toJson(sticker)));
+    }
+
+    public int createNewStickerSet(long userId, String name, String title, InputSticker[] stickers,
+            String stickerFormat, String stickerType, boolean needsRepainting) throws IOException {
+        String command = BASE_URL + "/createNewStickerSet?user_id=" + userId + "&name=" + urlEncode(name)
+                + "&title=" + urlEncode(title) + "&stickers=" + urlEncode(GSON.toJson(stickers))
+                + "&sticker_format=" + urlEncode(stickerFormat);
+        if (stickerType != null) command += "&sticker_type=" + urlEncode(stickerType);
+        if (needsRepainting) command += "&needs_repainting=true";
+        return callMethod(command);
+    }
+
+    public int setCustomEmojiStickerSetThumbnail(String name, String customEmojiId) throws IOException {
+        String command = BASE_URL + "/setCustomEmojiStickerSetThumbnail?name=" + urlEncode(name);
+        if (customEmojiId != null) command += "&custom_emoji_id=" + urlEncode(customEmojiId);
+        return callMethod(command);
+    }
+
+    public int setStickerSetTitle(String name, String title) throws IOException {
+        return callMethod(BASE_URL + "/setStickerSetTitle?name=" + urlEncode(name) + "&title=" + urlEncode(title));
+    }
+
+    public int deleteStickerSet(String name) throws IOException {
+        return callMethod(BASE_URL + "/deleteStickerSet?name=" + urlEncode(name));
+    }
+
+    public int setStickerEmojiList(String sticker, String[] emojiList) throws IOException {
+        return callMethod(BASE_URL + "/setStickerEmojiList?sticker=" + urlEncode(sticker) + "&emoji_list="
+                + urlEncode(GSON.toJson(emojiList)));
+    }
+
+    public int setStickerKeywords(String sticker, String[] keywords) throws IOException {
+        return callMethod(BASE_URL + "/setStickerKeywords?sticker=" + urlEncode(sticker) + "&keywords="
+                + urlEncode(GSON.toJson(keywords)));
+    }
+
+    public int setStickerMaskPosition(String sticker, MaskPosition maskPosition) throws IOException {
+        return callMethod(BASE_URL + "/setStickerMaskPosition?sticker=" + urlEncode(sticker) + "&mask_position="
+                + urlEncode(GSON.toJson(maskPosition)));
+    }
+
+    public int setStickerSetThumbnail(String name, long userId, String thumbnail) throws IOException {
+        String command = BASE_URL + "/setStickerSetThumbnail?name=" + urlEncode(name) + "&user_id=" + userId;
+        if (thumbnail != null) command += "&thumbnail=" + urlEncode(thumbnail);
+        return callMethod(command);
     }
 
     /**

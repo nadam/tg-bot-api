@@ -9,6 +9,7 @@ public class Animation {
     public int height;
     public int duration;
     public PhotoSize thumb;
+    public PhotoSize thumbnail;
     public String file_name;
     public String mime_type;
     public long file_size;

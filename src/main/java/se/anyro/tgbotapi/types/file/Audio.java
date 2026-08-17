@@ -13,4 +13,5 @@ public class Audio {
     public String file_name;
     public long file_size;
     public PhotoSize thumb;
+    public PhotoSize thumbnail;
 }

@@ -9,6 +9,7 @@ public class InputMediaDocument extends InputMedia {
 
     public String type = "document";
     public boolean disable_content_type_detection;
+    public String thumbnail;
 
     public InputMediaDocument() {
     }

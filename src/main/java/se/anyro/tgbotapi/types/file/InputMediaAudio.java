@@ -12,6 +12,7 @@ public class InputMediaAudio extends InputMedia {
     public String performer;
     public String title;
     public Boolean supports_streaming;
+    public String thumbnail;
 
     public InputMediaAudio() {
     }

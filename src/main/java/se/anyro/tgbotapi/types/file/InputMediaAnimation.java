@@ -14,6 +14,7 @@ public class InputMediaAnimation extends InputMedia {
     public Integer duration;
     public Boolean supports_streaming;
     public Boolean has_spoiler;
+    public String thumbnail;
 
     public InputMediaAnimation() {
     }
