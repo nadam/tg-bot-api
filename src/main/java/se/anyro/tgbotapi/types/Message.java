@@ -20,6 +20,8 @@ import se.anyro.tgbotapi.types.reply_markup.InlineKeyboardMarkup;
  */
 public class Message {
     public int message_id;
+    public int message_thread_id;
+    public boolean is_topic_message;
     public User from;
     public Chat sender_chat;
     public User via_bot;
@@ -81,6 +83,9 @@ public class Message {
     public VideoChatEnded video_chat_ended;
     public VideoChatParticipantsInvited video_chat_participants_invited;
     public WebAppData web_app_data;
+    public ForumTopicCreated forum_topic_created;
+    public ForumTopicClosed forum_topic_closed;
+    public ForumTopicReopened forum_topic_reopened;
 
     private static final String VIDEO_MP4 = "video/mp4";
 

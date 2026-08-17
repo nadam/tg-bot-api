@@ -25,6 +25,7 @@ public class ChatMember {
     public boolean can_promote_members;
     public boolean can_manage_voice_chats;
     public boolean can_manage_video_chats;
+    public boolean can_manage_topics;
 
     // Restricted only
     public boolean can_send_messages;

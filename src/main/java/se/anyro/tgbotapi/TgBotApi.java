@@ -23,6 +23,7 @@ import se.anyro.tgbotapi.types.ChatMember;
 import se.anyro.tgbotapi.types.ChatPermissions;
 import se.anyro.tgbotapi.types.Message;
 import se.anyro.tgbotapi.types.MessageId;
+import se.anyro.tgbotapi.types.ForumTopic;
 import se.anyro.tgbotapi.types.ParseMode;
 import se.anyro.tgbotapi.types.ResponseParameters;
 import se.anyro.tgbotapi.types.Update;
@@ -130,6 +131,13 @@ public class TgBotApi {
     private final String SEND_GAME;
     private final String SET_GAME_SCORE;
     private final String GET_GAME_HIGH_SCORES;
+    private final String CREATE_FORUM_TOPIC;
+    private final String EDIT_FORUM_TOPIC;
+    private final String CLOSE_FORUM_TOPIC;
+    private final String REOPEN_FORUM_TOPIC;
+    private final String DELETE_FORUM_TOPIC;
+    private final String UNPIN_ALL_FORUM_TOPIC_MESSAGES;
+    private final String GET_FORUM_TOPIC_ICON_STICKERS;
 
     private final String THUMB_FILENAME = "thumb_filename";
 
@@ -248,6 +256,13 @@ public class TgBotApi {
         SEND_GAME = BASE_URL + "/sendGame?";
         SET_GAME_SCORE = BASE_URL + "/setGameScore?";
         GET_GAME_HIGH_SCORES = BASE_URL + "/getGameHighScores?";
+        CREATE_FORUM_TOPIC = BASE_URL + "/createForumTopic?";
+        EDIT_FORUM_TOPIC = BASE_URL + "/editForumTopic?";
+        CLOSE_FORUM_TOPIC = BASE_URL + "/closeForumTopic?";
+        REOPEN_FORUM_TOPIC = BASE_URL + "/reopenForumTopic?";
+        DELETE_FORUM_TOPIC = BASE_URL + "/deleteForumTopic?";
+        UNPIN_ALL_FORUM_TOPIC_MESSAGES = BASE_URL + "/unpinAllForumTopicMessages?";
+        GET_FORUM_TOPIC_ICON_STICKERS = BASE_URL + "/getForumTopicIconStickers";
 
         OWNER = owner;
         this.errorListener = errorListener;
@@ -612,8 +627,14 @@ public class TgBotApi {
      */
     public Message sendMessage(long chatId, String text, ParseMode parseMode, boolean disablePreview, int replyTo,
             ReplyMarkup replyMarkup) throws IOException {
+        return sendMessage(chatId, text, parseMode, disablePreview, replyTo, replyMarkup, 0);
+    }
+
+    public Message sendMessage(long chatId, String text, ParseMode parseMode, boolean disablePreview, int replyTo,
+            ReplyMarkup replyMarkup, int messageThreadId) throws IOException {
         StringBuilder command = new StringBuilder(SEND_MESSAGE);
         command.append("chat_id=").append(chatId);
+        if (messageThreadId > 0) command.append("&message_thread_id=").append(messageThreadId);
         command.append("&text=").append(urlEncode(text));
         if (parseMode != null) {
             command.append("&parse_mode=").append(parseMode.VALUE);
@@ -641,8 +662,14 @@ public class TgBotApi {
      */
     public int sendMessage(String channel, String text, ParseMode parseMode, boolean disablePreview, int replyTo,
             ReplyMarkup replyMarkup) throws IOException {
+        return sendMessage(channel, text, parseMode, disablePreview, replyTo, replyMarkup, 0);
+    }
+
+    public int sendMessage(String channel, String text, ParseMode parseMode, boolean disablePreview, int replyTo,
+            ReplyMarkup replyMarkup, int messageThreadId) throws IOException {
         StringBuilder command = new StringBuilder(SEND_MESSAGE);
         command.append("chat_id=").append(channel);
+        if (messageThreadId > 0) command.append("&message_thread_id=").append(messageThreadId);
         command.append("&text=").append(urlEncode(text));
         if (parseMode != null) {
             command.append("&parse_mode=").append(parseMode.VALUE);
@@ -2237,13 +2264,22 @@ public class TgBotApi {
             throws IOException {
         return promoteChatMember(String.valueOf(chatId), userId, isAnonymous, canManageVideoChats, canChangeInfo,
                 canPostMessages, canEditMessages, canDeleteMessages, canInviteUsers, canRestrictMembers,
-                canPinMessages, canPromoteMembers);
+                canPinMessages, canPromoteMembers, false);
     }
 
     public int promoteChatMember(String channel, long userId, boolean isAnonymous, boolean canManageVideoChats,
             boolean canChangeInfo, boolean canPostMessages, boolean canEditMessages, boolean canDeleteMessages,
             boolean canInviteUsers, boolean canRestrictMembers, boolean canPinMessages, boolean canPromoteMembers)
             throws IOException {
+        return promoteChatMember(channel, userId, isAnonymous, canManageVideoChats, canChangeInfo, canPostMessages,
+                canEditMessages, canDeleteMessages, canInviteUsers, canRestrictMembers, canPinMessages,
+                canPromoteMembers, false);
+    }
+
+    public int promoteChatMember(String channel, long userId, boolean isAnonymous, boolean canManageVideoChats,
+            boolean canChangeInfo, boolean canPostMessages, boolean canEditMessages, boolean canDeleteMessages,
+            boolean canInviteUsers, boolean canRestrictMembers, boolean canPinMessages, boolean canPromoteMembers,
+            boolean canManageTopics) throws IOException {
         StringBuilder command = new StringBuilder(PROMOTE_CHAT_MEMBER);
         command.append("chat_id=").append(urlEncode(channel)).append("&user_id=").append(userId);
         if (isAnonymous) command.append("&is_anonymous=true");
@@ -2256,7 +2292,63 @@ public class TgBotApi {
         if (canRestrictMembers) command.append("&can_restrict_members=true");
         if (canPinMessages) command.append("&can_pin_messages=true");
         if (canPromoteMembers) command.append("&can_promote_members=true");
+        if (canManageTopics) command.append("&can_manage_topics=true");
         return callMethod(command.toString());
+    }
+
+    public ForumTopic createForumTopic(String chatId, String name, int iconColor, String iconCustomEmojiId)
+            throws IOException {
+        StringBuilder command = new StringBuilder(CREATE_FORUM_TOPIC).append("chat_id=").append(urlEncode(chatId))
+                .append("&name=").append(urlEncode(name));
+        if (iconColor != 0) command.append("&icon_color=").append(iconColor);
+        if (iconCustomEmojiId != null) {
+            command.append("&icon_custom_emoji_id=").append(urlEncode(iconCustomEmojiId));
+        }
+        return callMethod(command.toString(), ForumTopic.class);
+    }
+
+    public ForumTopic createForumTopic(long chatId, String name, int iconColor, String iconCustomEmojiId)
+            throws IOException {
+        return createForumTopic(String.valueOf(chatId), name, iconColor, iconCustomEmojiId);
+    }
+
+    public int editForumTopic(String chatId, int messageThreadId, String name, String iconCustomEmojiId)
+            throws IOException {
+        StringBuilder command = new StringBuilder(EDIT_FORUM_TOPIC).append("chat_id=").append(urlEncode(chatId))
+                .append("&message_thread_id=").append(messageThreadId).append("&name=").append(urlEncode(name));
+        if (iconCustomEmojiId != null) {
+            command.append("&icon_custom_emoji_id=").append(urlEncode(iconCustomEmojiId));
+        }
+        return callMethod(command.toString());
+    }
+
+    public int editForumTopic(long chatId, int messageThreadId, String name, String iconCustomEmojiId)
+            throws IOException {
+        return editForumTopic(String.valueOf(chatId), messageThreadId, name, iconCustomEmojiId);
+    }
+
+    private int callForumTopicMethod(String method, String chatId, int messageThreadId) throws IOException {
+        return callMethod(method + "chat_id=" + urlEncode(chatId) + "&message_thread_id=" + messageThreadId);
+    }
+
+    public int closeForumTopic(String chatId, int messageThreadId) throws IOException {
+        return callForumTopicMethod(CLOSE_FORUM_TOPIC, chatId, messageThreadId);
+    }
+
+    public int reopenForumTopic(String chatId, int messageThreadId) throws IOException {
+        return callForumTopicMethod(REOPEN_FORUM_TOPIC, chatId, messageThreadId);
+    }
+
+    public int deleteForumTopic(String chatId, int messageThreadId) throws IOException {
+        return callForumTopicMethod(DELETE_FORUM_TOPIC, chatId, messageThreadId);
+    }
+
+    public int unpinAllForumTopicMessages(String chatId, int messageThreadId) throws IOException {
+        return callForumTopicMethod(UNPIN_ALL_FORUM_TOPIC_MESSAGES, chatId, messageThreadId);
+    }
+
+    public Sticker[] getForumTopicIconStickers() throws IOException {
+        return callMethod(GET_FORUM_TOPIC_ICON_STICKERS, Sticker[].class);
     }
 
     /**

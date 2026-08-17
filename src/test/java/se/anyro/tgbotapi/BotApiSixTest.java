@@ -15,6 +15,7 @@ import se.anyro.tgbotapi.types.BotCommand;
 import se.anyro.tgbotapi.types.BotCommandScopeChatMember;
 import se.anyro.tgbotapi.types.ChatJoinRequest;
 import se.anyro.tgbotapi.types.Chat;
+import se.anyro.tgbotapi.types.Message;
 import se.anyro.tgbotapi.types.User;
 import se.anyro.tgbotapi.types.MenuButtonWebApp;
 import se.anyro.tgbotapi.types.Update;
@@ -169,5 +170,25 @@ public class BotApiSixTest {
 
         api.createNewStickerSet(1L, "set", "Title", "file-id", "🙂", "custom_emoji", null);
         assertTrue(api.request.contains("sticker_type=custom_emoji"));
+    }
+
+    @Test
+    public void supportsForumTopics() throws Exception {
+        RecordingApi api = new RecordingApi();
+        api.sendMessage(-100L, "Topic message", null, false, 0, null, 42);
+        assertTrue(api.request.contains("message_thread_id=42"));
+
+        api.createForumTopic(-100L, "Announcements", 0x6FB9F0, "emoji-1");
+        assertTrue(api.request.contains("/createForumTopic?"));
+        assertTrue(api.request.contains("name=Announcements"));
+        assertTrue(api.request.contains("icon_custom_emoji_id=emoji-1"));
+
+        Message message = new Gson().fromJson(
+                "{\"message_id\":1,\"message_thread_id\":42,\"is_topic_message\":true,"
+                        + "\"forum_topic_created\":{\"name\":\"Announcements\",\"icon_color\":7322096}}",
+                Message.class);
+        assertEquals(42, message.message_thread_id);
+        assertTrue(message.is_topic_message);
+        assertEquals("Announcements", message.forum_topic_created.name);
     }
 }

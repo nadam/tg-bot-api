@@ -25,6 +25,9 @@ public class Chat {
     public boolean join_to_send_messages;
     public boolean join_by_request;
     public boolean has_restricted_voice_and_video_messages;
+    public boolean is_forum;
+    public String[] active_usernames;
+    public String emoji_status_custom_emoji_id;
     public String bio;
 
     public enum Type {
