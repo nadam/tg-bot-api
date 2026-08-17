@@ -9,5 +9,5 @@ public class Document {
     public PhotoSize thumb;
     public String file_name;
     public String mime_type;
-    public int file_size;
+    public long file_size;
 }

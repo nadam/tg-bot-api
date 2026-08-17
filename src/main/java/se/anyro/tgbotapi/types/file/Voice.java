@@ -8,5 +8,5 @@ public class Voice {
     public String file_unique_id;
     public int duration;
     public String mime_type;
-    public int file_size;
+    public long file_size;
 }

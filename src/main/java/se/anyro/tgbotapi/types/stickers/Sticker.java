@@ -16,5 +16,6 @@ public class Sticker {
     public MaskPosition mask_position;
     public boolean is_animated;
     public boolean is_video;
+    public se.anyro.tgbotapi.types.file.File premium_animation;
     public int file_size;
 }

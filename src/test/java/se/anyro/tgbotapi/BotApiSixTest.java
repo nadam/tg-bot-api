@@ -121,6 +121,16 @@ public class BotApiSixTest {
     }
 
     @Test
+    public void createsInvoiceLink() throws Exception {
+        RecordingApi api = new RecordingApi();
+        api.createInvoiceLink("Title", "Description", "payload", "provider", "SEK",
+                new se.anyro.tgbotapi.types.payments.LabeledPrice[0], 0, null, null, null,
+                0, 0, 0, false, false, false, false, false);
+        assertTrue(api.request.contains("/createInvoiceLink?"));
+        assertTrue(api.request.contains("currency=SEK"));
+    }
+
+    @Test
     public void handlesChatWithoutType() {
         assertFalse(new Chat().isPrivate());
     }

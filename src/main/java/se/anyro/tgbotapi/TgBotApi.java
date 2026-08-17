@@ -377,11 +377,16 @@ public class TgBotApi {
      */
     public int setWebhook(String url, InputStream certificate, int maxConnections, String[] allowedUpdates)
             throws IOException {
-        return setWebhook(url, certificate, null, maxConnections, allowedUpdates, false);
+        return setWebhook(url, certificate, null, maxConnections, allowedUpdates, false, null);
     }
 
     public int setWebhook(String url, InputStream certificate, String ipAddress, int maxConnections,
             String[] allowedUpdates, boolean dropPendingUpdates) throws IOException {
+        return setWebhook(url, certificate, ipAddress, maxConnections, allowedUpdates, dropPendingUpdates, null);
+    }
+
+    public int setWebhook(String url, InputStream certificate, String ipAddress, int maxConnections,
+            String[] allowedUpdates, boolean dropPendingUpdates, String secretToken) throws IOException {
         FileSender sender = new FileSender(SET_WEBHOOK);
         sender.addFormField("url", url);
         if (certificate != null) {
@@ -398,6 +403,9 @@ public class TgBotApi {
         }
         if (dropPendingUpdates) {
             sender.addFormField("drop_pending_updates", "true");
+        }
+        if (secretToken != null) {
+            sender.addFormField("secret_token", secretToken);
         }
         return sender.finish();
     }
@@ -1975,8 +1983,8 @@ public class TgBotApi {
             }
             InputStream stream = con.getInputStream();
 
-            if (file.file_size > 0) {
-                byte[] result = new byte[file.file_size];
+            if (file.file_size > 0 && file.file_size <= Integer.MAX_VALUE) {
+                byte[] result = new byte[(int) file.file_size];
                 stream.read(result);
                 return result;
             }
@@ -3072,6 +3080,35 @@ public class TgBotApi {
             }
         }
         return callMethod(command.toString());
+    }
+
+    public String createInvoiceLink(String title, String description, String payload, String providerToken,
+            String currency, LabeledPrice[] prices, int maxTipAmount, int[] suggestedTipAmounts,
+            String providerData, String photoUrl, int photoSize, int photoWidth, int photoHeight,
+            boolean needName, boolean needPhoneNumber, boolean needEmail, boolean needShippingAddress,
+            boolean isFlexible) throws IOException {
+        StringBuilder command = new StringBuilder(BASE_URL + "/createInvoiceLink?");
+        command.append("title=").append(urlEncode(title));
+        command.append("&description=").append(urlEncode(description));
+        command.append("&payload=").append(urlEncode(payload));
+        command.append("&provider_token=").append(urlEncode(providerToken));
+        command.append("&currency=").append(urlEncode(currency));
+        command.append("&prices=").append(urlEncode(GSON.toJson(prices)));
+        if (maxTipAmount > 0) command.append("&max_tip_amount=").append(maxTipAmount);
+        if (suggestedTipAmounts != null) {
+            command.append("&suggested_tip_amounts=").append(urlEncode(GSON.toJson(suggestedTipAmounts)));
+        }
+        if (providerData != null) command.append("&provider_data=").append(urlEncode(providerData));
+        if (photoUrl != null) command.append("&photo_url=").append(urlEncode(photoUrl));
+        if (photoSize > 0) command.append("&photo_size=").append(photoSize);
+        if (photoWidth > 0) command.append("&photo_width=").append(photoWidth);
+        if (photoHeight > 0) command.append("&photo_height=").append(photoHeight);
+        if (needName) command.append("&need_name=true");
+        if (needPhoneNumber) command.append("&need_phone_number=true");
+        if (needEmail) command.append("&need_email=true");
+        if (needShippingAddress) command.append("&need_shipping_address=true");
+        if (isFlexible) command.append("&is_flexible=true");
+        return callMethod(command.toString(), String.class);
     }
 
     /**
