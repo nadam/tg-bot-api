@@ -13,4 +13,7 @@ public class ChatAdministratorRights {
     public boolean can_edit_messages;
     public boolean can_pin_messages;
     public boolean can_manage_topics;
+    public boolean can_post_stories;
+    public boolean can_edit_stories;
+    public boolean can_delete_stories;
 }

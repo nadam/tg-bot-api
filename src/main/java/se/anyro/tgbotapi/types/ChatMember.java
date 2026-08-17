@@ -26,6 +26,9 @@ public class ChatMember {
     public boolean can_manage_voice_chats;
     public boolean can_manage_video_chats;
     public boolean can_manage_topics;
+    public boolean can_post_stories;
+    public boolean can_edit_stories;
+    public boolean can_delete_stories;
 
     // Restricted only
     public boolean can_send_messages;

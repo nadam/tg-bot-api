@@ -2575,6 +2575,30 @@ public class TgBotApi {
         return callMethod(command.toString(), ForumTopic.class);
     }
 
+    public int promoteChatMember(String channel, long userId, boolean isAnonymous, boolean canManageVideoChats,
+            boolean canChangeInfo, boolean canPostMessages, boolean canEditMessages, boolean canDeleteMessages,
+            boolean canInviteUsers, boolean canRestrictMembers, boolean canPinMessages, boolean canPromoteMembers,
+            boolean canManageTopics, boolean canPostStories, boolean canEditStories, boolean canDeleteStories)
+            throws IOException {
+        StringBuilder command = new StringBuilder(PROMOTE_CHAT_MEMBER);
+        command.append("chat_id=").append(urlEncode(channel)).append("&user_id=").append(userId);
+        if (isAnonymous) command.append("&is_anonymous=true");
+        if (canManageVideoChats) command.append("&can_manage_video_chats=true");
+        if (canChangeInfo) command.append("&can_change_info=true");
+        if (canPostMessages) command.append("&can_post_messages=true");
+        if (canEditMessages) command.append("&can_edit_messages=true");
+        if (canDeleteMessages) command.append("&can_delete_messages=true");
+        if (canInviteUsers) command.append("&can_invite_users=true");
+        if (canRestrictMembers) command.append("&can_restrict_members=true");
+        if (canPinMessages) command.append("&can_pin_messages=true");
+        if (canPromoteMembers) command.append("&can_promote_members=true");
+        if (canManageTopics) command.append("&can_manage_topics=true");
+        if (canPostStories) command.append("&can_post_stories=true");
+        if (canEditStories) command.append("&can_edit_stories=true");
+        if (canDeleteStories) command.append("&can_delete_stories=true");
+        return callMethod(command.toString());
+    }
+
     public ForumTopic createForumTopic(long chatId, String name, int iconColor, String iconCustomEmojiId)
             throws IOException {
         return createForumTopic(String.valueOf(chatId), name, iconColor, iconCustomEmojiId);
