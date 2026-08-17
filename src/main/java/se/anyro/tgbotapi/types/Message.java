@@ -93,6 +93,7 @@ public class Message {
     public WriteAccessAllowed write_access_allowed;
     public UserShared user_shared;
     public ChatShared chat_shared;
+    public Story story;
 
     private static final String VIDEO_MP4 = "video/mp4";
 

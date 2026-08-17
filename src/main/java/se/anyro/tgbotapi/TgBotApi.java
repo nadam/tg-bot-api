@@ -3489,6 +3489,14 @@ public class TgBotApi {
         return callMethod(command);
     }
 
+    public int unpinAllGeneralForumTopicMessages(String chatId) throws IOException {
+        return callMethod(BASE_URL + "/unpinAllGeneralForumTopicMessages?chat_id=" + urlEncode(chatId));
+    }
+
+    public int unpinAllGeneralForumTopicMessages(long chatId) throws IOException {
+        return unpinAllGeneralForumTopicMessages(String.valueOf(chatId));
+    }
+
     public BotName getMyName(String languageCode) throws IOException {
         String command = BASE_URL + "/getMyName?";
         if (languageCode != null) command += "language_code=" + urlEncode(languageCode);
